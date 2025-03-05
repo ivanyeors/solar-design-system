@@ -1,112 +1,287 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import Button from '../components/ui/Button.vue';
+import ButtonPreview from '../components/showcase/ButtonPreview.vue';
 import ComponentShowcase from '../components/showcase/ComponentShowcase.vue';
 import PropRow from '../components/showcase/PropRow.vue';
+import TokenTable from '../components/showcase/TokenTable.vue';
+
+const activeTab = ref('design');
+const sections = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'usage', label: 'Usage' },
+  { id: 'specs', label: 'Specifications' },
+  { id: 'anatomy', label: 'Anatomy' },
+  { id: 'behaviors', label: 'Behaviors' },
+  { id: 'development', label: 'Development' }
+];
+
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// Add props for development section
+const props = [
+  {
+    name: 'variant',
+    type: "'primary' | 'secondary' | 'outline' | 'ghost'",
+    defaultValue: "'primary'",
+    description: "The visual style of the button."
+  },
+  {
+    name: 'size',
+    type: "'sm' | 'md' | 'lg'",
+    defaultValue: "'md'",
+    description: "The size of the button."
+  },
+  {
+    name: 'disabled',
+    type: 'boolean',
+    defaultValue: 'false',
+    description: "Whether the button is disabled."
+  },
+  {
+    name: 'loading',
+    type: 'boolean',
+    defaultValue: 'false',
+    description: "Whether the button is in a loading state."
+  }
+];
 </script>
 
 <template>
-  <div>
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Button</h1>
-      <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
-        Buttons allow users to trigger an action or event with a single click.
-      </p>
-    </div>
-    
-    <div class="space-y-12">
-      <!-- Basic Button -->
-      <ComponentShowcase
-        title="Basic Button"
-        description="The default button component with various styles and states."
-        componentName="Button"
-      >
-        <template #preview>
-          <Button>Default Button</Button>
-          <Button variant="primary">Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-        </template>
+  <div class="flex">
+    <!-- Left Sidebar Navigation -->
+    <nav class="w-64 fixed h-screen overflow-y-auto p-6 border-r border-gray-200 dark:border-gray-800">
+      <ul class="space-y-2">
+        <li v-for="section in sections" :key="section.id">
+          <a 
+            :href="`#${section.id}`"
+            @click.prevent="scrollToSection(section.id)"
+            class="block py-2 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            :class="{ 'bg-gray-100 dark:bg-gray-800': activeTab === section.id }"
+          >
+            {{ section.label }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="ml-64 flex-1 p-8 max-w-5xl">
+      <!-- Overview Section -->
+      <section id="overview" class="mb-16">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Button</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          Buttons help people take actions, such as sending an email, sharing a document, or liking a comment.
+        </p>
         
-        <template #code>
+        <!-- Interactive Preview -->
+        <ButtonPreview class="mb-8" />
+      </section>
+
+      <!-- Usage Section -->
+      <section id="usage" class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Usage</h2>
+        
+        <div class="grid grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 class="text-xl font-semibold mb-4">When to use</h3>
+            <ul class="space-y-3 text-gray-600 dark:text-gray-400">
+              <li>• Use buttons to help users take clear actions</li>
+              <li>• Primary buttons for main actions in a section</li>
+              <li>• Secondary buttons for alternative actions</li>
+              <li>• Ghost buttons for less prominent actions</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4">When not to use</h3>
+            <ul class="space-y-3 text-gray-600 dark:text-gray-400">
+              <li>• Avoid using too many primary buttons on one page</li>
+              <li>• Don't use buttons for navigation - use links instead</li>
+              <li>• Avoid using ghost buttons for primary actions</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="grid grid-cols-2 gap-8">
+          <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
+            <h3 class="text-green-700 dark:text-green-400 font-semibold mb-4">Do</h3>
+            <div class="flex gap-4 items-center">
+              <Button variant="primary">Save Changes</Button>
+              <Button variant="secondary">Cancel</Button>
+            </div>
+          </div>
+          <div class="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg">
+            <h3 class="text-red-700 dark:text-red-400 font-semibold mb-4">Don't</h3>
+            <div class="flex gap-4 items-center">
+              <Button variant="primary">Click Here</Button>
+              <Button variant="secondary">Submit</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Specifications Section -->
+      <section id="specs" class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Specifications</h2>
+        
+        <!-- Design Tokens -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
+          <TokenTable
+            :tokens="[
+              { name: '--btn-height-sm', value: '32px', usage: 'Small button height' },
+              { name: '--btn-height-md', value: '40px', usage: 'Medium button height' },
+              { name: '--btn-height-lg', value: '48px', usage: 'Large button height' },
+              { name: '--btn-padding-x', value: '16px', usage: 'Horizontal padding' },
+              { name: '--btn-radius', value: '8px', usage: 'Corner radius' },
+              { name: '--btn-font-weight', value: '500', usage: 'Font weight' },
+              { name: '--btn-transition', value: '150ms ease', usage: 'Animation timing' }
+            ]"
+          />
+        </div>
+      </section>
+
+      <!-- Anatomy Section -->
+      <section id="anatomy" class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Anatomy</h2>
+        <div class="relative p-8 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <Button variant="primary" size="lg" class="mx-auto">
+            <template #leading-icon>
+              <i class="icon-mail"></i>
+            </template>
+            Send Message
+            <template #trailing-icon>
+              <i class="icon-arrow-right"></i>
+            </template>
+          </Button>
+          
+          <div class="mt-8 grid grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-semibold mb-2">1. Container</h4>
+              <p class="text-gray-600 dark:text-gray-400">
+                The button's background container that provides visual prominence
+              </p>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">2. Label</h4>
+              <p class="text-gray-600 dark:text-gray-400">
+                Text that describes the button's action
+              </p>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">3. Leading Icon (Optional)</h4>
+              <p class="text-gray-600 dark:text-gray-400">
+                Icon that appears before the label
+              </p>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">4. Trailing Icon (Optional)</h4>
+              <p class="text-gray-600 dark:text-gray-400">
+                Icon that appears after the label
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Behaviors Section -->
+      <section id="behaviors" class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Behaviors</h2>
+        
+        <div class="grid grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-semibold mb-4">States</h3>
+            <ul class="space-y-4">
+              <li>
+                <h4 class="font-semibold">Rest</h4>
+                <p class="text-gray-600 dark:text-gray-400">Default state of the button</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Hover</h4>
+                <p class="text-gray-600 dark:text-gray-400">When the cursor is over the button</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Active/Pressed</h4>
+                <p class="text-gray-600 dark:text-gray-400">When the button is being clicked</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Disabled</h4>
+                <p class="text-gray-600 dark:text-gray-400">When the button is not interactive</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Loading</h4>
+                <p class="text-gray-600 dark:text-gray-400">When the action is being processed</p>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4">Interactions</h3>
+            <ul class="space-y-4">
+              <li>
+                <h4 class="font-semibold">Click/Tap</h4>
+                <p class="text-gray-600 dark:text-gray-400">Primary interaction method</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Keyboard</h4>
+                <p class="text-gray-600 dark:text-gray-400">Enter/Space triggers the button</p>
+              </li>
+              <li>
+                <h4 class="font-semibold">Focus</h4>
+                <p class="text-gray-600 dark:text-gray-400">Visual indicator when focused via keyboard</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Development Section -->
+      <section id="development" class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Development</h2>
+        
+        <!-- API Reference -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4">API Reference</h3>
+          <PropRow
+            v-for="prop in props"
+            :key="prop.name"
+            v-bind="prop"
+          />
+        </div>
+
+        <!-- Code Examples -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4">Examples</h3>
+          <ComponentShowcase>
+            <template #preview>
+              <div class="flex gap-4">
+                <Button>Default Button</Button>
+                <Button variant="primary">Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+              </div>
+            </template>
+            <template #code>
 import Button from '@/components/ui/Button.vue';
 
 &lt;Button&gt;Default Button&lt;/Button&gt;
 &lt;Button variant="primary"&gt;Primary&lt;/Button&gt;
 &lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;
-&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;
-&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;
-        </template>
-        
-        <template #props>
-          <PropRow
-            name="variant"
-            type="'primary' | 'secondary' | 'outline' | 'ghost'"
-            defaultValue="'primary'"
-            description="The visual style of the button."
-          />
-          <PropRow
-            name="size"
-            type="'sm' | 'md' | 'lg'"
-            defaultValue="'md'"
-            description="The size of the button."
-          />
-          <PropRow
-            name="disabled"
-            type="boolean"
-            defaultValue="false"
-            description="Whether the button is disabled."
-          />
-          <PropRow
-            name="loading"
-            type="boolean"
-            defaultValue="false"
-            description="Whether the button is in a loading state."
-          />
-        </template>
-      </ComponentShowcase>
-      
-      <!-- Button Sizes -->
-      <ComponentShowcase
-        title="Button Sizes"
-        description="Buttons come in three different sizes."
-        componentName="Button"
-      >
-        <template #preview>
-          <Button size="sm">Small</Button>
-          <Button size="md">Medium</Button>
-          <Button size="lg">Large</Button>
-        </template>
-        
-        <template #code>
-import Button from '@/components/ui/Button.vue';
-
-&lt;Button size="sm"&gt;Small&lt;/Button&gt;
-&lt;Button size="md"&gt;Medium&lt;/Button&gt;
-&lt;Button size="lg"&gt;Large&lt;/Button&gt;
-        </template>
-      </ComponentShowcase>
-      
-      <!-- Button States -->
-      <ComponentShowcase
-        title="Button States"
-        description="Buttons can be disabled or show a loading state."
-        componentName="Button"
-      >
-        <template #preview>
-          <Button>Normal</Button>
-          <Button disabled>Disabled</Button>
-          <Button loading>Loading</Button>
-        </template>
-        
-        <template #code>
-import Button from '@/components/ui/Button.vue';
-
-&lt;Button&gt;Normal&lt;/Button&gt;
-&lt;Button disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button loading&gt;Loading&lt;/Button&gt;
-        </template>
-      </ComponentShowcase>
-    </div>
+            </template>
+          </ComponentShowcase>
+        </div>
+      </section>
+    </main>
   </div>
-</template> 
+</template>
+
+<style scoped>
+.section-nav {
+  position: sticky;
+  top: 0;
+}
+</style> 
