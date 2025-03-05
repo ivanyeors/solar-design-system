@@ -9,7 +9,6 @@ const isMobileMenuOpen = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   
-  // Update the document class for dark mode
   if (isDarkMode.value) {
     document.documentElement.classList.add('dark');
     localStorage.setItem('theme', 'dark');
@@ -54,7 +53,7 @@ onMounted(() => {
       @closeMobileMenu="closeMobileMenu" 
     />
     
-    <main class="lg:pl-64 pt-16">
+    <main class="lg:pl-64">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <slot />
       </div>
