@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: '/solar-design-system/',
+  base: process.env.NODE_ENV === 'production' ? '/solar-design-system/' : '/',
   
   build: process.env.BUILD_LIB ? {
     // Library build configuration
