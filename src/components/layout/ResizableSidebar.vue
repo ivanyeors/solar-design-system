@@ -52,7 +52,7 @@ watch(isCollapsed, (newState) => {
   }
 });
 
-const startResizing = (event: MouseEvent) => {
+const startResizing = () => {
   isResizing.value = true;
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', stopResizing);

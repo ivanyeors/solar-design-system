@@ -2,9 +2,12 @@
 import { ref } from 'vue';
 import Button from '../ui/Button.vue';
 
-const size = ref('sm');
+type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+
+const size = ref<ButtonSize>('sm');
 const state = ref('rest');
-const type = ref('primary');
+const type = ref<ButtonVariant>('primary');
 const showLabel = ref(true);
 const showLeadingIcon = ref(true);
 const showTrailingIcon = ref(false);
@@ -20,12 +23,12 @@ const tokenValues = {
     sm: '0.5rem 1rem',
     md: '0.75rem 1.5rem',
     lg: '1rem 2rem'
-  },
+  } as const,
   fontSize: {
     sm: '0.875rem',
     md: '1rem',
     lg: '1.125rem'
-  }
+  } as const
 };
 
 const copyTokenValue = async (value: string) => {

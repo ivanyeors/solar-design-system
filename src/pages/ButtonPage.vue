@@ -296,7 +296,10 @@ const props = [
             <!-- Code Examples -->
             <div class="mb-8">
               <h3 class="text-xl font-semibold mb-4">Examples</h3>
-              <ComponentShowcase>
+              <ComponentShowcase
+                title="Basic Button Examples"
+                componentName="Button"
+              >
                 <template #preview>
                   <div class="flex gap-4">
                     <Button>Default Button</Button>
