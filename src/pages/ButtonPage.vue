@@ -112,8 +112,8 @@ const props = [
       </button>
 
       <!-- Content Sections -->
-      <div class="content-wrapper max-w-[1200px] mx-auto px-6 py-12">
-        <div class="content-container max-w-[900px] mx-auto">
+      <div class="content-wrapper max-w-[1440px] mx-auto px-6 py-12">
+        <div class="content-container max-w-[1080px] mx-auto">
           <section id="overview" class="mb-10 scroll-mt-16">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Button</h1>
             <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
