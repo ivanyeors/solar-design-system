@@ -20,7 +20,6 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "build:lib": "vue-tsc -b && BUILD_LIB=true vite build",
-    "build:pages": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -31,6 +30,7 @@
   "devDependencies": {
     "@headlessui/vue": "^1.7.23",
     "@tailwindcss/postcss": "^4.0.9",
+    "@types/node": "^20.11.21",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.20",

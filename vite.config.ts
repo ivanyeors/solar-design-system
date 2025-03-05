@@ -6,25 +6,30 @@ export default defineConfig({
   plugins: [vue()],
   base: '/solar-design-system/',
   
-  // Only use library mode when explicitly building the library
-  ...(process.env.BUILD_LIB ? {
-    build: {
-      lib: {
-        entry: './src/lib/index.ts',
-        name: 'SolarDesignSystem',
-        fileName: (format) => `solar-design-system.${format}.js`,
-      },
-      rollupOptions: {
-        // Externalize dependencies that shouldn't be bundled
-        external: ['vue'],
-        output: {
-          // Global variables to use in UMD build
-          globals: {
-            vue: 'Vue',
-          },
-          exports: 'named'
+  build: process.env.BUILD_LIB ? {
+    // Library build configuration
+    lib: {
+      entry: './src/lib/index.ts',
+      name: 'SolarDesignSystem',
+      fileName: (format) => `solar-design-system.${format}.js`,
+    },
+    rollupOptions: {
+      external: ['vue'],
+      output: {
+        globals: {
+          vue: 'Vue',
         },
+        exports: 'named'
       },
     }
-  } : {})
+  } : {
+    // GitHub Pages build configuration
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: './index.html',
+      },
+    }
+  }
 })
