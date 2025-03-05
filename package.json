@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/solar-design-system.umd.js",
   "module": "./dist/solar-design-system.es.js",
   "exports": {
@@ -22,10 +24,11 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "^3.2.0"
   },
   "devDependencies": {
     "@headlessui/vue": "^1.7.23",
+    "@tailwindcss/postcss": "^4.0.9",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.20",

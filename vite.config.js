@@ -6,8 +6,8 @@ export default defineConfig({
     build: {
         lib: {
             entry: './src/lib/index.ts',
-            name: 'VueDesignSystem',
-            fileName: function (format) { return "vue-design-system.".concat(format, ".js"); },
+            name: 'SolarDesignSystem',
+            fileName: function (format) { return "solar-design-system.".concat(format, ".js"); },
         },
         rollupOptions: {
             // Externalize dependencies that shouldn't be bundled
@@ -17,6 +17,7 @@ export default defineConfig({
                 globals: {
                     vue: 'Vue',
                 },
+                exports: 'named'
             },
         },
     },
