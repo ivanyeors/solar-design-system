@@ -1,4 +1,4 @@
-# Vue Design System
+# Solar Design System
 
 A modern design system built with Vue 3 and Tailwind CSS. This library provides a set of reusable components to help build consistent UIs quickly.
 
@@ -14,7 +14,7 @@ A modern design system built with Vue 3 and Tailwind CSS. This library provides 
 ## Installation
 
 ```bash
-npm install vue-design-system
+npm install solar-design-system
 ```
 
 ## Usage
@@ -25,11 +25,11 @@ npm install vue-design-system
 // main.js or main.ts
 import { createApp } from 'vue'
 import App from './App.vue'
-import VueDesignSystem from 'vue-design-system'
-import 'vue-design-system/style.css'
+import SolarDesignSystem from 'solar-design-system'
+import 'solar-design-system/style.css'
 
 const app = createApp(App)
-app.use(VueDesignSystem)
+app.use(SolarDesignSystem)
 app.mount('#app')
 ```
 
@@ -37,8 +37,8 @@ app.mount('#app')
 
 ```vue
 <script setup>
-import { Button } from 'vue-design-system'
-import 'vue-design-system/style.css'
+import { Button } from 'solar-design-system'
+import 'solar-design-system/style.css'
 </script>
 
 <template>

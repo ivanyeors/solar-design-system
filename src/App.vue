@@ -7,7 +7,7 @@ import Button from './components/ui/Button.vue';
     <div class="max-w-4xl mx-auto">
       <div class="text-center">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Vue Design System
+          Solar Design System
         </h1>
         <p class="mt-3 text-xl text-gray-500 sm:mt-4">
           A modern design system built with Vue and Tailwind CSS

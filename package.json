@@ -1,15 +1,15 @@
 {
-  "name": "vue-design-system",
+  "name": "solar-design-system",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "files": ["dist"],
-  "main": "./dist/vue-design-system.umd.js",
-  "module": "./dist/vue-design-system.es.js",
+  "main": "./dist/solar-design-system.umd.js",
+  "module": "./dist/solar-design-system.es.js",
   "exports": {
     ".": {
-      "import": "./dist/vue-design-system.es.js",
-      "require": "./dist/vue-design-system.umd.js"
+      "import": "./dist/solar-design-system.es.js",
+      "require": "./dist/solar-design-system.umd.js"
     },
     "./style.css": "./dist/style.css"
   },

@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: './src/lib/index.ts',
-      name: 'VueDesignSystem',
-      fileName: (format) => `vue-design-system.${format}.js`,
+      name: 'SolarDesignSystem',
+      fileName: (format) => `solar-design-system.${format}.js`,
     },
     rollupOptions: {
       // Externalize dependencies that shouldn't be bundled
