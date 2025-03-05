@@ -38,11 +38,9 @@ const navItems = [
   }
 ];
 
-const activeSection = ref('button');
-
 const closeMobileMenu = () => {
   emit('closeMobileMenu');
-}
+};
 </script>
 
 <template>

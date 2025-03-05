@@ -19,7 +19,7 @@ const routes = [
 const router = createRouter({
   history: createWebHistory('/solar-design-system/'),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, _from, savedPosition) {
     if (to.hash) {
       return {
         el: to.hash,
