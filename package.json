@@ -25,7 +25,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "vue": "^3.2.0"
+    "vue": "^3.2.0",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@headlessui/vue": "^1.7.23",
