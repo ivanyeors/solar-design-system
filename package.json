@@ -18,8 +18,8 @@
   "types": "./dist/types/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "build:lib": "vue-tsc -b && BUILD_LIB=true vite build",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:lib": "vue-tsc --noEmit && BUILD_LIB=true vite build",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
