@@ -32,8 +32,6 @@ jobs:
         
       - name: Build for GitHub Pages
         run: npm run build
-        env:
-          BUILD_LIB: true
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
