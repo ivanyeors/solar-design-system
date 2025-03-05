@@ -5,22 +5,26 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   base: '/solar-design-system/',
-  build: {
-    lib: {
-      entry: './src/lib/index.ts',
-      name: 'SolarDesignSystem',
-      fileName: (format) => `solar-design-system.${format}.js`,
-    },
-    rollupOptions: {
-      // Externalize dependencies that shouldn't be bundled
-      external: ['vue'],
-      output: {
-        // Global variables to use in UMD build
-        globals: {
-          vue: 'Vue',
-        },
-        exports: 'named'
+  
+  // Only use library mode when explicitly building the library
+  ...(process.env.BUILD_LIB ? {
+    build: {
+      lib: {
+        entry: './src/lib/index.ts',
+        name: 'SolarDesignSystem',
+        fileName: (format) => `solar-design-system.${format}.js`,
       },
-    },
-  },
+      rollupOptions: {
+        // Externalize dependencies that shouldn't be bundled
+        external: ['vue'],
+        output: {
+          // Global variables to use in UMD build
+          globals: {
+            vue: 'Vue',
+          },
+          exports: 'named'
+        },
+      },
+    }
+  } : {})
 })
