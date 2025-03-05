@@ -36,6 +36,26 @@ const copyTokenValue = async (value: string) => {
     console.error('Failed to copy:', err);
   }
 };
+
+const sizes = [
+  { value: 'sm', label: 'Small' },
+  { value: 'md', label: 'Medium' },
+  { value: 'lg', label: 'Large' }
+];
+
+const states = [
+  { value: 'rest', label: 'Rest' },
+  { value: 'hover', label: 'Hover' },
+  { value: 'disabled', label: 'Disabled' },
+  { value: 'loading', label: 'Loading' }
+];
+
+const types = [
+  { value: 'primary', label: 'Primary' },
+  { value: 'secondary', label: 'Secondary' },
+  { value: 'outline', label: 'Outline' },
+  { value: 'ghost', label: 'Ghost' }
+];
 </script>
 
 <template>
@@ -75,33 +95,61 @@ const copyTokenValue = async (value: string) => {
       <!-- Size Control -->
       <div class="space-y-2">
         <label class="text-gray-400 text-sm">Size</label>
-        <select v-model="size" class="w-full bg-gray-800 text-white rounded-md p-2">
-          <option value="sm">Small</option>
-          <option value="md">Medium</option>
-          <option value="lg">Large</option>
-        </select>
+        <div class="flex gap-2">
+          <button
+            v-for="sizeOption in sizes"
+            :key="sizeOption.value"
+            @click="size = sizeOption.value"
+            class="px-3 py-1 rounded-full text-sm"
+            :class="[
+              size === sizeOption.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            ]"
+          >
+            {{ sizeOption.label }}
+          </button>
+        </div>
       </div>
 
       <!-- State Control -->
       <div class="space-y-2">
         <label class="text-gray-400 text-sm">State</label>
-        <select v-model="state" class="w-full bg-gray-800 text-white rounded-md p-2">
-          <option value="rest">Rest</option>
-          <option value="hover">Hover</option>
-          <option value="disabled">Disabled</option>
-          <option value="loading">Loading</option>
-        </select>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="stateOption in states"
+            :key="stateOption.value"
+            @click="state = stateOption.value"
+            class="px-3 py-1 rounded-full text-sm"
+            :class="[
+              state === stateOption.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            ]"
+          >
+            {{ stateOption.label }}
+          </button>
+        </div>
       </div>
 
       <!-- Type Control -->
       <div class="space-y-2">
         <label class="text-gray-400 text-sm">Type</label>
-        <select v-model="type" class="w-full bg-gray-800 text-white rounded-md p-2">
-          <option value="primary">Primary</option>
-          <option value="secondary">Secondary</option>
-          <option value="outline">Outline</option>
-          <option value="ghost">Ghost</option>
-        </select>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="typeOption in types"
+            :key="typeOption.value"
+            @click="type = typeOption.value"
+            class="px-3 py-1 rounded-full text-sm"
+            :class="[
+              type === typeOption.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            ]"
+          >
+            {{ typeOption.label }}
+          </button>
+        </div>
       </div>
 
       <!-- Label Controls -->
@@ -156,6 +204,75 @@ const copyTokenValue = async (value: string) => {
           </button>
         </div>
       </div>
+
+      <!-- Token Values -->
+      <div class="space-y-4 pt-4 border-t border-gray-800">
+        <h4 class="text-gray-400 text-sm font-medium">Token Values</h4>
+        
+        <!-- Size-specific tokens -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Padding</span>
+            <button 
+              @click="copyTokenValue(tokenValues.padding[size])"
+              class="text-gray-300 hover:text-white flex items-center gap-2"
+            >
+              {{ tokenValues.padding[size] }}
+              <i class="icon-copy text-gray-500"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Font Size</span>
+            <button 
+              @click="copyTokenValue(tokenValues.fontSize[size])"
+              class="text-gray-300 hover:text-white flex items-center gap-2"
+            >
+              {{ tokenValues.fontSize[size] }}
+              <i class="icon-copy text-gray-500"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Theme tokens -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Brand</span>
+            <button 
+              @click="copyTokenValue(tokenValues.brands)"
+              class="text-gray-300 hover:text-white flex items-center gap-2"
+            >
+              {{ tokenValues.brands }}
+              <i class="icon-copy text-gray-500"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Color Mode</span>
+            <button 
+              @click="copyTokenValue(tokenValues.color)"
+              class="text-gray-300 hover:text-white flex items-center gap-2"
+            >
+              {{ tokenValues.color }}
+              <i class="icon-copy text-gray-500"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Token Color</span>
+            <button 
+              @click="copyTokenValue(tokenValues.tokenColor)"
+              class="text-gray-300 hover:text-white flex items-center gap-2"
+            >
+              {{ tokenValues.tokenColor }}
+              <i class="icon-copy text-gray-500"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</template> 
+</template>
+
+<style scoped>
+.icon-copy {
+  @apply w-4 h-4;
+}
+</style> 
