@@ -17,27 +17,32 @@
   },
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/start-dev.js",
+    "dev:no-tools": "vite",
+    "browser-tools": "npx @agentdeskai/browser-tools-server@1.2.0",
     "build": "vue-tsc --noEmit && vite build",
     "build:lib": "vue-tsc --noEmit && BUILD_LIB=true vite build",
     "preview": "vite preview",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "node scripts/start-storybook.js",
+    "storybook:no-tools": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "vue": "^3.4.19",
+    "vue": "^3.4.0",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@agentdeskai/browser-tools-server": "^1.2.0",
     "@headlessui/vue": "^1.7.23",
     "@types/node": "^20.11.21",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.17",
+    "concurrently": "^8.2.2",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.3.3",
-    "vite": "^5.1.4",
+    "vite": "^5.4.14",
     "vue-tsc": "^1.8.27"
   },
   "peerDependencies": {

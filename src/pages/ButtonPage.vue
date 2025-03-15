@@ -6,16 +6,23 @@ import ComponentShowcase from '../components/showcase/ComponentShowcase.vue';
 import PropRow from '../components/showcase/PropRow.vue';
 import TokenTable from '../components/showcase/TokenTable.vue';
 import SideNavigation from '../components/layout/SideNavigation.vue';
+import AccessibilityChecklist from '../components/showcase/AccessibilityChecklist.vue';
+import VersionHistory from '../components/showcase/VersionHistory.vue';
+import RelatedComponentCard from '../components/showcase/RelatedComponentCard.vue';
 
 // Active section tracking
 const activeSection = ref('overview');
 const sections = [
   { id: 'overview', label: 'Overview' },
-  { id: 'usage', label: 'Usage' },
-  { id: 'specs', label: 'Specifications' },
+  { id: 'playground', label: 'Playground' },
+  { id: 'guidelines', label: 'Guidelines' },
   { id: 'anatomy', label: 'Anatomy' },
-  { id: 'behaviors', label: 'Behaviors' },
-  { id: 'development', label: 'Development' }
+  { id: 'states', label: 'States & Variations' },
+  { id: 'accessibility', label: 'Accessibility' },
+  { id: 'implementation', label: 'Implementation' },
+  { id: 'examples', label: 'Examples' },
+  { id: 'related', label: 'Related Components' },
+  { id: 'version', label: 'Version History' }
 ];
 
 // Intersection Observer for active section
@@ -82,6 +89,95 @@ const props = [
     type: 'boolean',
     defaultValue: 'false',
     description: "Whether the button is in a loading state."
+  },
+  {
+    name: 'aria-label',
+    type: 'string',
+    defaultValue: 'undefined',
+    description: "Accessible label for screen readers (required when button has no text)."
+  },
+  {
+    name: 'type',
+    type: "'button' | 'submit' | 'reset'",
+    defaultValue: "'button'",
+    description: "The type attribute of the button element."
+  }
+];
+
+// Accessibility guidelines
+const accessibilityItems = [
+  {
+    guideline: "WCAG 2.1 AA Compliant",
+    status: true,
+    description: "Meets WCAG 2.1 Level AA success criteria"
+  },
+  {
+    guideline: "Keyboard Accessible",
+    status: true,
+    description: "Can be triggered using Enter or Space keys when focused"
+  },
+  {
+    guideline: "Screen Reader Friendly",
+    status: true,
+    description: "Provides appropriate role and state information to assistive technologies"
+  },
+  {
+    guideline: "Color Contrast",
+    status: true,
+    description: "Text has 4.5:1 contrast ratio with background"
+  },
+  {
+    guideline: "Focus Indication",
+    status: true,
+    description: "Visible focus state that meets 3:1 contrast requirement"
+  }
+];
+
+// Version history data
+const versionHistory = [
+  {
+    version: "1.2.0",
+    date: "2023-06-15",
+    changes: [
+      "Added loading state with spinner animation",
+      "Improved focus states for better accessibility",
+      "Added support for custom classes"
+    ]
+  },
+  {
+    version: "1.1.0",
+    date: "2023-04-02",
+    changes: [
+      "Added outline and ghost variants",
+      "Introduced size options (sm, md, lg)"
+    ]
+  },
+  {
+    version: "1.0.0",
+    date: "2023-02-10",
+    changes: [
+      "Initial release",
+      "Supports primary and secondary variants"
+    ]
+  }
+];
+
+// Related components
+const relatedComponents = [
+  {
+    name: "IconButton",
+    description: "Button that displays only an icon with an accessible label",
+    path: "/components/icon-button"
+  },
+  {
+    name: "ButtonGroup",
+    description: "Set of related buttons grouped together visually",
+    path: "/components/button-group"
+  },
+  {
+    name: "Link",
+    description: "Navigational element styled as text",
+    path: "/components/link"
   }
 ];
 </script>
@@ -107,12 +203,13 @@ const props = [
         v-if="isMobile"
         class="fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
         @click="showMobileNav = !showMobileNav"
+        aria-label="Toggle navigation menu"
       >
         <i class="icon-menu w-6 h-6"></i>
       </button>
 
       <!-- Content Sections -->
-      <div class="content-wrapper max-w-[1440px] mx-auto px-6 py-12">
+      <div class="content-wrapper max-w-[1440px] mx-auto px-6 pt-20 pb-12">
         <div class="content-container max-w-[1080px] mx-auto">
           <section id="overview" class="mb-10 scroll-mt-16">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Button</h1>
@@ -120,15 +217,42 @@ const props = [
               Buttons help people take actions, such as sending an email, sharing a document, or liking a comment.
             </p>
             
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <span class="w-2 h-2 mr-1 rounded-full bg-green-500"></span> Stable
+              </span>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                WCAG AA Compliant
+              </span>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                v1.2.0
+              </span>
+            </div>
+            
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 mb-6">
+              <div class="flex flex-wrap gap-4">
+                <Button variant="primary">Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="outline">Outline</Button>
+                <Button variant="ghost">Ghost</Button>
+              </div>
+            </div>
+          </section>
+
+          <section id="playground" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Interactive Playground</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Customize the button properties to see different variations and use cases.
+            </p>
+            
             <!-- Interactive Preview -->
             <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 lg:p-6">
-              <h2 class="text-lg font-semibold mb-4">Interactive Preview</h2>
               <ButtonPreview />
             </div>
           </section>
 
-          <section id="usage" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Usage</h2>
+          <section id="guidelines" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Design Guidelines</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
               <div>
@@ -158,6 +282,7 @@ const props = [
                   <Button variant="primary">Save Changes</Button>
                   <Button variant="secondary">Cancel</Button>
                 </div>
+                <p class="mt-4 text-gray-700 dark:text-gray-300">Use clear, concise action verbs that describe what the button does</p>
               </div>
               <div class="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg">
                 <h3 class="text-red-700 dark:text-red-400 font-semibold mb-4">Don't</h3>
@@ -165,27 +290,8 @@ const props = [
                   <Button variant="primary">Click Here</Button>
                   <Button variant="secondary">Submit</Button>
                 </div>
+                <p class="mt-4 text-gray-700 dark:text-gray-300">Avoid vague labels that don't clearly communicate the action</p>
               </div>
-            </div>
-          </section>
-
-          <section id="specs" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Specifications</h2>
-            
-            <!-- Design Tokens -->
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
-              <TokenTable
-                :tokens="[
-                  { name: '--btn-height-sm', value: '32px', usage: 'Small button height' },
-                  { name: '--btn-height-md', value: '40px', usage: 'Medium button height' },
-                  { name: '--btn-height-lg', value: '48px', usage: 'Large button height' },
-                  { name: '--btn-padding-x', value: '16px', usage: 'Horizontal padding' },
-                  { name: '--btn-radius', value: '8px', usage: 'Corner radius' },
-                  { name: '--btn-font-weight', value: '500', usage: 'Font weight' },
-                  { name: '--btn-transition', value: '150ms ease', usage: 'Animation timing' }
-                ]"
-              />
             </div>
           </section>
 
@@ -231,57 +337,123 @@ const props = [
             </div>
           </section>
 
-          <section id="behaviors" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Behaviors</h2>
+          <section id="states" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">States & Variations</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">States</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="flex flex-col items-center">
+                  <Button variant="primary">Default</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Default</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" class="hover">Hover</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Hover</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" class="active">Active</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Active</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" class="focus">Focus</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Focus</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" disabled>Disabled</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Disabled</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Variants</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex flex-col items-center">
+                  <Button variant="primary">Primary</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Primary</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="secondary">Secondary</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Secondary</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="outline">Outline</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Outline</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="ghost">Ghost</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Ghost</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Sizes</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" size="sm">Small</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Small</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" size="md">Medium</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Medium</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="primary" size="lg">Large</Button>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Large</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="accessibility" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Accessibility</h2>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Buttons are designed to be accessible to all users, including those using assistive technologies.
+            </p>
+            
+            <AccessibilityChecklist :items="accessibilityItems" />
+            
+            <div class="mt-6 space-y-4">
               <div>
-                <h3 class="text-xl font-semibold mb-4">States</h3>
-                <ul class="space-y-4">
-                  <li>
-                    <h4 class="font-semibold">Rest</h4>
-                    <p class="text-gray-600 dark:text-gray-400">Default state of the button</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Hover</h4>
-                    <p class="text-gray-600 dark:text-gray-400">When the cursor is over the button</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Active/Pressed</h4>
-                    <p class="text-gray-600 dark:text-gray-400">When the button is being clicked</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Disabled</h4>
-                    <p class="text-gray-600 dark:text-gray-400">When the button is not interactive</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Loading</h4>
-                    <p class="text-gray-600 dark:text-gray-400">When the action is being processed</p>
-                  </li>
+                <h3 class="text-xl font-semibold mb-2">Keyboard Support</h3>
+                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-400">
+                  <li>Focusable with <kbd>Tab</kbd> key</li>
+                  <li>Activate with <kbd>Enter</kbd> or <kbd>Space</kbd> key</li>
                 </ul>
               </div>
+              
               <div>
-                <h3 class="text-xl font-semibold mb-4">Interactions</h3>
-                <ul class="space-y-4">
-                  <li>
-                    <h4 class="font-semibold">Click/Tap</h4>
-                    <p class="text-gray-600 dark:text-gray-400">Primary interaction method</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Keyboard</h4>
-                    <p class="text-gray-600 dark:text-gray-400">Enter/Space triggers the button</p>
-                  </li>
-                  <li>
-                    <h4 class="font-semibold">Focus</h4>
-                    <p class="text-gray-600 dark:text-gray-400">Visual indicator when focused via keyboard</p>
-                  </li>
+                <h3 class="text-xl font-semibold mb-2">Screen Reader Considerations</h3>
+                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-400">
+                  <li>Use <code>aria-label</code> for buttons with icons only</li>
+                  <li>Use appropriate semantic HTML (<code>&lt;button&gt;</code> element)</li>
+                  <li>Dynamically update <code>aria-disabled</code> to match disabled state</li>
                 </ul>
               </div>
             </div>
           </section>
 
-          <section id="development" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Development</h2>
+          <section id="implementation" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Implementation</h2>
+            
+            <!-- Design Tokens -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
+              <TokenTable
+                :tokens="[
+                  { name: '--btn-height-sm', value: '32px', usage: 'Small button height' },
+                  { name: '--btn-height-md', value: '40px', usage: 'Medium button height' },
+                  { name: '--btn-height-lg', value: '48px', usage: 'Large button height' },
+                  { name: '--btn-padding-x', value: '16px', usage: 'Horizontal padding' },
+                  { name: '--btn-radius', value: '8px', usage: 'Corner radius' },
+                  { name: '--btn-font-weight', value: '500', usage: 'Font weight' },
+                  { name: '--btn-transition', value: '150ms ease', usage: 'Animation timing' }
+                ]"
+              />
+            </div>
             
             <!-- API Reference -->
             <div class="mb-8">
@@ -292,30 +464,140 @@ const props = [
                 v-bind="prop"
               />
             </div>
-
-            <!-- Code Examples -->
+            
             <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Examples</h3>
-              <ComponentShowcase
-                title="Basic Button Examples"
-                componentName="Button"
-              >
-                <template #preview>
-                  <div class="flex gap-4">
-                    <Button>Default Button</Button>
-                    <Button variant="primary">Primary</Button>
-                    <Button variant="secondary">Secondary</Button>
-                  </div>
-                </template>
-                <template #code>
+              <h3 class="text-xl font-semibold mb-4">Event Handlers</h3>
+              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <th class="text-left p-2">Event</th>
+                      <th class="text-left p-2">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <td class="p-2 font-mono text-sm">@click</td>
+                      <td class="p-2">Triggered when button is clicked</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <td class="p-2 font-mono text-sm">@focus</td>
+                      <td class="p-2">Triggered when button receives focus</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 font-mono text-sm">@blur</td>
+                      <td class="p-2">Triggered when button loses focus</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="examples" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Examples</h2>
+            
+            <!-- Basic Example -->
+            <ComponentShowcase
+              title="Basic Button Examples"
+              componentName="Button"
+            >
+              <template #preview>
+                <div class="flex gap-4">
+                  <Button>Default Button</Button>
+                  <Button variant="primary">Primary</Button>
+                  <Button variant="secondary">Secondary</Button>
+                </div>
+              </template>
+              <template #code>
 import Button from '@/components/ui/Button.vue';
 
 &lt;Button&gt;Default Button&lt;/Button&gt;
 &lt;Button variant="primary"&gt;Primary&lt;/Button&gt;
 &lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;
-                </template>
-              </ComponentShowcase>
+              </template>
+            </ComponentShowcase>
+            
+            <!-- Icon Button Example -->
+            <ComponentShowcase
+              title="Button with Icons"
+              componentName="Button"
+              class="mt-6"
+            >
+              <template #preview>
+                <div class="flex gap-4">
+                  <Button variant="primary">
+                    <template #leading-icon>
+                      <i class="icon-plus"></i>
+                    </template>
+                    Add Item
+                  </Button>
+                  <Button variant="outline">
+                    Share
+                    <template #trailing-icon>
+                      <i class="icon-share"></i>
+                    </template>
+                  </Button>
+                </div>
+              </template>
+              <template #code>
+import Button from '@/components/ui/Button.vue';
+
+&lt;Button variant="primary"&gt;
+  &lt;template #leading-icon&gt;
+    &lt;i class="icon-plus"&gt;&lt;/i&gt;
+  &lt;/template&gt;
+  Add Item
+&lt;/Button&gt;
+
+&lt;Button variant="outline"&gt;
+  Share
+  &lt;template #trailing-icon&gt;
+    &lt;i class="icon-share"&gt;&lt;/i&gt;
+  &lt;/template&gt;
+&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+            
+            <!-- Loading Button Example -->
+            <ComponentShowcase
+              title="Loading State"
+              componentName="Button"
+              class="mt-6"
+            >
+              <template #preview>
+                <div class="flex gap-4">
+                  <Button variant="primary" loading>Saving</Button>
+                  <Button variant="secondary" loading>Loading</Button>
+                </div>
+              </template>
+              <template #code>
+import Button from '@/components/ui/Button.vue';
+
+&lt;Button variant="primary" loading&gt;Saving&lt;/Button&gt;
+&lt;Button variant="secondary" loading&gt;Loading&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+          </section>
+
+          <section id="related" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Related Components</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <RelatedComponentCard 
+                v-for="component in relatedComponents" 
+                :key="component.name"
+                :name="component.name"
+                :description="component.description"
+                :path="component.path"
+              />
             </div>
+          </section>
+
+          <section id="version" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Version History</h2>
+            
+            <VersionHistory :versions="versionHistory" />
           </section>
         </div>
       </div>
@@ -362,6 +644,7 @@ import Button from '@/components/ui/Button.vue';
           <button 
             class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             @click="showMobileNav = false"
+            aria-label="Close navigation menu"
           >
             <i class="icon-x w-5 h-5"></i>
           </button>
@@ -482,6 +765,19 @@ section {
 /* Smooth transitions for interactive elements */
 button, a {
   transition: all 0.2s ease-in-out;
+}
+
+/* Button state simulation classes */
+.hover {
+  @apply opacity-90;
+}
+
+.active {
+  @apply opacity-80;
+}
+
+.focus {
+  @apply ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900;
 }
 
 /* ResizableSidebar overrides */

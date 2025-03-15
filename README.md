@@ -75,6 +75,47 @@ npm run dev
 npm run build
 ```
 
+## Browser Tools Integration
+
+This project supports integration with the Agent Desk AI browser-tools for enhanced development capabilities when working with Cursor IDE and Claude. The browser-tools server will automatically start when you run the development server or Storybook if the feature is enabled.
+
+### Usage
+
+1. Run development server with browser-tools:
+   ```bash
+   # Enable browser-tools
+   BROWSER_TOOLS_ENABLED=true npm run dev
+
+   # Or on Windows PowerShell
+   $env:BROWSER_TOOLS_ENABLED = "true"; npm run dev
+   ```
+
+2. Run Storybook with browser-tools:
+   ```bash
+   # Enable browser-tools
+   BROWSER_TOOLS_ENABLED=true npm run storybook
+
+   # Or on Windows PowerShell
+   $env:BROWSER_TOOLS_ENABLED = "true"; npm run storybook
+   ```
+
+3. Run just the browser-tools server:
+   ```bash
+   npm run browser-tools
+   ```
+
+### Disabling Browser Tools
+
+If you need to run without the browser-tools server:
+```bash
+# Explicitly disable browser-tools
+BROWSER_TOOLS_ENABLED=false npm run dev
+
+# Or use the direct commands
+npm run dev:no-tools
+npm run storybook:no-tools
+```
+
 ## GitHub Pages Deployment
 
 The documentation site is automatically deployed to GitHub Pages when changes are pushed to the main branch.
