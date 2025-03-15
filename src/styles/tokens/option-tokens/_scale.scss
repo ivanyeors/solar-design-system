@@ -1,0 +1,45 @@
+/**
+ * Design Tokens - Scale token definitions (spacing, sizing)
+ * 
+ * This file contains scale tokens for the design system.
+ * Generated automatically - DO NOT EDIT DIRECTLY
+ *
+ * Naming convention:
+ * $scale-[category]-[size]: Where category is spacing, sizing, radius, etc., and size is based on t-shirt sizing
+ * 
+ * Size scale: none < 2xs < xs < sm < md < lg < xl < 2xl < 3xl < 4xl
+ * 
+ * Example usage:
+ * .element {
+ *   margin: $scale-spacing-md;
+ *   padding: $scale-spacing-sm $scale-spacing-md;
+ *   border-radius: $scale-radius-sm;
+ * }
+ */
+
+// ================ SPACING ================
+
+$scale-spacing-2xs: $16px-scale-12%;
+$scale-spacing-lg: $16px-scale-400%;
+$scale-spacing-md: $16px-scale-62%;
+$scale-spacing-none: $16px-scale-0%;
+$scale-spacing-sm: $16px-scale-50%;
+$scale-spacing-xl: $16px-scale-450%;
+$scale-spacing-xs: $16px-scale-25%;
+
+// ================ SIZING ================
+
+$scale-sizing-2xl: 2px;
+$scale-sizing-2xs: 0;
+$scale-sizing-3xl: 3px;
+$scale-sizing-4xl: 192px;
+$scale-sizing-lg: 1px;
+$scale-sizing-md: 0.5px;
+$scale-sizing-none: $16px-scale-0%;
+$scale-sizing-sm: 0.25px;
+$scale-sizing-xs: $16px-scale-50%;
+
+// ================ RADIUS ================
+
+$scale-radius-none: $16px-scale-0%;
+$scale-radius-pill: $16px-scale-2400%;

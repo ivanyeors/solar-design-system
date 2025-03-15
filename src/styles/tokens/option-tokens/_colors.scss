@@ -1,0 +1,224 @@
+/**
+ * Design Tokens - Color token definitions
+ * 
+ * This file contains colors tokens for the design system.
+ * Generated automatically - DO NOT EDIT DIRECTLY
+ *
+ * Naming convention:
+ * $color-[category]-[variant]: Where category is brand, neutral, semantic, etc., and variant is the color variation
+ * 
+ * Example usage:
+ * .element {
+ *   background-color: $color-brand-primary;
+ *   color: $color-text-primary;
+ * }
+ */
+
+/* ================================================
+   BRAND COLORS
+   ================================================ */
+
+/* Primary Brand Colors */
+$color-brand-primary-01: #7b7b7b00;
+$color-brand-primary-02: #7b7b7b00;
+$color-brand-primary-500: #257bdf;
+$color-brand-primary-9: #f2df0c;
+
+/* ================================================
+   SEMANTIC COLORS
+   ================================================ */
+
+/* Success Colors */
+$color-success-green: #474d48cc;
+
+/* ================================================
+   NEUTRAL COLORS
+   ================================================ */
+
+$color-neutral-0: #202122;
+$color-neutral-00: #ffffff;
+$color-neutral-1: #392b2b;
+$color-neutral-100: #20212200;
+$color-neutral-1000: #000000;
+$color-neutral-150: #3e4247;
+$color-neutral-17: #f9faff;
+$color-neutral-2: #392b2b;
+$color-neutral-200: #4b5057;
+$color-neutral-25: #17191a;
+$color-neutral-250: #585e66;
+$color-neutral-3: #392b2b;
+$color-neutral-300: #656c75;
+$color-neutral-4: #392b2b;
+$color-neutral-400: #717985;
+$color-neutral-5: #392b2b;
+$color-neutral-50: #242629;
+$color-neutral-500: #7e8794;
+$color-neutral-6: #392b2b;
+$color-neutral-600: #8c94a1;
+$color-neutral-650: #9aa2ad;
+$color-neutral-700: #a9b0ba;
+$color-neutral-750: #b9c0c9;
+$color-neutral-800: #c9cfd6;
+$color-neutral-850: #dadee3;
+$color-neutral-900: #ebedf0;
+$color-neutral-950: #fafbfc;
+$color-neutral-black: #00000066;
+$color-neutral-evyd: #ffffff;
+$color-neutral-light: #ffffff33;
+$color-neutral-transparent: #ffffff00;
+$color-neutral-white: #000000;
+
+/* ================================================
+   COLOR PALETTES
+   ================================================ */
+
+/* Red Palette */
+$color-red-1: #3f0000;
+$color-red-10: #3f0000;
+$color-red-11: #3f0000;
+$color-red-12: #3f0000;
+$color-red-13: #3f0000;
+$color-red-14: #3f0000;
+$color-red-15: #3f0000;
+$color-red-16: #3f0000;
+$color-red-17: #3f0000;
+$color-red-2: #3f0000;
+$color-red-3: #3f0000;
+$color-red-4: #3f0000;
+$color-red-5: #3f0000;
+$color-red-6: #3f0000;
+$color-red-7: #3f0000;
+$color-red-8: #3f0000;
+$color-red-9: #3f0000;
+
+/* Yellow Palette */
+$color-yellow-1: #332f05;
+$color-yellow-10: #f5e427;
+$color-yellow-11: #f5e645;
+$color-yellow-12: #f7ea60;
+$color-yellow-13: #faf07d;
+$color-yellow-14: #fcf49d;
+$color-yellow-15: #fcf6b8;
+$color-yellow-16: #fcf9d7;
+$color-yellow-17: #fffef5;
+$color-yellow-2: #4a4407;
+$color-yellow-3: #635c09;
+$color-yellow-4: #7a710a;
+$color-yellow-5: #94880a;
+$color-yellow-6: #ab9e0c;
+$color-yellow-7: #c2b30c;
+$color-yellow-8: #dbca0d;
+
+/* Green Palette */
+$color-green-1: #1f3300;
+$color-green-10: #89c22f;
+$color-green-11: #98cc45;
+$color-green-12: #a7d45f;
+$color-green-13: #b7de7a;
+$color-green-14: #c7e595;
+$color-green-15: #d6edb2;
+$color-green-16: #e9f7d5;
+$color-green-17: #fbfff5;
+$color-green-2: #2a4501;
+$color-green-3: #345403;
+$color-green-4: #406605;
+$color-green-5: #57870c;
+$color-green-6: #65990f;
+$color-green-7: #70a814;
+$color-green-8: #70a814;
+$color-green-9: #b0e9ce;
+
+/* Blue Palette */
+$color-blue-01: #10182808;
+$color-blue-02: #10182814;
+$color-blue-1: #000e29;
+$color-blue-10: #000e29;
+$color-blue-100: #1d3c5e;
+$color-blue-11: #000e29;
+$color-blue-12: #000e29;
+$color-blue-13: #000e29;
+$color-blue-14: #000e29;
+$color-blue-15: #000e29;
+$color-blue-150: #214773;
+$color-blue-16: #000e29;
+$color-blue-17: #000e29;
+$color-blue-2: #000e29;
+$color-blue-200: #245387;
+$color-blue-25: #122233;
+$color-blue-250: #265e9e;
+$color-blue-3: #000e29;
+$color-blue-300: #2768b2;
+$color-blue-4: #000e29;
+$color-blue-400: #2872c7;
+$color-blue-5: #000e29;
+$color-blue-50: #18304a;
+$color-blue-500: #7cb0ec;
+$color-blue-6: #000e29;
+$color-blue-600: #3d89e0;
+$color-blue-650: #5397e5;
+$color-blue-7: #000e29;
+$color-blue-700: #6ca7eb;
+$color-blue-750: #85b5ed;
+$color-blue-8: #000e29;
+$color-blue-800: #9dc5f2;
+$color-blue-850: #b8d4f5;
+$color-blue-9: #000e29;
+$color-blue-900: #d2e5fa;
+$color-blue-950: #eff6ff;
+$color-blue-evyd: #24303d;
+
+/* Purple Palette */
+$color-purple-1: #834dd4;
+$color-purple-10: #834dd4;
+$color-purple-11: #834dd4;
+$color-purple-12: #834dd4;
+$color-purple-13: #834dd4;
+$color-purple-14: #834dd4;
+$color-purple-15: #834dd4;
+$color-purple-16: #834dd4;
+$color-purple-17: #834dd4;
+$color-purple-2: #834dd4;
+$color-purple-3: #834dd4;
+$color-purple-4: #834dd4;
+$color-purple-5: #834dd4;
+$color-purple-6: #834dd4;
+$color-purple-7: #834dd4;
+$color-purple-8: #834dd4;
+$color-purple-9: #834dd4;
+
+/* Pink Palette */
+$color-pink-1: #bf397a;
+$color-pink-10: #bf397a;
+$color-pink-11: #bf397a;
+$color-pink-12: #bf397a;
+$color-pink-13: #bf397a;
+$color-pink-14: #bf397a;
+$color-pink-15: #bf397a;
+$color-pink-16: #bf397a;
+$color-pink-17: #bf397a;
+$color-pink-2: #bf397a;
+$color-pink-3: #bf397a;
+$color-pink-4: #bf397a;
+$color-pink-5: #bf397a;
+$color-pink-6: #bf397a;
+$color-pink-7: #bf397a;
+$color-pink-8: #bf397a;
+$color-pink-9: #bf397a;
+
+/* Teal Palette */
+$color-teal-1: #082422;
+$color-teal-10: #1ca399;
+$color-teal-11: #31b0a7;
+$color-teal-12: #4abdb4;
+$color-teal-13: #66ccc5;
+$color-teal-14: #84d9d3;
+$color-teal-15: #bee5e3;
+$color-teal-16: #c9f2f0;
+$color-teal-17: #effefd;
+$color-teal-2: #0a3330;
+$color-teal-3: #0b403c;
+$color-teal-4: #0c4f4a;
+$color-teal-5: #0c5e59;
+$color-teal-6: #0d6b65;
+$color-teal-7: #0c7a73;
+$color-teal-8: #0b877f;

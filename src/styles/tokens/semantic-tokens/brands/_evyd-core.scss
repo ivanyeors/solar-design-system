@@ -1,0 +1,864 @@
+/**
+ * EVYD Core brand-specific tokens
+ * 
+ * This file contains component-specific design tokens for the evydcore brand.
+ * Generated automatically - DO NOT EDIT DIRECTLY
+ *
+ * Naming convention:
+ * $component-[name]-[property]-[variant]-[state]: Structured component tokens
+ * 
+ * Example usage:
+ * .button {
+ *   background-color: $component-button-background;
+ *   color: $component-button-text;
+ *   border-radius: $component-button-radius;
+ * }
+ */
+
+// Brand-specific tokens
+
+// ================ AVATAR COMPONENT TOKENS ================
+
+$component-avatar: $color-stone-25;
+$component-avatar: $color-stone-850;
+$component-avatar-icon: $color-stone-850;
+$component-avatar-border: $color-stone-100;
+$component-avataradius: $base-radius-pill;
+// 5 tokens processed for avatar
+
+// ================ BADGE COMPONENT TOKENS ================
+
+$component-badge: $color-fill-brand-pale-rest;
+$component-badge-icon: $color-icon-brand-rest;
+$component-badge-typography: $color-text-primary-rest;
+$component-badge-typography: $color-text-secondary-rest;
+$component-badge-typography-success: $color-text-success-rest;
+$component-badge-typography-warning: $color-text-warning-rest;
+$component-badge-typography: $color-text-danger-rest;
+$component-badge-radius: $base-radius-pill;
+$component-badge-spacing: $base-gap-size-3;
+$component-badge-spacing: $base-padding-size-4;
+$component-badge-spacing: $base-padding-size-4;
+$component-badge-spacing: $base-padding-size-4;
+$component-badge-spacing: $base-padding-size-1;
+$component-badge-spacing: $base-padding-size-1;
+$component-badge-spacing: $base-padding-size-1;
+$component-badge-icon: $color-icon-secondary-rest;
+$component-badge-border: $color-border-primary-rest;
+$component-badge-success: $color-fill-success-pale-rest;
+$component-badge-warning: $color-fill-warning-pale-rest;
+$component-badge: $color-fill-danger-pale-rest;
+// 20 tokens processed for badge
+
+// ================ BUTTON COMPONENT TOKENS ================
+
+$component-button-text: $color-stone-850;
+$component-button-typography-disabled: $color-stone-200;
+$component-button: $color-stone-25;
+$component-button-border-pressed: $color-border-primary-rest;
+$component-button-disabled: $color-cerulean-100;
+$component-button-text-disabled: $color-stone-50;
+$component-button-icon-disabled: $color-cerulean-50;
+$component-button-hover: $color-cerulean-300;
+$component-button-info: $color-fill-info-pale-press;
+$component-button-info-disabled: $color-fill-brand-pale-disabled;
+$component-button-typography-info-disabled: $color-text-info-disabled;
+$component-button-icon-info-disabled: $color-icon-info-disabled;
+$component-button-hover: $color-fill-danger-pale-hover;
+$component-button-border-focus: $color-border-danger-focus;
+$component-button: $color-fill-danger-pale-press;
+$component-button-disabled: $color-fill-danger-pale-disabled;
+$component-button-typography-disabled: $color-text-danger-disabled;
+$component-button-icon-disabled: $color-icon-danger-disabled;
+$component-button-ghost: #eaecf0;
+$component-button-text: $color-stone-25;
+$component-button-text: $color-stone-25;
+$component-button-text-focus: $color-cerulean-50;
+$component-button-focus: $color-cerulean-500-main;
+$component-button-pressed: $color-cerulean-650;
+$component-button-text-disabled: $color-stone-200;
+$component-button-hover: $color-stone-50;
+$component-button-focus: $color-stone-25;
+$component-button-disabled: $color-stone-25;
+$component-button-pressed: $color-stone-25;
+$component-button-radius: $base-radius-size-3;
+$component-button-spacing: $base-gap-size-3;
+$component-button-spacing: $base-padding-size-6;
+$component-button-spacing: $base-padding-size-4;
+$component-button-spacing: $base-padding-size-7;
+$component-button-spacing: $base-padding-size-5;
+$component-button-spacing: $base-padding-size-8;
+$component-button-spacing: $base-padding-size-8;
+$component-button-spacing: $base-padding-size-6;
+$component-button-spacing: $base-padding-size-6;
+$component-button-selected: $color-fill-neutral-rest;
+$component-button-selected: $color-fill-brand-pale-rest;
+$component-button-hover: $color-fill-brand-pale-hover;
+$component-button-pressed: $color-fill-brand-pale-press;
+$component-button-disabled: $color-fill-neutral-disabled;
+$component-button-typography: $color-text-primary-rest;
+$component-button-typography-disabled: $color-text-primary-disabled;
+$component-button-typography-selected: $color-text-brand-focus;
+$component-button-border-selected: $color-border-primary-rest;
+$component-button-border-selected: $color-border-brand-rest;
+$component-button-spacing: $base-gap-size-10;
+$component-button-spacing: $base-padding-size-9;
+$component-button-spacing: $base-padding-size-6;
+$component-button: $color-fill-neutral-rest;
+$component-button-selected: $color-fill-neutral-press;
+$component-button-border: $color-stone-transparent;
+$component-button-border-selected: $color-stone-transparent;
+$component-button-typography: $color-text-primary-rest;
+$component-button-typography-selected: $color-text-primary-rest;
+$component-button-spacing: $base-gap-size-6;
+$component-button-spacing: $base-gap-size-6;
+$component-button-spacing: $base-gap-size-5;
+$component-button-radius: $base-radius-size-4;
+$component-button-border: $color-stone-transparent;
+$component-button-background: $color-stone-25;
+$component-button-spacing: 0;
+$component-button-spacing: 0;
+$component-button-radius: $base-radius-size-3;
+$component-button-spacing: $base-gap-size-3;
+$component-button-spacing: $base-gap-size-7;
+$component-button-spacing: $base-gap-size-5;
+$component-button-size: "Small";
+$component-button-spacing: $base-gap-size-11;
+// 72 tokens processed for button
+
+// ================ CARD COMPONENT TOKENS ================
+
+$component-card-text: $effect-dropshadow-maincard-01;
+$component-card-text: $effect-dropshadow-maincard-02;
+$component-card-background: $color-neutral-depr-50;
+$component-card-border: $color-stone-transparent;
+$component-card-radius: $base-radius-size-5;
+$component-card-spacing: $base-gap-size-9;
+$component-card-spacing: $base-padding-size-7;
+$component-card-spacing: $base-padding-size-7;
+$component-card-background: $color-stone-50;
+$component-card-border: $color-stone-transparent;
+$component-card-radius: $base-radius-size-5;
+$component-card-spacing: $base-padding-size-7;
+$component-card-spacing: $base-padding-size-7;
+$component-card-spacing: $base-gap-size-9;
+$component-card-background: $color-stone-25;
+$component-card-background: $color-stone-25;
+$component-card-background: $color-stone-25;
+$component-card-background: $color-stone-25;
+// 18 tokens processed for card
+
+// ================ CHECKBOX COMPONENT TOKENS ================
+
+$component-checkbox-text: $color-stone-white;
+$component-checkbox-text: $color-stone-100;
+$component-checkbox-text-active: $color-cerulean-25;
+$component-checkbox-text-active: $color-cerulean-500-main;
+$component-checkbox-text-hover: $color-cerulean-50;
+$component-checkbox-text: $color-cerulean-250;
+$component-checkbox-text: $color-stone-white;
+$component-checkbox-text: $color-stone-50;
+$component-checkbox-text-hover: $color-cerulean-500-main;
+$component-checkbox-text: $color-cerulean-500-main;
+$component-checkbox-radius: $base-radius-size-2;
+$component-checkbox-spacing: $base-gap-size-5;
+$component-checkbox-spacing: $base-gap-none;
+// 13 tokens processed for checkbox
+
+// ================ DROPDOWN COMPONENT TOKENS ================
+
+$component-dropdown: $color-surface-primary-rest;
+$component-dropdown-hover: $color-fill-neutral-hover;
+$component-dropdown-pressed: $color-surface-primary-press;
+$component-dropdown-disabled: $color-surface-primary-disabled;
+$component-dropdown-border: $color-border-primary-rest;
+$component-dropdown-typography: $color-stone-800;
+$component-dropdown-icon: $color-stone-800;
+$component-dropdown-spacing: $base-gap-size-6;
+$component-dropdown-spacing: $base-gap-size-9;
+$component-dropdown-radius: $base-radius-size-3;
+$component-dropdown: $color-stone-25;
+$component-dropdown-border: $color-stone-100;
+$component-dropdown-hover: $color-stone-50;
+$component-dropdown-disabled: $color-stone-25;
+$component-dropdown-typography: $color-stone-800;
+$component-dropdown-icon: $color-stone-800;
+$component-dropdown-radius: $base-radius-size-3;
+$component-dropdown-spacing: $base-gap-size-5;
+$component-dropdown-spacing: $base-padding-size-6;
+$component-dropdown-spacing: $base-padding-size-6;
+$component-dropdown-spacing: $base-padding-size-4;
+$component-dropdown-spacing: $base-padding-size-3;
+$component-dropdown-info: $color-stone-25;
+$component-dropdown-typography-secondary: $color-stone-500;
+$component-dropdown-radius-info: $base-radius-size-3;
+$component-dropdown-spacing-info: $base-padding-size-6;
+$component-dropdown-spacing-info: $base-padding-size-7;
+// 27 tokens processed for dropdown
+
+// ================ HEADER COMPONENT TOKENS ================
+
+$component-header: $color-stone-500;
+$component-header-spacing: $base-padding-size-7;
+$component-header-spacing: $base-gap-size-5;
+$component-header-spacing: $base-padding-size-16;
+$component-header-spacing: $base-padding-size-15;
+$component-header-spacing: $base-padding-size-4;
+// 6 tokens processed for header
+
+// ================ ICON COMPONENT TOKENS ================
+
+$component-icon-text: $color-cerulean-500-main;
+$component-icon-text-hover: $color-cerulean-650;
+$component-icon-text: $color-cerulean-800;
+$component-icon-text-focus: $color-cerulean-500-main;
+$component-icon-text-disabled: $color-cerulean-100;
+$component-icon-text: $color-brick-9;
+$component-icon-text-hover: $color-brick-14;
+$component-icon-text: $color-brick-15;
+$component-icon-text-focus: $color-brick-13;
+$component-icon-text-disabled: $color-brick-4;
+$component-icon-text-warning: $color-merigold-8;
+$component-icon-text-warning-hover: $color-merigold-9-main;
+$component-icon-text-warning: $color-merigold-10;
+$component-icon-text-warning-focus: $color-merigold-8;
+$component-icon-text-warning-disabled: $color-merigold-5;
+$component-icon-text-success: $color-jade-9;
+$component-icon-text-success-hover: $color-jade-8;
+$component-icon-text-success: $color-jade-10;
+$component-icon-text-success-focus: $color-jade-13;
+$component-icon-text-success-disabled: $color-jade-4;
+$component-icon-text-info: $color-cerulean-500-main;
+$component-icon-text-info-hover: $color-cerulean-650;
+$component-icon-text-info: $color-cerulean-800;
+$component-icon-text-infocus: $color-cerulean-500-main;
+$component-icon-text-info-disabled: $color-cerulean-150;
+$component-icon-text-primary: $color-stone-850;
+$component-icon-text-primary-hover: $color-stone-850;
+$component-icon-text-primary: $color-stone-850;
+$component-icon-text-primary-focus: $color-stone-850;
+$component-icon-text-primary-disabled: $color-stone-200;
+$component-icon-text-primary: $color-stone-25;
+$component-icon-text-secondary: $color-stone-500;
+$component-icon-text-secondary-hover: $color-stone-650;
+$component-icon-text-secondary-pressed: $color-stone-750;
+$component-icon-text-secondary-focus: $color-stone-500;
+$component-icon-text-secondary-disabled: $color-stone-150;
+$component-icon-text-secondary: $color-stone-25;
+$component-icon-text: $color-grape-8;
+$component-icon-text-hover: $color-grape-9-main;
+$component-icon-text: $color-grape-10;
+$component-icon-text-focus: $color-grape-8;
+$component-icon-text-disabled: $color-grape-5;
+$component-icon-text: $color-stone-white;
+$component-icon-spacing: $base-radius-size-2;
+$component-icon: $color-jade-13;
+$component-icon: $color-stone-800;
+$component-icon: $color-icon-neutral-rest;
+$component-icon: $color-cerulean-500-main;
+$component-icon: $color-stone-800;
+$component-icon-active: $color-stone-800;
+$component-icon: $color-stone-white;
+$component-icon: $color-cerulean-500-main;
+$component-icon: $color-stone-800;
+$component-icon: $color-icon-primary-rest;
+$component-icon: $color-stone-850;
+$component-icon: $color-stone-850;
+$component-icon: $color-stone-850;
+$component-icon: $color-stone-850;
+$component-icon: $color-stone-850;
+$component-icon: $color-stone-850;
+// 60 tokens processed for icon
+
+// ================ INPUT COMPONENT TOKENS ================
+
+$component-input-radius: $base-radius-size-3;
+$component-input-spacing: $base-gap-size-5;
+$component-input-spacing: $base-padding-size-6;
+$component-input-spacing: $base-padding-size-6;
+$component-input-spacing: $base-gap-size-5;
+$component-input-spacing: $base-gap-size-3;
+$component-input-spacing: $base-gap-size-7;
+$component-input-spacing: -1;
+$component-input-radius: $base-radius-none;
+$component-input-spacing: $base-padding-size-6;
+$component-input-spacing: $base-padding-size-4;
+$component-input-spacing: $base-padding-size-4;
+$component-input-spacing: $base-padding-size-3;
+// 13 tokens processed for input
+
+// ================ MENU COMPONENT TOKENS ================
+
+$component-menu-typography-active: $color-stone-800;
+$component-menu-typography: $color-stone-800;
+$component-menu-spacing: $base-radius-size-2;
+$component-menu-spacing: $base-padding-size-6;
+$component-menu-spacing: $base-padding-size-7;
+$component-menu-spacing: $base-padding-size-11;
+$component-menu-radius: $base-radius-none;
+// 7 tokens processed for menu
+
+// ================ PILL COMPONENT TOKENS ================
+
+$component-pill-selected: $color-cerulean-50;
+$component-pill-selected: $color-stone-50;
+$component-pill-size: $base-width-size-4a;
+// 3 tokens processed for pill
+
+// ================ RADIO COMPONENT TOKENS ================
+
+$component-radio-radius: $base-radius-pill;
+$component-radio-spacing: $base-gap-size-5;
+$component-radio-spacing: $base-gap-none;
+// 3 tokens processed for radio
+
+// ================ SELECT COMPONENT TOKENS ================
+
+$component-selected: $color-cerulean-50;
+$component-selected: $color-stone-50;
+$component-select-radiuselected: $base-radius-pill;
+$component-select-size-selected: $base-width-size-6;
+$component-select-size-selected: $base-height-size-6;
+$component-select-spacing-selected: $base-padding-size-5;
+$component-select-spacing-selected: $base-padding-size-5;
+$component-selectext-selected: $color-cerulean-500-main;
+$component-selectext-selected: $color-stone-50;
+$component-selectypography-selected: $color-stone-white;
+$component-selectypography-selected: $color-stone-800;
+$component-select-border-selected: $color-stone-transparent;
+$component-select-border-selected: $color-cerulean-500-main;
+$component-select-border-selected: $color-crimson-9;
+$component-selectext-selected: $color-cerulean-500-main;
+$component-selectext-selected: $color-stone-50;
+$component-selectypography-selected: $color-stone-50;
+$component-selectypography-selected: $color-stone-800;
+$component-select-border-selected: $color-stone-transparent;
+$component-selected: $color-stone-100;
+// 20 tokens processed for select
+
+// ================ TABS COMPONENT TOKENS ================
+
+$componentabs: "true";
+// 1 tokens processed for tabs
+
+// ================ TOAST COMPONENT TOKENS ================
+
+$componentoast-background: $color-stone-800;
+$componentoast-background-error: $color-brick-3;
+$componentoast-background-warning: $color-merigold-3;
+$componentoast-background-info: $color-sky-depr-100;
+$componentoast-radius: $base-radius-size-4;
+$componentoast-spacing: $base-padding-size-4;
+$componentoast-spacing: $base-padding-size-3;
+$componentoast-spacing: $base-padding-size-6;
+$componentoast-spacing: $base-radius-size-5;
+$componentoast-spacing: $base-radius-none;
+// 10 tokens processed for toast
+
+// ================ SYSTEM: BACKGROUND TOKENS ================
+
+$system-background-group-brand-bg: $color-cerulean-25;
+$system-background-group-dark-bg: $color-stone-25;
+$system-background-bg-disabled: $color-stone-transparent;
+$system-background-completed: $color-stone-25;
+$system-background-today: $color-stone-25;
+$system-background-incomplete: $color-stone-25;
+$system-background-today: $color-cerulean-25;
+$system-background: $color-stone-25;
+$system-background-banner-background: $color-stone-25;
+$system-background-bg-highlighted: $color-cerulean-25;
+$system-background: $color-stone-25;
+$system-background-bg-vc: $color-cerulean-25;
+$system-background-bg-va: $color-crimson-2;
+$system-background-bg-weekly: $color-cerulean-25;
+$system-background-bg-daily: $color-stone-25;
+$system-background: $color-stone-25;
+$system-background: $color-stone-25;
+$system-background-meal-background: $color-stone-50;
+// 18 tokens processed for background
+
+// ================ SYSTEM: BORDER TOKENS ================
+
+$system-border-brand-rest: $color-cerulean-500-main;
+$system-border-brand-hover: $color-cerulean-650;
+$system-border-brand-press: $color-cerulean-800;
+$system-border-brand-focus: $color-cerulean-50;
+$system-border-brandisabled: $color-cerulean-150;
+$system-border-dangerest: $color-brick-13;
+$system-border-danger-hover: $color-brick-14;
+$system-border-danger-press: $color-brick-15;
+$system-border-danger-focus: $color-brick-2;
+$system-border-danger-disabled: $color-brick-10;
+$system-border-warning-rest: $color-merigold-8;
+$system-border-warning-hover: $color-merigold-9-main;
+$system-border-warning-press: $color-merigold-10;
+$system-border-warning-focus: $color-merigold-3;
+$system-border-warning-disabled: $color-merigold-5;
+$system-border-info-rest: $color-cerulean-500-main;
+$system-border-info-hover: $color-cerulean-650;
+$system-border-info-press: $color-cerulean-800;
+$system-border-infocus: $color-cerulean-500-main;
+$system-border-info-disabled: $color-cerulean-150;
+$system-border-success-rest: $color-jade-9;
+$system-border-success-hover: $color-jade-10;
+$system-border-success-press: $color-jade-12;
+$system-border-success-focus: $color-jade-9;
+$system-border-success-disabled: $color-jade-2;
+$system-border-primary-rest: $color-stone-100;
+$system-border-primary-hover: $color-stone-150;
+$system-border-primary-press: $color-stone-200;
+$system-border-primary-focus: $color-stone-100;
+$system-border-primary-disabled: $color-stone-50;
+$system-border-note-rest: $color-grape-8;
+$system-border-note-hover: $color-grape-9-main;
+$system-border-note-press: $color-grape-10;
+$system-border-note-focus: $color-grape-8;
+$system-border-note-disabled: $color-grape-5;
+$system-border-transparent: $color-stone-transparent;
+$system-border-primary-inverse: $color-stone-25;
+$system-border: $color-stone-100;
+$system-border-rest: $color-stone-100;
+$system-border-focus: $color-cerulean-50;
+$system-border-disabled: $color-stone-100;
+$system-border-danger: $color-brick-13;
+$system-border-success: $color-jade-13;
+$system-border-empty: $color-stone-100;
+$system-border: $color-stone-100;
+$system-border: $color-stone-100;
+$system-border-cell-border: $color-stone-100;
+$system-border-weekly: $color-cerulean-500-main;
+$system-border-daily: $color-stone-100;
+// 49 tokens processed for border
+
+// ================ SYSTEM: FEEDBACK TOKENS ================
+
+$system-feedback-warning-rest: $color-merigold-9-main;
+$system-feedback-warning-press: $color-merigold-10;
+$system-feedback-warning-pale-rest: $color-merigold-2;
+$system-feedback-warning-pale-press: $color-merigold-4;
+$system-feedback-info-rest: $color-cerulean-500-main;
+$system-feedback-info-press: $color-cerulean-700;
+$system-feedback-info-pale-rest: $color-cerulean-25;
+$system-feedback-info-pale-press: $color-cerulean-100;
+$system-feedback-success-rest: $color-jade-9;
+$system-feedback-success-press: $color-jade-10;
+$system-feedback-success-pale-rest: $color-jade-1;
+$system-feedback-success-pale-press: $color-jade-9;
+// 12 tokens processed for feedback
+
+// ================ SYSTEM: INTERACTIVE TOKENS ================
+
+$system-interactive-brand-hover: $color-cerulean-300;
+$system-interactive-brandisabled: $color-cerulean-150;
+$system-interactive-brand-pale-hover: $color-cerulean-50;
+$system-interactive-brand-pale-disabled: $color-cerulean-25;
+$system-interactive-neutral-hover: $color-stone-25;
+$system-interactive-neutral-disabled: $color-stone-25;
+$system-interactive-grey-hover: $color-stone-50;
+$system-interactive-grey-disabled: $color-stone-25;
+$system-interactive-danger-hover: $color-brick-8;
+$system-interactive-danger-disabled: $color-brick-3;
+$system-interactive-danger-pale-hover: $color-brick-2;
+$system-interactive-danger-pale-disabled: $color-brick-1;
+$system-interactive-brand-focus: $color-cerulean-500-main;
+$system-interactive-brand-pale-focus: $color-cerulean-25;
+$system-interactive-neutral-focus: $color-stone-25;
+$system-interactive-grey-focus: $color-stone-25;
+$system-interactive-danger-focus: $color-brick-9;
+$system-interactive-danger-pale-focus: $color-brick-1;
+$system-interactive-warning-hover: $color-merigold-8;
+$system-interactive-warning-focus: $color-merigold-9-main;
+$system-interactive-warning-disabled: $color-merigold-5;
+$system-interactive-warning-pale-hover: $color-merigold-3;
+$system-interactive-warning-pale-focus: $color-merigold-2;
+$system-interactive-warning-pale-disabled: $color-merigold-2;
+$system-interactive-info-hover: $color-cerulean-300;
+$system-interactive-infocus: $color-cerulean-500-main;
+$system-interactive-info-disabled: $color-cerulean-150;
+$system-interactive-info-pale-hover: $color-cerulean-50;
+$system-interactive-info-pale-focus: $color-cerulean-25;
+$system-interactive-info-pale-disabled: $color-cerulean-25;
+$system-interactive-success-hover: $color-jade-8;
+$system-interactive-success-focus: $color-jade-9;
+$system-interactive-success-disabled: $color-fill-neutral-disabled;
+$system-interactive-success-pale-hover: $color-jade-8;
+$system-interactive-success-pale-focus: $color-jade-7;
+$system-interactive-success-pale-disabled: $color-fill-neutral-disabled;
+$system-interactive-note-hover: $color-grape-9-main;
+$system-interactive-note-focus: $color-grape-8;
+$system-interactive-note-disabled: $color-grape-5;
+$system-interactive-note-pale-hover: $color-grape-3;
+$system-interactive-note-pale-focus: $color-grape-2;
+$system-interactive-note-pale-disabled: $color-grape-2;
+$system-interactive-primary-hover: $color-stone-50;
+$system-interactive-primary-focus: $color-stone-25;
+$system-interactive-primary-disabled: $color-stone-50;
+$system-interactive-secondary-hover: $color-stone-100;
+$system-interactive-secondary-focus: $color-stone-50;
+$system-interactive-secondary-disabled: $color-stone-50;
+$system-interactive-brand: $color-cerulean-50;
+$system-interactive-neutral: $color-stone-50;
+$system-interactive-danger: $color-brick-8;
+$system-interactive-hoveradius: $base-radius-pill;
+// 52 tokens processed for interactive
+
+// ================ SYSTEM: LAYOUT TOKENS ================
+
+$system-layout-container-padding: $base-padding-size-1;
+$system-layout-container: $color-stone-50;
+$system-layout-containeradius: $base-radius-pill;
+$system-layout-container: $color-stone-50;
+$system-layoutimerseparator-container: $color-stone-200;
+$system-layout-h-1: -1.44;
+$system-layout-h-2: -1.2;
+$system-layout-h-3: -0.96;
+$system-layout-h-4: -0.72;
+$system-layout-h-5: -0.6;
+$system-layout-h-6: -0.48;
+$system-layout-xl: -0.4;
+$system-layout-l: -0.36;
+$system-layout-m: -0.32;
+$system-layout-s: -0.28;
+$system-layout-xs: -0.24;
+$system-layout-2xs: -0.2;
+$system-layout-overline: 2.64;
+$system-layout-h-1: $font-paragraph-spacing-72;
+$system-layout-h-2: $font-paragraph-spacing-60;
+$system-layout-h-3: $font-paragraph-spacing-48;
+$system-layout-h-4: $font-paragraph-spacing-36;
+$system-layout-h-5: $font-paragraph-spacing-30;
+$system-layout-h-6: $font-paragraph-spacing-24;
+$system-layout-xl: $font-paragraph-spacing-20;
+$system-layout-l: $font-paragraph-spacing-18;
+$system-layout-m: $font-paragraph-spacing-16;
+$system-layout-s: $font-paragraph-spacing-14;
+$system-layout-xs: $font-paragraph-spacing-12;
+$system-layout-2xs: $font-paragraph-spacing-10;
+$system-layout-overline: $font-paragraph-spacing-11;
+// 31 tokens processed for layout
+
+// ================ SYSTEM: OTHER TOKENS ================
+
+$system-text-brand-rest: $color-cerulean-500-main;
+$system-text-brand-press: $color-cerulean-700;
+$system-text-brand-pale-rest: $color-cerulean-25;
+$system-text-brand-pale-press: $color-cerulean-100;
+$system-text-neutral-rest: $color-stone-white;
+$system-text-neutral-press: $color-stone-50;
+$system-text-black-rest: $color-stone-850;
+$system-text-grey-rest: $color-stone-25;
+$system-text-grey-press: $color-stone-100;
+$system-text-dangerest: $color-brick-9;
+$system-text-danger-press: $color-brick-10;
+$system-text-danger-pale-rest: $color-brick-1;
+$system-text-danger-pale-press: $color-brick-4;
+$system-text-note-rest: $color-grape-8;
+$system-text-note-press: $color-grape-10;
+$system-text-note-pale-rest: $color-grape-2;
+$system-text-note-pale-press: $color-grape-4;
+$system-textransparent-rest: $color-stone-transparent;
+$system-text-canvas-rest: $color-stone-50;
+$system-text-primary-rest: $color-stone-25;
+$system-text-primary-press: $color-stone-100;
+$system-text-secondary-rest: $color-stone-50;
+$system-text-secondary-press: $color-stone-150;
+$system-text-green-primary: $color-jade-9;
+$system-text-green-secondary: $color-jade-2;
+$system-text-blue-primary: $color-cerulean-500-main;
+$system-text-blue-secondary: $color-cerulean-50;
+$system-text-purple-primary: $color-violet-9-main;
+$system-text-purple-secondary: $color-violet-2;
+$system-text-orange-primary: $color-marmalade-9-main;
+$system-text-orange-secondary: $color-marmalade-2;
+$system-text-red-primary: $color-brick-9;
+$system-text-red-secondary: $color-brick-2;
+$system-text-yellow-primary: $color-lemon-9-main;
+$system-text-yellow-secondary: $color-lemon-2;
+$system-text-grey-primary: $color-stone-500;
+$system-text-grey-secondary: $color-stone-50;
+$system-text-pink-primary: $color-rose-9;
+$system-text-pink-secondary: $color-rose-2;
+$system-text-brand-primary: $color-cerulean-500-main;
+$system-text-brand-secondary: $color-cerulean-50;
+$system-text-brand-primary-transparent: #257bdf00;
+$system-text-dark: $overlay-black;
+$system-text-white: $overlay-light;
+$system-text-small-01: $effect-dropshadow-small-01;
+$system-text-small-02: $effect-dropshadow-small-02;
+$system-text-medium-01: $effect-dropshadow-medium-01;
+$system-text-medium-02: $effect-dropshadow-medium-02;
+$system-text-large-01: $effect-dropshadow-large-01;
+$system-text-large-02: $effect-dropshadow-large-02;
+$system-text-black-01: $color-neutral-depr-850;
+$system-text-brand-01: $color-cerulean-25;
+$system-text-white: $color-neutral-depr-25;
+$system-text-grey-01: $color-neutral-depr-150;
+$system-text-brand-02: $color-cerulean-50;
+$system-text-brand-03: $color-cerulean-100;
+$system-text-brand-04: $color-cerulean-150;
+$system-text-brand-05: $color-cerulean-200;
+$system-text-brand-06: $color-cerulean-300;
+$system-text-green-01: $color-jade-9;
+$system-text-grey-02: $color-neutral-depr-300;
+$system-text-red: $color-brick-9;
+$system-text-brand-07: $color-cerulean-500-main;
+$system-text-brand-08: $color-cerulean-700;
+$system-text-black-02: $color-neutral-depr-600;
+$system-text-brand-09: $color-cerulean-800;
+$system-text-green-02: $color-jade-3;
+$system-text-merigold-02: $color-merigold-5;
+$system-text-merigold-03: $color-merigold-8;
+$system-text-merigold-04: $color-merigold-10;
+$system-text-merigold-01: $color-merigold-2;
+$system-text-babyblue-03: $color-cerulean-100;
+$system-text-babyblue-02: $color-cerulean-50;
+$system-text-babyblue-01: $color-cerulean-25;
+$system-text-orangepeel-01: #fef9f0;
+$system-text-orangepeel-02: #fcd39d;
+$system-text-orangepeel-03: #ff8900;
+$system-text-orangepeel-04: #cc7400;
+$system-text-grey-03: $color-neutral-depr-800;
+$system-text-brand-overlay: #257bdf66;
+$system-text-green-03: #e6f9f0;
+$system-text-stone-tier-01: #e2e4e5;
+$system-text-stone-tier-02: #4c4d4e;
+$system-text-evyd: $logo-evyd;
+$system-radius: $base-radius-pill;
+$system-size-dot-width: $base-width-size-2;
+$system-spacingroup-gap: $base-gap-size-5;
+$system-spacingroup-h-padding: $base-padding-size-2;
+$system-spacingroup-v-padding: $base-padding-size-2;
+$system-radiustartdate-radius: $base-radius-pill;
+$system-radius-enddate-radius: $base-radius-pill;
+$system-size-startdate-width: $base-width-size-6;
+$system-size-startdate-height: $base-height-size-6;
+$system-radius-press-radius: $base-radius-pill;
+$system-spacing-default-v-padding: $base-padding-size-5;
+$system-size-default-width: $base-width-size-6;
+$system-size-default-height: $base-height-size-6;
+$system-spacing-default-h-padding: $base-padding-size-5;
+$system-spacing-startdate-h-padding: $base-padding-size-5;
+$system-spacing-startdate-v-padding: $base-padding-size-5;
+$system-sizenddate-width: $base-width-size-6;
+$system-sizenddate-height: $base-height-size-6;
+$system-spacing-enddate-h-padding: $base-padding-size-5;
+$system-spacing-enddate-v-padding: $base-padding-size-5;
+$system-radius-default-radius: $base-radius-pill;
+$system-radius: $base-radius-pill;
+$system-radius: $base-radius-size-5;
+$system-spacing-v-padding-top: $base-radius-size-3;
+$system-spacing-v-padding: $base-padding-size-5;
+$system-spacing-h-padding: $base-padding-size-5;
+$system-spacing-v-padding-alt: $base-padding-size-5;
+$system-spacing-h-padding-alt: $base-padding-size-5;
+$system-radius: $base-radius-size-3;
+$system-spacing-h-padding: $base-radius-size-4;
+$system-spacing-v-padding: $base-radius-size-3;
+$system-long: $color-cerulean-500-main;
+$system-short: $color-cerulean-25;
+$system-radius: $base-radius-size-1;
+$system-radius: $base-radius-size-3;
+$system-spacingap: $base-gap-size-5;
+$system-fill-brand-bold: $color-cerulean-500-main;
+$system-fill-brand-light: $color-cerulean-25;
+$system-radius: $base-radius-size-3;
+$system-spacing-h-padding-l: $base-radius-size-3;
+$system-spacing-v-padding-l: $base-radius-size-4;
+$system-spacingap: $base-gap-size-5;
+$system-indicator: $color-stone-200;
+$system-spacing-h-padding: $base-padding-size-6;
+$system-radius-indicatoradius: $base-radius-pill;
+$system-radius: $base-radius-size-3;
+$system-spacing-v-padding: $base-padding-size-4;
+$system-spacingap: $base-gap-none;
+$system-spacing-timerseparator-gap: $base-gap-size-5;
+$system-spacing-h-padding: $base-padding-size-4;
+$system-text-fill-color-1: $color-merigold-5;
+$system-text-fill-color-2: $color-stone-100;
+$system-text-fill-color-3: $color-merigold-10;
+$system-radius: $base-radius-pill;
+$system-bg: $color-stone-25;
+$system-radius: $base-radius-pill;
+$system-spacingap: $base-gap-size-3;
+$system-spacing-h-padding: $base-padding-size-4;
+$system-spacing-v-padding: $base-padding-size-2;
+$system-bg: $color-stone-25;
+$system-spacing-v-padding: $base-padding-size-4;
+$system-spacing-h-padding: $base-padding-size-6;
+$system-spacingap: $base-gap-size-5;
+$system-spacing-v-padding: $base-padding-size-1;
+$system-radius-highligted: $base-radius-size-3;
+$system-spacing-h-padding: $base-padding-size-7;
+$system-spacing-v-padding: $base-padding-size-6;
+$system-radius: $base-radius-size-3;
+$system-spacingap: $base-gap-size-5;
+$system-radius: $base-radius-size-3;
+$system-spacingap: $base-gap-size-5;
+$system-spacing-h-padding: $base-padding-size-7;
+$system-spacing-v-padding: $base-padding-size-6;
+$system-radius: $base-radius-size-3;
+$system-spacing-h-padding: $base-radius-size-4;
+$system-spacing-v-padding: $base-radius-size-3;
+$system-fill-inner: $color-cerulean-500-main;
+$system-fill-outer: $color-stone-25;
+$system-spacingap: $base-gap-size-3;
+$system-bar: $color-stone-100;
+$system-radius: $base-radius-size-5;
+$system-radius: $base-radius-pill;
+$system-spacingap: $base-gap-size-5;
+$system-spacing-title-gap: $base-gap-none;
+$system-spacing-h-padding: $base-padding-size-1;
+$system-spacing-v-padding: $base-padding-size-1;
+$system-radius-handle-radius: $base-radius-pill;
+$system-spacing-h-padding: $base-padding-size-7;
+$system-spacing-v-padding: $base-padding-size-7;
+$system-radius: $base-radius-size-5;
+$system-spacingap: $base-gap-size-9;
+// 175 tokens processed for other
+
+// ================ SYSTEM: TEXT TOKENS ================
+
+$system-text-brand-rest: $color-cerulean-500-main;
+$system-text-brandisabled: $color-cerulean-150;
+$system-text-dangerest: $color-brick-9;
+$system-text-danger-disabled: $color-brick-4;
+$system-text-success-rest: $color-jade-9;
+$system-text-success-disabled: $color-jade-4;
+$system-text-warning-rest: $color-merigold-8;
+$system-text-warning-disabled: $color-merigold-5;
+$system-text-primary-rest: $color-stone-850;
+$system-text-primary-disabled: $color-stone-200;
+$system-text-primary-inverse: $color-stone-25;
+$system-text-primary-press: $color-stone-850;
+$system-text-secondary-disabled: $color-stone-150;
+$system-text-secondary-press: $color-stone-750;
+$system-text-secondary-rest: $color-stone-500;
+$system-text-secondary-inverse: $color-stone-25;
+$system-text-brand-hover: $color-cerulean-300;
+$system-text-brand-press: $color-cerulean-700;
+$system-text-brand-focus: $color-cerulean-500-main;
+$system-text-danger-hover: $color-brick-14;
+$system-text-danger-press: $color-brick-15;
+$system-text-success-hover: $color-jade-8;
+$system-text-success-press: $color-jade-10;
+$system-text-warning-hover: $color-merigold-9-main;
+$system-text-danger-focus: $color-brick-13;
+$system-text-success-focus: $color-jade-9;
+$system-text-warning-press: $color-merigold-10;
+$system-text-warning-focus: $color-merigold-8;
+$system-text-primary-hover: $color-stone-850;
+$system-text-primary-focus: $color-stone-850;
+$system-text-secondary-hover: $color-stone-650;
+$system-text-secondary-focus: $color-stone-500;
+$system-text-info-rest: $color-cerulean-500-main;
+$system-text-info-hover: $color-cerulean-300;
+$system-text-info-press: $color-cerulean-700;
+$system-text-infocus: $color-cerulean-500-main;
+$system-text-info-disabled: $color-cerulean-150;
+$system-text-note-rest: $color-grape-8;
+$system-text-note-hover: $color-grape-9-main;
+$system-text-note-press: $color-grape-10;
+$system-text-note-focus: $color-grape-8;
+$system-text-note-disabled: $color-grape-5;
+$system-text-neutrallight-rest: $color-stone-25;
+$system-text-neutraldark-rest: $color-stone-950;
+$system-text-default: $color-stone-800;
+$system-text-year-text-default: $color-stone-800;
+$system-text-today: $color-cerulean-500-main;
+$system-text-incomplete: $color-stone-100;
+$system-text-border-today: $color-stone-100;
+$system-text-color: $color-stone-800;
+$system-text-bar-color: $color-stone-100;
+$system-text-radius: $base-radius-size-3;
+$system-text-gap: $base-radius-size-3;
+$system-text: $color-stone-800;
+$system-text-fill-brand-bold: $color-cerulean-500-main;
+$system-text-fill-brand-light: $color-cerulean-25;
+$system-text-brand-light: $color-cerulean-500-main;
+$system-text-brand-bold: $color-text-neutrallight-rest;
+$system-text-border: $color-stone-100;
+$system-text-radius: $base-radius-pill;
+$system-text-h-padding-l: $base-radius-size-4;
+$system-text-v-padding-l: $base-radius-size-3;
+$system-text-h-padding-m: $base-radius-size-4;
+$system-text-v-padding-m: $base-radius-size-3;
+$system-text-h-padding-s: $base-radius-size-4;
+$system-text-v-padding-s: $base-radius-size-3;
+$system-text: $color-stone-800;
+$system-text-rest: $color-stone-800;
+$system-text-disabled: $color-stone-200;
+$system-text-danger: $color-stone-800;
+$system-text-success: $color-stone-800;
+$system-text-brand-bold: $color-stone-white;
+$system-text-brand-light: $color-cerulean-500-main;
+$system-text-secondary: $color-stone-500;
+$system-text-primary: $color-stone-800;
+$system-text-secondary: $color-stone-500;
+$system-text: $color-text-primary-rest;
+$system-text-inverse: $color-text-neutrallight-rest;
+$system-text: $color-text-primary-rest;
+$system-text: $color-text-primary-rest;
+$system-text-primary: $color-text-primary-rest;
+$system-text-secondary: $color-text-secondary-rest;
+$system-text-brand: $color-cerulean-500-main;
+$system-text: $color-stone-850;
+$system-text-secondary: $color-stone-500;
+$system-text-vc: $color-stone-850;
+$system-text-va: $color-stone-850;
+$system-text-heading: $font-family-dm sans;
+$system-text: $font-family-dm sans;
+$system-text-overline: $font-family-dm sans;
+$system-text-regular: $font-weight-regular-400;
+$system-text-medium: $font-weight-medium-500;
+$system-text-semibold: $font-weight-semibold-600;
+$system-text-bold: $font-weight-bold-700;
+$system-text-h-1: $font-size-72;
+$system-text-h-2: $font-size-60;
+$system-text-h-3: $font-size-48;
+$system-text-h-4: $font-size-36;
+$system-text-h-5: $font-size-30;
+$system-text-h-6: $font-size-24;
+$system-text-xl: $font-size-20;
+$system-text-l: $font-size-18;
+$system-text-m: $font-size-16;
+$system-text-s: $font-size-14;
+$system-text-xs: $font-size-12;
+$system-text-2xs: $font-size-10;
+$system-text-overline: $font-size-11;
+$system-text-h-1: $font-line-height-90;
+$system-text-h-2: $font-line-height-72;
+$system-text-h-3: $font-line-height-60;
+$system-text-h-4: $font-line-height-44;
+$system-text-h-5: $font-line-height-36;
+$system-text-h-6: $font-line-height-32;
+$system-text-xl: $font-line-height-24;
+$system-text-l: $font-line-height-28;
+$system-text-m: $font-line-height-24;
+$system-text-s: $font-line-height-20;
+$system-text-xs: $font-line-height-18;
+$system-text-2xs: $font-line-height-12;
+$system-text-overline: $font-line-height-14;
+$system-text-h-1: $font-paragraph-indent-none;
+$system-text-h-2: $font-paragraph-indent-none;
+$system-text-h-3: $font-paragraph-indent-none;
+$system-text-h-4: $font-paragraph-indent-none;
+$system-text-h-5: $font-paragraph-indent-none;
+$system-text-h-6: $font-paragraph-indent-none;
+$system-text-xl: $font-paragraph-indent-none;
+$system-text-l: $font-paragraph-indent-none;
+$system-text-m: $font-paragraph-indent-none;
+$system-text-s: $font-paragraph-indent-none;
+$system-text-xs: $font-paragraph-indent-none;
+$system-text-2xs: $font-paragraph-indent-none;
+$system-text-overline: $font-paragraph-indent-none;
+// 133 tokens processed for text
+
+// Total: 748 tokens processed for evydcore
+
+// Mixins for easy token access
+@mixin brand-tokens() {
+  // Include all brand tokens as CSS custom properties
+  @each $name, $value in $brand-tokens {
+    --#{$name}: #{$value};
+  }
+}

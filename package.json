@@ -1,51 +1,28 @@
 {
-  "name": "solar-design-system",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/solar-design-system.umd.js",
-  "module": "./dist/solar-design-system.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/solar-design-system.es.js",
-      "require": "./dist/solar-design-system.umd.js"
-    },
-    "./style.css": "./dist/style.css"
-  },
-  "types": "./dist/types/index.d.ts",
+  "name": "solar-design-system-tokens",
+  "version": "1.0.0",
+  "description": "Token extraction and organization toolkit for Solar Design System",
+  "main": "src/tokens/index.js",
   "scripts": {
-    "dev": "node scripts/start-dev.js",
-    "dev:no-tools": "vite",
-    "browser-tools": "npx @agentdeskai/browser-tools-server@1.2.0",
-    "build": "vue-tsc --noEmit && vite build",
-    "build:lib": "vue-tsc --noEmit && BUILD_LIB=true vite build",
-    "preview": "vite preview",
-    "storybook": "node scripts/start-storybook.js",
-    "storybook:no-tools": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "extract": "node token-extractor.js",
+    "extract:py": "python token-extractor.py",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "design-system",
+    "tokens",
+    "design-tokens",
+    "token-studio",
+    "css",
+    "theming"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.5"
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
   },
-  "devDependencies": {
-    "@agentdeskai/browser-tools-server": "^1.2.0",
-    "@headlessui/vue": "^1.7.23",
-    "@types/node": "^20.11.21",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/tsconfig": "^0.7.0",
-    "autoprefixer": "^10.4.17",
-    "concurrently": "^8.2.2",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.3",
-    "vite": "^5.4.14",
-    "vue-tsc": "^1.8.27"
-  },
-  "peerDependencies": {
-    "vue": "^3.4.0"
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

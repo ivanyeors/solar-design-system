@@ -1,125 +1,99 @@
-# Solar Design System
+# Solar Design System - Token Extractor
 
-A modern design system built with Vue 3 and Tailwind CSS. This library provides a set of reusable components to help build consistent UIs quickly.
+This repository contains a toolkit for extracting and organizing design tokens from TokenStudio's `tokens.json` file into a structured format following industry best practices.
 
-## Features
+## File Structure
 
-- 🔥 Built with Vue 3 Composition API and TypeScript
-- 🎨 Styled with Tailwind CSS
-- 📦 Includes common UI components
-- 📝 Fully typed props and events
-- 📱 Responsive design
-- ♿ Accessibility built-in
+The token extractor script organizes the tokens into a scalable file structure:
 
-## Installation
-
-```bash
-npm install solar-design-system
 ```
+src/
+└── tokens/
+    ├── option-tokens/       # Base primitive tokens
+    │   ├── colors.js        # Color palette tokens
+    │   └── scale.js         # Scale, spacing, sizing tokens
+    ├── semantic-tokens/     # Semantic application tokens
+    │   ├── brands.js        # Brand-specific tokens
+    │   └── themes.js        # Theme tokens (light/dark)
+    └── index.js             # Main entry point exporting all tokens
+```
+
+## Token Organization
+
+Following design system best practices, the tokens are organized into two main categories:
+
+### 1. Option Tokens
+
+These are the primitive, base-level design tokens that serve as the foundation of the design system:
+
+- **Colors:** Base color palette including neutrals, brand colors, and supporting colors
+- **Scale:** Foundational measurements including spacing, sizing, radius, etc.
+
+### 2. Semantic Tokens
+
+These tokens have semantic meaning and are used in specific contexts:
+
+- **Brands:** Brand-specific tokens that define the visual identity of each brand
+- **Themes:** Theme tokens for light and dark modes
+
+## How It Works
+
+The token extractor script:
+
+1. Reads the `tokens.json` file from the TokenStudio directory
+2. Processes the nested token structure into a flat format
+3. Categorizes tokens based on their path and type
+4. Generates JavaScript modules for each token category
+5. Creates an index file to export all token modules
 
 ## Usage
 
-### Global Registration
-
-```js
-// main.js or main.ts
-import { createApp } from 'vue'
-import App from './App.vue'
-import SolarDesignSystem from 'solar-design-system'
-import 'solar-design-system/style.css'
-
-const app = createApp(App)
-app.use(SolarDesignSystem)
-app.mount('#app')
-```
-
-### Individual Component Import
-
-```vue
-<script setup>
-import { Button } from 'solar-design-system'
-import 'solar-design-system/style.css'
-</script>
-
-<template>
-  <Button variant="primary">Click Me</Button>
-</template>
-```
-
-## Available Components
-
-### Button
-
-A versatile button component with various styles and states.
-
-```vue
-<Button variant="primary" size="md">Click Me</Button>
-```
-
-Props:
-- `variant`: 'primary' | 'secondary' | 'outline' | 'ghost'
-- `size`: 'sm' | 'md' | 'lg'
-- `disabled`: boolean
-- `loading`: boolean
-
-## Development
+### Running the Token Extractor
 
 ```bash
-# Install dependencies
+# Install dependencies (if needed)
 npm install
 
-# Start development server
-npm run dev
-
-# Build the library
-npm run build
+# Run the token extractor script
+node token-extractor.js
 ```
 
-## Browser Tools Integration
+### Importing Tokens in Your Application
 
-This project supports integration with the Agent Desk AI browser-tools for enhanced development capabilities when working with Cursor IDE and Claude. The browser-tools server will automatically start when you run the development server or Storybook if the feature is enabled.
+```javascript
+// Import all tokens
+import tokens from './src/tokens';
 
-### Usage
+// Or import specific token groups
+import { optionColors, themes } from './src/tokens';
 
-1. Run development server with browser-tools:
-   ```bash
-   # Enable browser-tools
-   BROWSER_TOOLS_ENABLED=true npm run dev
-
-   # Or on Windows PowerShell
-   $env:BROWSER_TOOLS_ENABLED = "true"; npm run dev
-   ```
-
-2. Run Storybook with browser-tools:
-   ```bash
-   # Enable browser-tools
-   BROWSER_TOOLS_ENABLED=true npm run storybook
-
-   # Or on Windows PowerShell
-   $env:BROWSER_TOOLS_ENABLED = "true"; npm run storybook
-   ```
-
-3. Run just the browser-tools server:
-   ```bash
-   npm run browser-tools
-   ```
-
-### Disabling Browser Tools
-
-If you need to run without the browser-tools server:
-```bash
-# Explicitly disable browser-tools
-BROWSER_TOOLS_ENABLED=false npm run dev
-
-# Or use the direct commands
-npm run dev:no-tools
-npm run storybook:no-tools
+// Usage example
+const primaryColor = themes['brand-primary'];
+const spacing = optionScale['spacing-medium'];
 ```
 
-## GitHub Pages Deployment
+## Keeping Tokens Updated
 
-The documentation site is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+The extractor script is designed to always pull the latest tokens from the `tokens.json` file. When tokens are updated:
 
-## License
+1. Update the `tokens.json` file in the TokenStudio directory
+2. Run the token extractor script
+3. The tokens will be automatically updated in your application
 
-MIT
+## Best Practices
+
+- **Reference, Don't Duplicate:** Always reference tokens directly rather than duplicating values
+- **Use Semantic Tokens:** Prefer semantic tokens over direct color references
+- **Theme Support:** Design components to use theme tokens for built-in dark/light mode support
+- **Keep It Simple:** Group related tokens together to make them easier to find and use
+
+## Industry Standards
+
+This token organization follows industry standards from major design systems such as:
+
+- Google's Material Design
+- Salesforce Lightning Design System
+- Atlassian Design System
+- IBM Carbon Design System
+
+By organizing tokens this way, we ensure scalability, maintainability, and compatibility with best practices in the design systems community.
