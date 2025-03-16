@@ -51,7 +51,7 @@ jobs:
         
       - name: Run token extractor if tokens changed
         if: steps.check_changes.outputs.token_changes == 'true'
-        run: python token-extractor.py
+        run: python token-extractor.py --token-file "token-studio/tokens.json" --scss-output "src/styles/tokens" --generate-scss
         
       - name: Build for GitHub Pages
         run: npm run build
