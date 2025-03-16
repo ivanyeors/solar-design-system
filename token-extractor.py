@@ -1737,6 +1737,10 @@ def organize_option_colors(tokens):
         parts = token_path.split('/')[-1].split('.')
         original_name = parts[-1]
         
+        # Skip deprecated tokens
+        if "-depr" in original_name.lower():
+            return None
+        
         # Basic naming standardization
         if category == "brand":
             if subcategory:
@@ -1758,25 +1762,20 @@ def organize_option_colors(tokens):
         else:
             prefix = "color"
         
-        # Check if there's a numeric component to use as a shade value
-        shade_match = re.search(r'(\d+)', original_name)
-        if shade_match:
-            shade = shade_match.group(1)
-            return f"{prefix}-{shade}"
-        
-        # For named variants
-        variant_match = re.search(r'(light|dark|bright|deep|pale|vivid|soft)', original_name, re.IGNORECASE)
-        if variant_match:
-            variant = variant_match.group(1).lower()
-            return f"{prefix}-{variant}"
-            
-        # Default to original name with prefix
+        # Keep original color name but clean it
         cleaned_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
+        # Remove any -depr suffix if it exists
+        cleaned_name = re.sub(r'-depr.*$', '', cleaned_name)
         return f"{prefix}-{cleaned_name}"
     
     # Process each token
     for token_path, token_data in tokens.items():
         value = token_data.get("value", "")
+        
+        # Skip deprecated tokens
+        if "-depr" in token_path.lower():
+            continue
+            
         categorized = False
         
         # Get the last part of the path for easier matching
