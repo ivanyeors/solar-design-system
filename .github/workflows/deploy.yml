@@ -3,6 +3,14 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ['main', 'master']
+    paths:
+      - 'token-studio/**'
+      - '.github/workflows/**'
+      - 'src/**'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.vue'
+      - '**/*.html'
   workflow_dispatch:
 
 permissions:
@@ -27,8 +35,23 @@ jobs:
           node-version: 20
           cache: 'npm'
           
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
       - name: Install dependencies
         run: npm install
+        
+      - name: Check for token-studio changes
+        id: check_changes
+        run: |
+          git diff --quiet HEAD^ HEAD -- token-studio/ || echo "token_changes=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+        
+      - name: Run token extractor if tokens changed
+        if: steps.check_changes.outputs.token_changes == 'true'
+        run: python token-extractor.py
         
       - name: Build for GitHub Pages
         run: npm run build
