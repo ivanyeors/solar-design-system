@@ -123,14 +123,14 @@ jobs:
             echo 'import { defineConfig } from "vite";
             import vue from "@vitejs/plugin-vue";
 
-export default defineConfig({
-  plugins: [vue()],
-  build: {
-    rollupOptions: {
-      external: ["vue-router"]
-    }
-  }
-});' > vite.config.js
+            export default defineConfig({
+              plugins: [vue()],
+              build: {
+                rollupOptions: {
+                  external: ["vue-router"]
+                }
+              }
+            });' > vite.config.js
           fi
           cat vite.config.js
         
