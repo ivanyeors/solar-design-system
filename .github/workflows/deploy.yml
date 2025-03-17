@@ -55,6 +55,10 @@ jobs:
         if: steps.check_changes.outputs.token_changes == 'true'
         run: python token-studio/split_tokens.py
         
+      - name: Run token organizer after split
+        if: steps.check_changes.outputs.token_changes == 'true'
+        run: python token-studio/src/styles/organize_tokens.py
+        
       - name: Build for GitHub Pages
         run: npm run build
         
