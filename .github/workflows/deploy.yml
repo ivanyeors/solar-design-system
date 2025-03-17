@@ -43,7 +43,10 @@ jobs:
           python-version: '3.10'
           
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          # Explicitly install vue-router if needed
+          npm list vue-router || npm install vue-router@4
         
       - name: Check for token-studio changes
         id: check_changes
@@ -86,8 +89,36 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python token-studio/src/styles/organize_tokens.py
         
+      # Creating a temporary vite.config.js to properly handle dependencies
+      - name: Configure Vite
+        run: |
+          if [ -f "vite.config.js" ]; then
+            # Backup original config
+            cp vite.config.js vite.config.js.backup
+            # Add vue-router to external if it doesn't exist
+            grep -q "vue-router" vite.config.js || sed -i '/build: {/a \    rollupOptions: { external: ["vue-router"] },' vite.config.js
+          else
+            echo "Creating basic vite.config.js"
+            echo 'import { defineConfig } from "vite";
+            export default defineConfig({
+              build: {
+                rollupOptions: {
+                  external: ["vue-router"]
+                }
+              }
+            });' > vite.config.js
+          fi
+          cat vite.config.js
+        
       - name: Build for GitHub Pages
         run: npm run build
+        
+      - name: Restore original Vite config if needed
+        run: |
+          if [ -f "vite.config.js.backup" ]; then
+            mv vite.config.js.backup vite.config.js
+          fi
+        continue-on-error: true
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
