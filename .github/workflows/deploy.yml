@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need at least 2 commits for diff checking
         
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -49,9 +51,9 @@ jobs:
           git diff --quiet HEAD^ HEAD -- token-studio/ || echo "token_changes=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         
-      - name: Run token extractor if tokens changed
+      - name: Run token splitter if tokens changed
         if: steps.check_changes.outputs.token_changes == 'true'
-        run: python token-extractor.py --token-file "token-studio/tokens.json" --scss-output "src/styles/tokens" --generate-scss
+        run: python token-studio/split_tokens.py
         
       - name: Build for GitHub Pages
         run: npm run build
