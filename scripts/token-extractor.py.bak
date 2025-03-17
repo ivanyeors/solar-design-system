@@ -1628,14 +1628,8 @@ def create_scss_index():
 
 def organize_option_colors(tokens):
     """
-    Organize color option tokens into logical categories with improved naming conventions.
-    
-    Returns a dictionary with the following categories:
-    - brand: Brand-specific colors
-    - neutral: Neutral/gray colors
-    - semantic: Colors with functional meaning (success, warning, error, info)
-    - palette: Full color spectrum organized by hue
-    - other: Uncategorized colors
+    Organize color option tokens while preserving original names and structure.
+    Skip only deprecated tokens (-depr).
     """
     categories = {
         "brand": {
@@ -1651,180 +1645,445 @@ def organize_option_colors(tokens):
             "error": {},
             "info": {}
         },
-        "palette": {
-            "red": {},
-            "orange": {},
-            "yellow": {},
-            "green": {},
-            "blue": {},
-            "purple": {},
-            "pink": {},
-            "teal": {},
-            "brown": {},
-            "gray": {}
-        },
+        "palette": {},
         "other": {}
     }
     
-    # Define regex patterns for each category
-    patterns = {
-        "brand": {
-            "primary": [r'primary', r'main', r'brand\-?main', r'principal'],
-            "secondary": [r'secondary', r'brand\-?secondary'],
-            "accent": [r'accent', r'highlight']
-        },
-        "neutral": [r'neutral', r'gray', r'grey', r'white', r'black', r'stone'],
-        "semantic": {
-            "success": [r'success', r'valid', r'positive', r'confirm', r'green'],
-            "warning": [r'warning', r'caution', r'alert', r'attention', r'yellow', r'amber', r'orange'],
-            "error": [r'error', r'danger', r'invalid', r'negative', r'failure', r'red'],
-            "info": [r'info', r'notification', r'note', r'blue']
-        },
-        "palette": {
-            "red": [r'red', r'crimson', r'ruby', r'maroon'],
-            "orange": [r'orange', r'tangerine', r'amber'],
-            "yellow": [r'yellow', r'gold', r'lemon'],
-            "green": [r'green', r'emerald', r'lime', r'jade'],
-            "blue": [r'blue', r'azure', r'cerulean', r'sapphire'],
-            "purple": [r'purple', r'violet', r'lavender', r'indigo'],
-            "pink": [r'pink', r'magenta', r'fuchsia', r'rose'],
-            "teal": [r'teal', r'turquoise', r'aqua', r'cyan'],
-            "brown": [r'brown', r'chocolate', r'coffee', r'tan'],
-            "gray": [r'gray', r'grey']
-        }
+    # Add debug counter
+    debug_count = 0
+    print("\nDEBUG: organize_option_colors")
+    print(f"Total input tokens: {len(tokens)}")
+    
+    # Process each token
+    for token_path, token_data in tokens.items():
+        # Skip deprecated tokens
+        if "-depr" in token_path.lower():
+            continue
+            
+        value = token_data.get("value", "")
+        
+        # Extract the original name from the path
+        parts = token_path.split('.')
+        original_name = parts[-1]  # Get the last part as the token name
+        path_parts = token_path.split('/')
+        
+        # First look for the color name in the path structure
+        color_name = None
+        color_shade = None
+        
+        # Try to extract color name and shade from the path
+        for i, part in enumerate(path_parts):
+            # Try to match color names, e.g., "cerulean", "purple"
+            if any(color in part.lower() for color in ["red", "blue", "green", "orange", "yellow", "purple", 
+                                                      "pink", "brown", "gray", "black", "white", "cerulean",
+                                                      "indigo", "violet", "cyan", "teal", "lime", "olive",
+                                                      "magenta", "maroon", "navy", "silver", "gold", "brick"]):
+                color_name = part.lower()
+                
+                # Check if the next item might be a shade
+                if i+1 < len(path_parts) and re.search(r'^\d+$', path_parts[i+1]):
+                    color_shade = path_parts[i+1]
+                
+            # Look for numeric part that might be a shade
+            elif re.search(r'^\d+$', part):
+                color_shade = part
+        
+        # If no color name found, look in the original name
+        if not color_name:
+            # If the token name itself is a shade number (like "500", "600", etc.)
+            if re.match(r'^\d+$', original_name):
+                color_shade = original_name
+                
+                # Try to extract color name from path parts
+                for part in path_parts:
+                    if re.match(r'^[a-zA-Z]+$', part) and part.lower() not in ["color", "light", "dark"]:
+                        color_name = part.lower()
+                        break
+            
+            # Pattern 1: [colorname]-[shade] (e.g., "cerulean-50", "purple-500")
+            else:
+                match = re.match(r'([a-z-]+)-(\d+)', original_name.lower())
+                if match:
+                    color_name = match.group(1)
+                    color_shade = match.group(2)
+                # Pattern 2: Color name with no shade
+                elif re.match(r'^[a-z]+$', original_name.lower()):
+                    color_name = original_name.lower()
+        
+        # Extract path elements for naming
+        path_elements = []
+        theme = None
+        
+        # Look for theme (light/dark)
+        if len(path_parts) >= 2:
+            possible_theme = path_parts[1].lower() if len(path_parts) > 1 else ""
+            if possible_theme in ["light", "dark"]:
+                theme = possible_theme
+                path_elements.append(theme)
+        
+        # Add color name if found
+        if color_name:
+            path_elements.append(color_name)
+        
+        # Add additional meaningful path parts (excluding common ones)
+        for part in path_parts:
+            part_lower = part.lower()
+            # Skip common parts we've already processed
+            if (part_lower == color_name or 
+                part_lower in ["light", "dark", "color"] or 
+                re.match(r'^\d+$', part_lower)):
+                continue
+                
+            # Add other meaningful parts
+            if re.match(r'^[a-z]+$', part_lower) and len(part_lower) > 1:
+                path_elements.append(part_lower)
+        
+        # Add shade at the end if present
+        if color_shade:
+            path_elements.append(color_shade)
+        
+        # If we couldn't extract meaningful parts, use the original name
+        if not path_elements:
+            path_elements.append(original_name.lower())
+        
+        # Create a properly formatted name with hyphens
+        clean_name = "color"
+        for element in path_elements:
+            clean_name += f"-{element}"
+        
+        # Clean the token name (replace spaces with hyphens, ensure valid CSS variable name)
+        clean_name = clean_name.replace(' ', '-').replace('/', '-')
+        # Remove any parentheses or special characters
+        clean_name = re.sub(r'[^\w\-]', '', clean_name)
+        
+        # Debug print for a sample of tokens
+        if debug_count < 10:
+            print(f"Token: {token_path} → Original: '{original_name}' → Clean: '{clean_name}' = {value}")
+            debug_count += 1
+        
+        # Determine the category but preserve the cleaned name
+        if "primary" in token_path.lower() or "main" in token_path.lower():
+            categories["brand"]["primary"][clean_name] = value
+        elif "secondary" in token_path.lower():
+            categories["brand"]["secondary"][clean_name] = value
+        elif "accent" in token_path.lower():
+            categories["brand"]["accent"][clean_name] = value
+        elif any(term in token_path.lower() for term in ["success", "valid", "positive"]):
+            categories["semantic"]["success"][clean_name] = value
+        elif any(term in token_path.lower() for term in ["warning", "caution", "alert"]):
+            categories["semantic"]["warning"][clean_name] = value
+        elif any(term in token_path.lower() for term in ["error", "danger", "negative"]):
+            categories["semantic"]["error"][clean_name] = value
+        elif any(term in token_path.lower() for term in ["info", "notification"]):
+            categories["semantic"]["info"][clean_name] = value
+        elif "neutral" in token_path.lower():
+            categories["neutral"][clean_name] = value
+        else:
+            # For all other colors, put them in the palette category
+            categories["palette"][clean_name] = value
+    
+    # Count total tokens categorized
+    total_categorized = 0
+    for category, subcats in categories.items():
+        if isinstance(subcats, dict) and any(isinstance(v, dict) for v in subcats.values()):
+            # Handle nested structure like brand
+            for subcat, tokens_dict in subcats.items():
+                total_categorized += len(tokens_dict)
+        else:
+            total_categorized += len(subcats)
+    
+    print(f"Total tokens categorized: {total_categorized}")
+    print("Category counts:")
+    for category, subcats in categories.items():
+        if isinstance(subcats, dict) and any(isinstance(v, dict) for v in subcats.values()):
+            # Handle nested structure like brand
+            print(f"  {category}:")
+            for subcat, tokens_dict in subcats.items():
+                print(f"    {subcat}: {len(tokens_dict)}")
+        else:
+            print(f"  {category}: {len(subcats)}")
+    
+    return categories
+
+def organize_option_font(tokens):
+    """
+    Organize font option tokens into logical categories with standardized naming.
+    
+    Returns a dictionary with the following categories:
+    - family: Font family tokens
+    - weight: Font weight tokens
+    - size: Font size tokens
+    - line-height: Line height tokens
+    - letter-spacing: Letter spacing tokens
+    - style: Font style tokens
+    - system: System typography tokens (like heading, body, etc.)
+    - other: Uncategorized typography tokens
+    """
+    categories = {
+        "family": {},
+        "weight": {},
+        "size": {},
+        "line-height": {},
+        "letter-spacing": {},
+        "style": {},
+        "system": {},
+        "other": {}
     }
     
-    # Parse hex values to categorize by hue analysis for undefined colors
-    def categorize_by_hex(hex_value):
-        if not isinstance(hex_value, str) or not hex_value.startswith('#'):
-            return None
-        
-        try:
-            # Basic hue categorization based on hex values
-            r = int(hex_value[1:3], 16)
-            g = int(hex_value[3:5], 16)
-            b = int(hex_value[5:7], 16)
-            
-            # Calculate lightness - used for neutral detection
-            lightness = (r + g + b) / (3 * 255)
-            
-            # Detect if it's a neutral/gray color (all channels close to each other)
-            max_diff = max(abs(r - g), abs(r - b), abs(g - b))
-            if max_diff < 20:
-                return "neutral"
-            
-            # Find dominant color by hue
-            if r > g and r > b:
-                if g > b * 1.5:
-                    return "orange" if g > r * 0.65 else "red"
-                return "red"
-            elif g > r and g > b:
-                if r > b * 1.5:
-                    return "yellow" if r > g * 0.65 else "green"
-                return "green"
-            elif b > r and b > g:
-                if r > g * 1.5:
-                    return "purple" if r > b * 0.5 else "blue"
-                return "blue"
-            else:
-                return "other"
-        except:
-            return "other"
+    # Pattern matching for categorization with regex for better accuracy
+    patterns = {
+        "family": [r'family', r'font-family', r'typeface', r'font'],
+        "weight": [r'weight', r'font-weight', r'bold', r'black', r'light', r'medium', r'regular', r'thin'],
+        "size": [r'size', r'font-size', r'text-size', r'fontSize'],
+        "line-height": [r'line-height', r'lineHeight', r'leading'],
+        "letter-spacing": [r'letter-spacing', r'letterSpacing', r'tracking', r'character-spacing'],
+        "style": [r'style', r'font-style', r'italic', r'oblique', r'normal'],
+        "system": [r'heading', r'body', r'caption', r'label', r'display', r'title']
+    }
+    
+    # Predefined size names for standardization
+    size_names = {
+        "none": 0,
+        "2xs": 10,
+        "xs": 20,
+        "sm": 30,
+        "md": 40,
+        "lg": 50,
+        "xl": 60,
+        "2xl": 70,
+        "3xl": 80,
+        "4xl": 90,
+        "5xl": 100,
+        "6xl": 110
+    }
     
     # Function to standardize token naming
-    def standardize_name(token_path, category, subcategory=None):
+    def standardize_name(token_path, category):
         # Extract name parts
         parts = token_path.split('/')[-1].split('.')
-        original_name = parts[-1]
+        original_name = parts[-1].lower()
         
-        # Skip deprecated tokens
-        if "-depr" in original_name.lower():
-            return None
-        
-        # Basic naming standardization
-        if category == "brand":
-            if subcategory:
-                prefix = f"color-brand-{subcategory}"
-            else:
-                prefix = "color-brand"
-        elif category == "neutral":
-            prefix = "color-neutral"
-        elif category == "semantic":
-            if subcategory:
-                prefix = f"color-{subcategory}"
-            else:
-                prefix = "color-semantic"
-        elif category == "palette":
-            if subcategory:
-                prefix = f"color-{subcategory}"
-            else:
-                prefix = "color-palette"
+        # Clean the token name (replace spaces with hyphens, ensure valid CSS variable name)
+        clean_name = original_name.replace(' ', '-')
+        # Remove any parentheses or special characters
+        clean_name = re.sub(r'[^\w\-]', '', clean_name)
+        # Ensure it starts with a letter or underscore (for CSS variable validity)
+        if clean_name and not clean_name[0].isalpha() and clean_name[0] != '_':
+            clean_name = f'font-{category}-{clean_name}'
         else:
-            prefix = "color"
+            clean_name = f'font-{category}-{clean_name}'
         
-        # Keep original color name but clean it
-        cleaned_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
-        # Remove any -depr suffix if it exists
-        cleaned_name = re.sub(r'-depr.*$', '', cleaned_name)
-        return f"{prefix}-{cleaned_name}"
+        return clean_name
     
     # Process each token
     for token_path, token_data in tokens.items():
         value = token_data.get("value", "")
+        categorized = False
         
         # Skip deprecated tokens
         if "-depr" in token_path.lower():
             continue
             
-        categorized = False
+        # Get the path for better matching
+        token_name = token_path.lower()
         
-        # Get the last part of the path for easier matching
-        path_parts = token_path.split('/')
-        token_name = path_parts[-1].lower()
-        
-        # Check brand colors first
-        for brand_type, patterns_list in patterns["brand"].items():
+        # Check each category
+        for category, patterns_list in patterns.items():
             if any(re.search(pattern, token_name, re.IGNORECASE) for pattern in patterns_list):
-                categories["brand"][brand_type][standardize_name(token_path, "brand", brand_type)] = value
+                standard_name = standardize_name(token_path, category)
+                categories[category][standard_name] = value
                 categorized = True
                 break
         
+        # If not categorized, put in other
         if not categorized:
-            # Check neutral colors
-            if any(re.search(pattern, token_name, re.IGNORECASE) for pattern in patterns["neutral"]):
-                categories["neutral"][standardize_name(token_path, "neutral")] = value
-                categorized = True
+            path_parts = token_path.split('/')
+            original_name = path_parts[-1].lower()
+            clean_name = original_name.replace(' ', '-')
+            clean_name = re.sub(r'[^\w\-]', '', clean_name)
+            categories["other"][f"font-{clean_name}"] = value
+    
+    # Sort each category using a simple alphabetical sort
+    for category, tokens_dict in categories.items():
+        # Convert to a list of tuples for easier sorting
+        sorted_items = list(tokens_dict.items())
+        # Sort alphabetically by key
+        sorted_items.sort(key=lambda x: str(x[0]))
         
-        if not categorized:
-            # Check semantic colors
-            for semantic_type, patterns_list in patterns["semantic"].items():
-                if any(re.search(pattern, token_name, re.IGNORECASE) for pattern in patterns_list):
-                    categories["semantic"][semantic_type][standardize_name(token_path, "semantic", semantic_type)] = value
-                    categorized = True
-                    break
-        
-        if not categorized:
-            # Check palette colors
-            for palette_type, patterns_list in patterns["palette"].items():
-                if any(re.search(pattern, token_name, re.IGNORECASE) for pattern in patterns_list):
-                    categories["palette"][palette_type][standardize_name(token_path, "palette", palette_type)] = value
-                    categorized = True
-                    break
-        
-        if not categorized:
-            # Try to categorize by hex value if not already categorized
-            if isinstance(value, str) and value.startswith('#'):
-                color_type = categorize_by_hex(value)
-                if color_type == "neutral":
-                    categories["neutral"][standardize_name(token_path, "neutral")] = value
-                elif color_type in categories["palette"]:
-                    categories["palette"][color_type][standardize_name(token_path, "palette", color_type)] = value
-                else:
-                    categories["other"][standardize_name(token_path, "other")] = value
-            else:
-                categories["other"][standardize_name(token_path, "other")] = value
+        # Convert back to dictionary
+        categories[category] = {k: v for k, v in sorted_items}
     
     return categories
+
+def generate_scss_module(tokens, name, description, component_groups=None, system_groups=None, token_sets=None):
+    """
+    Generate SCSS variables from token data with improved documentation and organization.
+    """
+    is_brand = name in ["evydcore", "bruhealth"]
+    is_option = name in ["colors", "scale", "font"]
+    normalized_name = name.replace("-", "")
+    
+    output = []
+    
+    # Add documentation header
+    output.append("/**")
+    output.append(f" * {description}")
+    output.append(" * Generated by token-extractor.py")
+    output.append(" */")
+    output.append("")
+    
+    # For option tokens (colors, scale, font)
+    if is_option:
+        if name == "colors":
+            # Debug the token structure
+            print(f"\nDEBUG: generate_scss_module for colors")
+            print(f"Token structure keys: {list(tokens.keys())}")
+            
+            # Process color categories
+            if tokens["brand"] and any(tokens["brand"].values()):
+                output.append("/* Brand Colors */")
+                output.append("")
+                for category, colors in tokens["brand"].items():
+                    if colors:
+                        output.append(f"// {category.capitalize()} Brand Colors")
+                        for color_name, value in sorted(colors.items()):
+                            # Format the color value correctly
+                            scss_value = format_scss_token_value(value, "color", token_sets)
+                            output.append(f"${color_name}: {scss_value};")
+                        output.append("")
+            
+            if tokens["semantic"] and any(tokens["semantic"].values()):
+                output.append("/* Semantic Colors */")
+                output.append("")
+                for category, colors in tokens["semantic"].items():
+                    if colors:
+                        output.append(f"// {category.capitalize()} Colors")
+                        for color_name, value in sorted(colors.items()):
+                            # Format the color value correctly
+                            scss_value = format_scss_token_value(value, "color", token_sets)
+                            output.append(f"${color_name}: {scss_value};")
+                        output.append("")
+            
+            if tokens["neutral"]:
+                output.append("/* Neutral Colors */")
+                output.append("")
+                for color_name, value in sorted(tokens["neutral"].items()):
+                    # Format the color value correctly
+                    scss_value = format_scss_token_value(value, "color", token_sets)
+                    output.append(f"${color_name}: {scss_value};")
+                output.append("")
+            
+            if tokens["palette"]:
+                output.append("/* Color Palette */")
+                output.append("")
+                for color_name, value in sorted(tokens["palette"].items()):
+                    # Format the color value correctly
+                    scss_value = format_scss_token_value(value, "color", token_sets)
+                    output.append(f"${color_name}: {scss_value};")
+                output.append("")
+            
+            if tokens["other"]:
+                output.append("/* Other Colors */")
+                output.append("")
+                for color_name, value in sorted(tokens["other"].items()):
+                    # Format the color value correctly
+                    scss_value = format_scss_token_value(value, "color", token_sets)
+                    output.append(f"${color_name}: {scss_value};")
+                output.append("")
+        
+        elif name == "scale":
+            # Process scale categories
+            for category, values in tokens.items():
+                if values:
+                    output.append(f"/* {category.capitalize()} Scale */")
+                    output.append("")
+                    for scale_name, value in sorted(values.items()):
+                        # Format the scale value correctly
+                        scss_value = format_scss_token_value(value, "dimension", token_sets)
+                        output.append(f"${scale_name}: {scss_value};")
+                    output.append("")
+        
+        elif name == "font":
+            # Process font categories
+            for category, values in tokens.items():
+                if values:
+                    output.append(f"/* {category.capitalize()} Typography */")
+                    output.append("")
+                    
+                    # Custom sort for each category to handle both string and numeric values
+                    sorted_items = list(values.items())
+                    try:
+                        # For simple alphabetical sort
+                        sorted_items.sort(key=lambda x: str(x[0]))
+                    except Exception as e:
+                        print(f"Error sorting {category} typography tokens: {e}")
+                        # If sorting fails, just use the unsorted items
+                    
+                    for font_name, value in sorted_items:
+                        # Determine the correct token type for formatting
+                        if category == "family":
+                            token_type = "fontFamily"
+                        elif category == "weight":
+                            token_type = "fontWeight"
+                        elif category == "size":
+                            token_type = "fontSize"
+                        elif category == "line-height":
+                            token_type = "lineHeight"
+                        elif category == "letter-spacing":
+                            token_type = "letterSpacing"
+                        else:
+                            token_type = "string"
+                        
+                        # Format the font value correctly
+                        scss_value = format_scss_token_value(value, token_type, token_sets)
+                        output.append(f"${font_name}: {scss_value};")
+                    output.append("")
+    
+    # For brand tokens
+    elif is_brand:
+        # Process brand tokens (existing brand token logic)
+        output.append("// Brand-specific tokens")
+        output.append("")
+        
+        # Make sure we have component groups for this brand
+        brand_comp_groups = component_groups.get(normalized_name, {}) if component_groups else {}
+        brand_sys_groups = system_groups.get(normalized_name, {}) if system_groups else {}
+        
+        # Process component tokens
+        if brand_comp_groups:
+            for comp_name, tokens_list in sorted(brand_comp_groups.items()):
+                if tokens_list:
+                    output.append(f"// {comp_name.upper()} Component Tokens")
+                    output.append("")
+                    for token_path in tokens_list:
+                        if token_path in tokens:
+                            token_data = tokens[token_path]
+                            value = token_data["value"]
+                            token_type = token_data["type"]
+                            parts = token_path.split(".")
+                            original_name = parts[-1]
+                            scss_value = format_scss_token_value(value, token_type, token_sets)
+                            output.append(f"${original_name}: {scss_value};")
+                    output.append("")
+        
+        # Process system tokens
+        if brand_sys_groups:
+            for system_name, tokens_list in sorted(brand_sys_groups.items()):
+                if tokens_list:
+                    output.append(f"// System {system_name.capitalize()} Tokens")
+                    output.append("")
+                    for token_path in tokens_list:
+                        if token_path in tokens:
+                            token_data = tokens[token_path]
+                            value = token_data["value"]
+                            token_type = token_data["type"]
+                            parts = token_path.split(".")
+                            original_name = parts[-1]
+                            scss_value = format_scss_token_value(value, token_type, token_sets)
+                            output.append(f"${original_name}: {scss_value};")
+                    output.append("")
+    
+    return "\n".join(output)
 
 def organize_option_scale(tokens):
     """
@@ -1877,41 +2136,17 @@ def organize_option_scale(tokens):
         parts = token_path.split('/')[-1].split('.')
         original_name = parts[-1].lower()
         
-        # Basic naming standardization
-        prefix = f"scale-{category}"
+        # Clean the token name (replace spaces with hyphens, ensure valid CSS variable name)
+        clean_name = original_name.replace(' ', '-')
+        # Remove any parentheses or special characters
+        clean_name = re.sub(r'[^\w\-]', '', clean_name)
+        # Ensure it starts with a letter or underscore (for CSS variable validity)
+        if clean_name and not clean_name[0].isalpha() and clean_name[0] != '_':
+            clean_name = f'scale-{category}-{clean_name}'
+        else:
+            clean_name = f'scale-{category}-{clean_name}'
         
-        # Check if this matches a predefined size name
-        for size_name in size_names.keys():
-            if size_name in original_name:
-                return f"{prefix}-{size_name}"
-        
-        # Check for numeric sizes
-        numeric_match = re.search(r'(\d+)', original_name)
-        if numeric_match:
-            size_value = numeric_match.group(1)
-            # Convert to closest t-shirt size if applicable
-            if int(size_value) <= 1:
-                return f"{prefix}-2xs"
-            elif int(size_value) <= 2:
-                return f"{prefix}-xs"
-            elif int(size_value) <= 4:
-                return f"{prefix}-sm"
-            elif int(size_value) <= 8:
-                return f"{prefix}-md"
-            elif int(size_value) <= 16:
-                return f"{prefix}-lg"
-            elif int(size_value) <= 24:
-                return f"{prefix}-xl"
-            elif int(size_value) <= 32:
-                return f"{prefix}-2xl"
-            elif int(size_value) <= 48:
-                return f"{prefix}-3xl"
-            else:
-                return f"{prefix}-4xl"
-        
-        # Default to cleaned original name
-        clean_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
-        return f"{prefix}-{clean_name}"
+        return clean_name
     
     # Helper function to sort tokens by size
     def sort_key_for_token(token_name):
@@ -1933,6 +2168,10 @@ def organize_option_scale(tokens):
         value = token_data.get("value", "")
         categorized = False
         
+        # Skip deprecated tokens
+        if "-depr" in token_path.lower():
+            continue
+            
         # Get the last part of the path for easier matching
         path_parts = token_path.split('/')
         token_name = path_parts[-1].lower()
@@ -1961,12 +2200,15 @@ def organize_option_scale(tokens):
                 categorized = True
             elif not categorized:
                 # Generic base token not further specified
-                categories["other"][f"scale-base-{token_name}"] = value
+                clean_name = token_name.replace(' ', '-')
+                clean_name = re.sub(r'[^\w\-]', '', clean_name)
+                categories["other"][f"scale-base-{clean_name}"] = value
                 categorized = True
         
         # If not categorized, put in other
         if not categorized:
-            clean_name = re.sub(r'[^a-zA-Z0-9\-]', '', token_name)
+            clean_name = token_name.replace(' ', '-')
+            clean_name = re.sub(r'[^\w\-]', '', clean_name)
             categories["other"][f"scale-{clean_name}"] = value
     
     # Sort each category by standardized size order
@@ -1977,700 +2219,6 @@ def organize_option_scale(tokens):
         categories[category] = sorted_dict
     
     return categories
-
-def organize_option_font(tokens):
-    """
-    Organize font option tokens into logical categories with improved naming conventions.
-    
-    Returns a dictionary with the following categories:
-    - family: Font family tokens
-    - weight: Font weight tokens
-    - size: Font size tokens
-    - line-height: Line height tokens
-    - letter-spacing: Letter spacing tokens
-    - style: Font style tokens
-    - system: System/composite typography tokens
-    - other: Uncategorized typography tokens
-    """
-    categories = {
-        "family": {},
-        "weight": {},
-        "size": {},
-        "line-height": {},
-        "letter-spacing": {},
-        "style": {},
-        "system": {},
-        "other": {}
-    }
-    
-    # Pattern matching for categorization
-    patterns = {
-        "family": [r'family', r'face', r'font-family', r'typeface'],
-        "weight": [r'weight', r'bold', r'regular', r'medium', r'light', r'thin', r'thick', r'heavy', r'black', r'semibold'],
-        "size": [r'size', r'font-size'],
-        "line-height": [r'line-height', r'leading'],
-        "letter-spacing": [r'letter-spacing', r'tracking', r'kerning'],
-        "style": [r'style', r'italic', r'oblique', r'normal', r'decoration'],
-        "system": [r'system', r'heading', r'body', r'caption', r'label', r'display', r'title', r'paragraph', r'text']
-    }
-    
-    # Predefined font size names for standardization
-    size_names = {
-        "2xs": 10,
-        "xs": 20,
-        "sm": 30,
-        "md": 40,
-        "lg": 50,
-        "xl": 60,
-        "2xl": 70,
-        "3xl": 80,
-        "4xl": 90,
-        "5xl": 100,
-        "6xl": 110
-    }
-    
-    # Font weights map for standardization
-    weight_map = {
-        "thin": 100,
-        "extra-light": 200,
-        "light": 300,
-        "regular": 400,
-        "normal": 400,
-        "medium": 500,
-        "semibold": 600,
-        "semi-bold": 600,
-        "bold": 700,
-        "extra-bold": 800,
-        "extrabold": 800,
-        "black": 900,
-        "heavy": 900
-    }
-    
-    # Function to standardize token naming
-    def standardize_name(token_path, category):
-        # Extract name parts
-        parts = token_path.split('/')[-1].split('.')
-        original_name = parts[-1].lower()
-        
-        # Basic naming standardization
-        prefix = f"font-{category}"
-        
-        # Special handling for different categories
-        if category == "family":
-            # For font families, use a simplified name
-            family_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
-            return f"{prefix}-{family_name}"
-            
-        elif category == "weight":
-            # Check if it matches a standard weight name
-            for weight_name in weight_map.keys():
-                if weight_name in original_name:
-                    return f"{prefix}-{weight_name}"
-            
-            # Check for numeric weights
-            numeric_match = re.search(r'(\d+)', original_name)
-            if numeric_match:
-                weight_value = int(numeric_match.group(1))
-                if weight_value <= 100:
-                    return f"{prefix}-thin"
-                elif weight_value <= 200:
-                    return f"{prefix}-extra-light"
-                elif weight_value <= 300:
-                    return f"{prefix}-light"
-                elif weight_value <= 400:
-                    return f"{prefix}-regular"
-                elif weight_value <= 500:
-                    return f"{prefix}-medium"
-                elif weight_value <= 600:
-                    return f"{prefix}-semibold"
-                elif weight_value <= 700:
-                    return f"{prefix}-bold"
-                elif weight_value <= 800:
-                    return f"{prefix}-extra-bold"
-                else:
-                    return f"{prefix}-black"
-            
-            # Default
-            return f"{prefix}-{original_name}"
-            
-        elif category == "size":
-            # Check if it matches a standard size name
-            for size_name in size_names.keys():
-                if size_name in original_name:
-                    return f"{prefix}-{size_name}"
-            
-            # Check for numeric sizes
-            numeric_match = re.search(r'(\d+)', original_name)
-            if numeric_match:
-                size_value = float(numeric_match.group(1))
-                # Map pixel values to t-shirt sizes
-                if size_value <= 10:
-                    return f"{prefix}-2xs"
-                elif size_value <= 12:
-                    return f"{prefix}-xs"
-                elif size_value <= 14:
-                    return f"{prefix}-sm"
-                elif size_value <= 16:
-                    return f"{prefix}-md"
-                elif size_value <= 18:
-                    return f"{prefix}-lg"
-                elif size_value <= 20:
-                    return f"{prefix}-xl"
-                elif size_value <= 24:
-                    return f"{prefix}-2xl"
-                elif size_value <= 30:
-                    return f"{prefix}-3xl"
-                elif size_value <= 36:
-                    return f"{prefix}-4xl"
-                elif size_value <= 48:
-                    return f"{prefix}-5xl"
-                else:
-                    return f"{prefix}-6xl"
-            
-            return f"{prefix}-{original_name}"
-            
-        elif category == "system":
-            # For system typography, preserve semantic meaning
-            system_type = ""
-            for system_term in ["heading", "body", "caption", "label", "display", "title", "paragraph"]:
-                if system_term in original_name:
-                    system_type = system_term
-                    break
-            
-            if system_type:
-                # Check for level indicator
-                level_match = re.search(r'(\d+)', original_name)
-                if level_match:
-                    return f"{prefix}-{system_type}-{level_match.group(1)}"
-                else:
-                    return f"{prefix}-{system_type}"
-            else:
-                return f"{prefix}-{original_name}"
-        
-        # Default: clean the original name and use it
-        clean_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
-        return f"{prefix}-{clean_name}"
-    
-    # Helper function to sort tokens
-    def sort_key_for_token(token_name, category):
-        if category == "size":
-            # Sort by t-shirt size or numeric value
-            for size_name, order in size_names.items():
-                if size_name in token_name:
-                    return order
-                    
-            # Extract numeric value if present
-            match = re.search(r'(\d+)', token_name)
-            if match:
-                return int(match.group(1))
-        
-        elif category == "weight":
-            # Sort by weight value
-            for weight_name, order in weight_map.items():
-                if weight_name in token_name:
-                    return order
-                    
-            # Extract numeric value if present
-            match = re.search(r'(\d+)', token_name)
-            if match:
-                return int(match.group(1))
-        
-        elif category == "system":
-            # Sort system typography by type and level
-            order = 1000
-            
-            # Basic order by type
-            if "display" in token_name:
-                order = 100
-            elif "heading" in token_name:
-                order = 200
-            elif "title" in token_name:
-                order = 300
-            elif "body" in token_name:
-                order = 400
-            elif "paragraph" in token_name:
-                order = 500
-            elif "label" in token_name:
-                order = 600
-            elif "caption" in token_name:
-                order = 700
-            
-            # Adjust by level if present
-            level_match = re.search(r'(\d+)', token_name)
-            if level_match:
-                order += int(level_match.group(1))
-                
-            return order
-        
-        # Default sort alphabetically
-        return token_name
-    
-    # Process each token
-    for token_path, token_data in tokens.items():
-        value = token_data.get("value", "")
-        categorized = False
-        
-        # Get the last part of the path for easier matching
-        path_parts = token_path.split('/')
-        token_name = '/'.join(path_parts).lower()  # Use full path for better matching
-        
-        # Check each category
-        for category, patterns_list in patterns.items():
-            if any(re.search(pattern, token_name, re.IGNORECASE) for pattern in patterns_list):
-                standard_name = standardize_name(token_path, category)
-                categories[category][standard_name] = value
-                categorized = True
-                break
-        
-        # If not categorized, put in other
-        if not categorized:
-            original_name = path_parts[-1].lower()
-            clean_name = re.sub(r'[^a-zA-Z0-9\-]', '', original_name)
-            categories["other"][f"font-{clean_name}"] = value
-    
-    # Sort each category
-    for category, tokens_dict in categories.items():
-        sorted_dict = {}
-        for token_name in sorted(tokens_dict.keys(), 
-                                key=lambda x: sort_key_for_token(x, category)):
-            sorted_dict[token_name] = tokens_dict[token_name]
-        categories[category] = sorted_dict
-    
-    return categories
-
-def generate_scss_module(tokens, name, description, component_groups=None, system_groups=None, token_sets=None):
-    """
-    Generate SCSS variables from token data with improved documentation and organization.
-    
-    Args:
-        tokens: The tokens to generate SCSS for
-        name: The name of the module
-        description: Description of the module
-        component_groups: Optional component groupings
-        system_groups: Optional system-level groups
-        token_sets: Optional full token set for resolving token references
-    """
-    is_brand = name in ["evydcore", "bruhealth"]
-    is_option = name in ["colors", "scale", "font"]
-    normalized_name = name.replace("-", "")
-    
-    # Print some debug info
-    print(f"\nDEBUG: Generate_scss_module for {name}")
-    print(f"  is_brand: {is_brand}, normalized_name: {normalized_name}")
-    print(f"  Number of tokens: {len(tokens)}")
-    if is_brand and component_groups and normalized_name in component_groups:
-        print(f"  Component groups: {len(component_groups[normalized_name])}")
-    
-    output = []
-    
-    # Add comprehensive documentation
-    if is_option:
-        output.append(f"/**")
-        output.append(f" * Design Tokens - {description}")
-        output.append(f" * ")
-        output.append(f" * This file contains {name} tokens for the design system.")
-        output.append(f" * Generated automatically - DO NOT EDIT DIRECTLY")
-        output.append(f" *")
-        
-        if name == "colors":
-            output.append(f" * Naming convention:")
-            output.append(f" * $color-[category]-[variant]: Where category is brand, neutral, semantic, etc., and variant is the color variation")
-            output.append(f" * ")
-            output.append(f" * Example usage:")
-            output.append(f" * .element {{")
-            output.append(f" *   background-color: $color-brand-primary;")
-            output.append(f" *   color: $color-text-primary;")
-            output.append(f" * }}")
-        elif name == "scale":
-            output.append(f" * Naming convention:")
-            output.append(f" * $scale-[category]-[size]: Where category is spacing, sizing, radius, etc., and size is based on t-shirt sizing")
-            output.append(f" * ")
-            output.append(f" * Size scale: none < 2xs < xs < sm < md < lg < xl < 2xl < 3xl < 4xl")
-            output.append(f" * ")
-            output.append(f" * Example usage:")
-            output.append(f" * .element {{")
-            output.append(f" *   margin: $scale-spacing-md;")
-            output.append(f" *   padding: $scale-spacing-sm $scale-spacing-md;")
-            output.append(f" *   border-radius: $scale-radius-sm;")
-            output.append(f" * }}")
-        elif name == "font":
-            output.append(f" * Naming convention:")
-            output.append(f" * $font-[category]-[variant]: Where category is family, weight, size, etc., and variant is the specific value")
-            output.append(f" * ")
-            output.append(f" * Example usage:")
-            output.append(f" * .element {{")
-            output.append(f" *   font-family: $font-family-primary;")
-            output.append(f" *   font-size: $font-size-md;")
-            output.append(f" *   font-weight: $font-weight-bold;")
-            output.append(f" * }}")
-            
-        output.append(f" */")
-    else:
-        # Brand/semantic tokens documentation
-        output.append(f"/**")
-        output.append(f" * {description}")
-        output.append(f" * ")
-        output.append(f" * This file contains component-specific design tokens for the {name} brand.")
-        output.append(f" * Generated automatically - DO NOT EDIT DIRECTLY")
-        output.append(f" *")
-        output.append(f" * Naming convention:")
-        output.append(f" * $component-[name]-[property]-[variant]-[state]: Structured component tokens")
-        output.append(f" * ")
-        output.append(f" * Example usage:")
-        output.append(f" * .button {{")
-        output.append(f" *   background-color: $component-button-background;")
-        output.append(f" *   color: $component-button-text;")
-        output.append(f" *   border-radius: $component-button-radius;")
-        output.append(f" * }}")
-        output.append(f" */")
-    
-    output.append("")
-    
-    # For option tokens, use our specialized organization
-    if is_option:
-        if name == "colors":
-            categories = organize_option_colors(tokens)
-            
-            # Brand colors section
-            if any(categories["brand"].values()):
-                output.append("/* ================================================")
-                output.append("   BRAND COLORS")
-                output.append("   ================================================ */")
-                output.append("")
-
-                # Organize by primary, secondary, accent
-                for brand_category, brand_tokens in categories["brand"].items():
-                    if brand_tokens:
-                        output.append(f"/* {brand_category.capitalize()} Brand Colors */")
-                        for key, value in sorted(brand_tokens.items()):
-                            scss_value = format_scss_token_value(value, "color", token_sets)
-                            output.append(f"${key}: {scss_value};")
-                        output.append("")
-            
-            # Semantic colors section
-            if any(categories["semantic"].values()):
-                output.append("/* ================================================")
-                output.append("   SEMANTIC COLORS")
-                output.append("   ================================================ */")
-                output.append("")
-                
-                # Success colors
-                if categories["semantic"]["success"]:
-                    output.append("/* Success Colors */")
-                    for key, value in sorted(categories["semantic"]["success"].items()):
-                        scss_value = format_scss_token_value(value, "color", token_sets)
-                        output.append(f"${key}: {scss_value};")
-                    output.append("")
-                
-                # Warning colors
-                if categories["semantic"]["warning"]:
-                    output.append("/* Warning Colors */")
-                    for key, value in sorted(categories["semantic"]["warning"].items()):
-                        scss_value = format_scss_token_value(value, "color", token_sets)
-                        output.append(f"${key}: {scss_value};")
-                    output.append("")
-                
-                # Error colors
-                if categories["semantic"]["error"]:
-                    output.append("/* Error Colors */")
-                    for key, value in sorted(categories["semantic"]["error"].items()):
-                        scss_value = format_scss_token_value(value, "color", token_sets)
-                        output.append(f"${key}: {scss_value};")
-                    output.append("")
-                
-                # Info colors
-                if categories["semantic"]["info"]:
-                    output.append("/* Info Colors */")
-                    for key, value in sorted(categories["semantic"]["info"].items()):
-                        scss_value = format_scss_token_value(value, "color", token_sets)
-                        output.append(f"${key}: {scss_value};")
-                    output.append("")
-            
-            # Neutral colors section
-            if categories["neutral"]:
-                output.append("/* ================================================")
-                output.append("   NEUTRAL COLORS")
-                output.append("   ================================================ */")
-                output.append("")
-                for key, value in sorted(categories["neutral"].items()):
-                    scss_value = format_scss_token_value(value, "color", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Color palettes section
-            if any(categories["palette"].values()):
-                output.append("/* ================================================")
-                output.append("   COLOR PALETTES")
-                output.append("   ================================================ */")
-                output.append("")
-                
-                for palette, tokens in categories["palette"].items():
-                    if tokens:
-                        output.append(f"/* {palette.capitalize()} Palette */")
-                        for key, value in sorted(tokens.items()):
-                            scss_value = format_scss_token_value(value, "color", token_sets)
-                            output.append(f"${key}: {scss_value};")
-                        output.append("")
-            
-            # Other colors
-            if categories["other"]:
-                output.append("/* ================================================")
-                output.append("   OTHER COLORS")
-                output.append("   ================================================ */")
-                output.append("")
-                for key, value in sorted(categories["other"].items()):
-                    scss_value = format_scss_token_value(value, "color", token_sets)
-                    output.append(f"${key}: {scss_value};")
-        
-        elif name == "scale":
-            categories = organize_option_scale(tokens)
-            
-            # Spacing section
-            if categories["spacing"]:
-                output.append("// ================ SPACING ================")
-                output.append("")
-                for key, value in sorted(categories["spacing"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Sizing section
-            if categories["sizing"]:
-                output.append("// ================ SIZING ================")
-                output.append("")
-                for key, value in sorted(categories["sizing"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Radius section
-            if categories["radius"]:
-                output.append("// ================ RADIUS ================")
-                output.append("")
-                for key, value in sorted(categories["radius"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Borders section
-            if categories["borders"]:
-                output.append("// ================ BORDERS ================")
-                output.append("")
-                for key, value in sorted(categories["borders"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Other scale tokens
-            if categories["other"]:
-                output.append("// ================ OTHER SCALE TOKENS ================")
-                output.append("")
-                for key, value in sorted(categories["other"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-        
-        elif name == "font":
-            categories = organize_option_font(tokens)
-            
-            # Font family section
-            if categories["family"]:
-                output.append("// ================ FONT FAMILIES ================")
-                output.append("")
-                for key, value in sorted(categories["family"].items()):
-                    scss_value = format_scss_token_value(value, "fontFamily", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Font weight section
-            if categories["weight"]:
-                output.append("// ================ FONT WEIGHTS ================")
-                output.append("")
-                for key, value in sorted(categories["weight"].items()):
-                    scss_value = format_scss_token_value(value, "fontWeight", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Font size section
-            if categories["size"]:
-                output.append("// ================ FONT SIZES ================")
-                output.append("")
-                for key, value in sorted(categories["size"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Line height section
-            if categories["line-height"]:
-                output.append("// ================ LINE HEIGHTS ================")
-                output.append("")
-                for key, value in sorted(categories["line-height"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Letter spacing section
-            if categories["letter-spacing"]:
-                output.append("// ================ LETTER SPACING ================")
-                output.append("")
-                for key, value in sorted(categories["letter-spacing"].items()):
-                    scss_value = format_scss_token_value(value, "dimension", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Font style section
-            if categories["style"]:
-                output.append("// ================ FONT STYLES ================")
-                output.append("")
-                for key, value in sorted(categories["style"].items()):
-                    scss_value = format_scss_token_value(value, "string", token_sets)
-                    output.append(f"${key}: {scss_value};")
-                output.append("")
-            
-            # Other font tokens
-            if categories["other"]:
-                output.append("// ================ OTHER TYPOGRAPHY TOKENS ================")
-                output.append("")
-                for key, value in sorted(categories["other"].items()):
-                    scss_value = format_scss_token_value(value, "string", token_sets)
-                    output.append(f"${key}: {scss_value};")
-    
-    # For brand tokens, handle components and system tokens
-    elif is_brand:
-        output.append("// Brand-specific tokens")
-        output.append("")
-        # Debug count of processed tokens
-        processed_tokens_count = 0
-        
-        # Make sure we have component groups for this brand
-        brand_comp_groups = component_groups.get(normalized_name, {}) if component_groups else {}
-        brand_sys_groups = system_groups.get(normalized_name, {}) if system_groups else {}
-        
-        print(f"  Using component_groups[{normalized_name}]: {len(brand_comp_groups)} components")
-        
-        # Process component tokens
-        if brand_comp_groups:
-            for comp_name, tokens_list in sorted(brand_comp_groups.items()):
-                if not tokens_list:
-                    continue
-                
-                # Create a section for each component
-                output.append(f"// ================ {comp_name.upper()} COMPONENT TOKENS ================")
-                output.append("")
-                
-                # Process tokens for this component
-                tokens_processed = 0
-                for token_path in tokens_list:
-                    # Debug for the first one
-                    if tokens_processed < 1:
-                        print(f"  Processing token: {token_path}")
-                        print(f"  Token exists in tokens dict: {token_path in tokens}")
-                    
-                    # Check if this token exists in the tokens dictionary
-                    if token_path in tokens:
-                        token_data = tokens[token_path]
-                        tokens_processed += 1
-                        value = token_data["value"]
-                        token_type = token_data["type"]
-                        
-                        # Debug only for the first token
-                        if tokens_processed < 2:
-                            print(f"  Token found with value: {value}, type: {token_type}")
-                        
-                        # Format semantic name similar to JS version
-                        parts = token_path.split(".")
-                        original_name = parts[-1].lower()
-                        formatted_name = format_semantic_token_name(comp_name, token_path, original_name)
-                        
-                        # Format the value for SCSS
-                        scss_value = format_scss_token_value(value, token_type, token_sets)
-                        
-                        output.append(f"${formatted_name}: {scss_value};")
-                
-                # Only add section if we processed tokens
-                if tokens_processed > 0:
-                    output.append(f"// {tokens_processed} tokens processed for {comp_name}")
-                    output.append("")
-                    processed_tokens_count += tokens_processed
-        
-        # Process system tokens
-        if brand_sys_groups:
-            for system_name, tokens_list in sorted(brand_sys_groups.items()):
-                if not tokens_list:
-                    continue
-                
-                # System header
-                output.append(f"// ================ SYSTEM: {system_name.upper()} TOKENS ================")
-                output.append("")
-                
-                # Process tokens for this system
-                tokens_processed = 0
-                for token_path in tokens_list:
-                    # Check if this token exists in the tokens dictionary
-                    if token_path in tokens:
-                        token_data = tokens[token_path]
-                        tokens_processed += 1
-                        value = token_data["value"]
-                        token_type = token_data["type"]
-                        
-                        # Create system token name
-                        parts = token_path.split(".")
-                        original_name = parts[-1].lower()
-                        
-                        # Determine property type
-                        property_type = identify_property_type(token_path, original_name)
-                        
-                        # Get state/variant
-                        state = identify_state(token_path, original_name)
-                        variant = identify_variant(token_path, original_name)
-                        
-                        # Clean token name
-                        token_name = re.sub(r'[^\w-]', '-', original_name)
-                        token_name = re.sub(r'-+', '-', token_name)
-                        token_name = re.sub(r'^-|-$', '', token_name)
-                        
-                        # Format system token name
-                        if system_name != "other":
-                            system_token_name = f"system-{system_name}-{token_name}"
-                        else:
-                            # More specific naming for "other" category
-                            if property_type != "base":
-                                system_token_name = f"system-{property_type}-{token_name}"
-                            else:
-                                system_token_name = f"system-{token_name}"
-                        
-                        # Clean up any duplicate parts in the name
-                        system_token_name = re.sub(r'([a-z-]+)-\1', r'\1', system_token_name)
-                        system_token_name = re.sub(r'-+', '-', system_token_name)
-                        
-                        # Format the value for SCSS with direct token resolution
-                        scss_value = format_scss_token_value(value, token_type, token_sets)
-                        
-                        output.append(f"${system_token_name}: {scss_value};")
-                
-                # Only add section if we processed tokens
-                if tokens_processed > 0:
-                    output.append(f"// {tokens_processed} tokens processed for {system_name}")
-                    output.append("")
-                    processed_tokens_count += tokens_processed
-        
-        # Print debug info
-        print(f"  Total tokens processed: {processed_tokens_count}")
-        
-        # Add total processed tokens for debugging
-        output.append(f"// Total: {processed_tokens_count} tokens processed for {name}")
-        output.append("")
-        
-        # Add SCSS mixins to make token usage easier
-        output.append("// Mixins for easy token access")
-        output.append("@mixin brand-tokens() {")
-        output.append("  // Include all brand tokens as CSS custom properties")
-        output.append("  @each $name, $value in $brand-tokens {")
-        output.append("    --#{$name}: #{$value};")
-        output.append("  }")
-        output.append("}")
-        output.append("")
-    
-    return "\n".join(output)
 
 def main():
     """Main function to extract tokens and generate SCSS modules."""
@@ -2879,8 +2427,10 @@ def main():
             
             # Generate SCSS for option tokens
             if option_tokens["colors"]:
+                # First organize the colors
+                organized_colors = organize_option_colors(option_tokens["colors"])
                 output_scss = generate_scss_module(
-                    option_tokens["colors"], 
+                    organized_colors,
                     "colors", 
                     "Color token definitions",
                     token_sets=token_sets
@@ -2888,8 +2438,10 @@ def main():
                 write_to_file(output_scss, CONFIG["scssOutputPath"] + "/option-tokens", "_colors.scss")
             
             if option_tokens["scale"]:
+                # First organize the scale tokens
+                organized_scale = organize_option_scale(option_tokens["scale"])
                 output_scss = generate_scss_module(
-                    option_tokens["scale"], 
+                    organized_scale, 
                     "scale", 
                     "Scale token definitions (spacing, sizing)",
                     token_sets=token_sets
@@ -2897,8 +2449,10 @@ def main():
                 write_to_file(output_scss, CONFIG["scssOutputPath"] + "/option-tokens", "_scale.scss")
             
             if option_tokens["font"]:
+                # First organize the font tokens
+                organized_font = organize_option_font(option_tokens["font"])
                 output_scss = generate_scss_module(
-                    option_tokens["font"], 
+                    organized_font, 
                     "font", 
                     "Typography token definitions",
                     token_sets=token_sets

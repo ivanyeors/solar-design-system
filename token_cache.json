@@ -1,16 +1,16 @@
 {
-  "last_run": "2025-03-16T01:13:22.804465",
-  "token_file": "G:/WORKING FILES/solar-design-system/token-studio/tokens.json",
-  "file_hash": "0a7f2f95e49d20625193d02deef15bcef1f399ecb0d0a6ab7bf75da56f55d0d2",
+  "last_run": "2025-03-16T12:43:27.655316",
+  "token_file": "token-studio/tokens.json",
+  "file_hash": "d00c2c4be9796ec39c04283b57213a03051474864607c508624d79108f94991d",
   "tokens_count": 2443,
   "output_files": {
     "scss": [
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\option-tokens\\_colors.scss",
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\option-tokens\\_scale.scss",
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\option-tokens\\_font.scss",
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\semantic-tokens\\brands\\_evyd-core.scss",
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\semantic-tokens\\brands\\_bruhealth.scss",
-      "G:/WORKING FILES/solar-design-system/src/styles/tokens\\_tokens.scss"
+      "src/styles/tokens\\option-tokens\\_colors.scss",
+      "src/styles/tokens\\option-tokens\\_scale.scss",
+      "src/styles/tokens\\option-tokens\\_font.scss",
+      "src/styles/tokens\\semantic-tokens\\brands\\_evyd-core.scss",
+      "src/styles/tokens\\semantic-tokens\\brands\\_bruhealth.scss",
+      "src/styles/tokens\\_tokens.scss"
     ],
     "js": []
   }
