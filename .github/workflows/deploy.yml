@@ -47,6 +47,8 @@ jobs:
           npm install
           # Explicitly install vue-router if needed
           npm list vue-router || npm install vue-router@4
+          # Install Vue plugin for Vite if needed
+          npm list @vitejs/plugin-vue || npm install -D @vitejs/plugin-vue
         
       - name: Check for token-studio changes
         id: check_changes
@@ -89,24 +91,46 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python token-studio/src/styles/organize_tokens.py
         
-      # Creating a temporary vite.config.js to properly handle dependencies
+      # Creating a proper vite.config.js that includes the Vue plugin
       - name: Configure Vite
         run: |
           if [ -f "vite.config.js" ]; then
             # Backup original config
             cp vite.config.js vite.config.js.backup
+            
+            # Check if Vue plugin is already imported and used
+            if ! grep -q "@vitejs/plugin-vue" vite.config.js; then
+              # Add Vue plugin import
+              sed -i '1s/^/import vue from "@vitejs\/plugin-vue";\n/' vite.config.js
+              
+              # Add plugins section if it doesn't exist
+              if ! grep -q "plugins:" vite.config.js; then
+                sed -i '/defineConfig({/a \  plugins: [vue()],' vite.config.js
+              else
+                # Add vue plugin to existing plugins array
+                sed -i '/plugins:/s/\[/\[vue(), /' vite.config.js
+              fi
+            fi
+            
             # Add vue-router to external if it doesn't exist
-            grep -q "vue-router" vite.config.js || sed -i '/build: {/a \    rollupOptions: { external: ["vue-router"] },' vite.config.js
+            if ! grep -q "rollupOptions" vite.config.js; then
+              sed -i '/defineConfig({/a \  build: { rollupOptions: { external: ["vue-router"] } },' vite.config.js
+            elif ! grep -q "vue-router" vite.config.js; then
+              sed -i '/rollupOptions/s/{/{external: ["vue-router"], /' vite.config.js
+            fi
           else
-            echo "Creating basic vite.config.js"
+            # Create a new config file with Vue plugin
             echo 'import { defineConfig } from "vite";
-            export default defineConfig({
-              build: {
-                rollupOptions: {
-                  external: ["vue-router"]
-                }
-              }
-            });' > vite.config.js
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()],
+  build: {
+    rollupOptions: {
+      external: ["vue-router"]
+    }
+  }
+});' > vite.config.js
           fi
           cat vite.config.js
         
