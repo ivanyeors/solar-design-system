@@ -51,13 +51,40 @@ jobs:
           git diff --quiet HEAD^ HEAD -- token-studio/ || echo "token_changes=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         
+      - name: Check token-studio structure
+        if: steps.check_changes.outputs.token_changes == 'true'
+        run: |
+          ls -la token-studio/
+          if [ -f "token-studio/tokens.json" ]; then
+            echo "tokens.json exists!"
+          else
+            echo "Warning: tokens.json not found in token-studio directory"
+          fi
+        
       - name: Run token splitter if tokens changed
         if: steps.check_changes.outputs.token_changes == 'true'
-        run: python token-studio/split_tokens.py
+        run: |
+          mkdir -p token-studio/tokens/brands
+          mkdir -p token-studio/tokens/color
+          mkdir -p token-studio/tokens/font
+          mkdir -p token-studio/tokens/scale
+          mkdir -p token-studio/src/styles/tokens
+          python token-studio/split_tokens.py
+        
+      - name: Check token directory structure after split
+        if: steps.check_changes.outputs.token_changes == 'true'
+        run: |
+          echo "Directory structure after token split:"
+          find token-studio -type d | sort
+          echo "Generated SCSS files:"
+          find token-studio -name "*.scss" | sort
         
       - name: Run token organizer after split
         if: steps.check_changes.outputs.token_changes == 'true'
-        run: python token-studio/src/styles/organize_tokens.py
+        run: |
+          # Add PYTHONPATH to include the repository root
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python token-studio/src/styles/organize_tokens.py
         
       - name: Build for GitHub Pages
         run: npm run build
