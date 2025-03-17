@@ -130,7 +130,7 @@ export default defineConfig({
       external: ["vue-router"]
     }
   }
-);' > vite.config.js
+});' > vite.config.js
           fi
           cat vite.config.js
         
