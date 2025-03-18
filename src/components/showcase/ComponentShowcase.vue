@@ -11,23 +11,23 @@ const activeTab = ref('preview');
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-900 dark:border-gray-800">
+  <div class="showcase-container">
     <!-- Component header -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ title }}</h2>
-      <p v-if="description" class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ description }}</p>
+    <div class="showcase-header">
+      <h2 class="showcase-title">{{ title }}</h2>
+      <p v-if="description" class="showcase-description">{{ description }}</p>
     </div>
     
     <!-- Tab navigation -->
-    <div class="border-b border-gray-200 dark:border-gray-800">
+    <div class="showcase-tabs-border">
       <nav class="flex -mb-px">
         <button
           @click="activeTab = 'preview'"
           :class="[
             'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
             activeTab === 'preview'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-700'
+              ? 'tab-active'
+              : 'tab-inactive'
           ]"
         >
           Preview
@@ -37,8 +37,8 @@ const activeTab = ref('preview');
           :class="[
             'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
             activeTab === 'code'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-700'
+              ? 'tab-active'
+              : 'tab-inactive'
           ]"
         >
           Code
@@ -48,8 +48,8 @@ const activeTab = ref('preview');
           :class="[
             'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
             activeTab === 'props'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-700'
+              ? 'tab-active'
+              : 'tab-inactive'
           ]"
         >
           Props
@@ -68,22 +68,22 @@ const activeTab = ref('preview');
       
       <!-- Code tab -->
       <div v-if="activeTab === 'code'" class="p-6">
-        <pre class="bg-gray-100 p-4 rounded-md overflow-x-auto text-sm dark:bg-gray-800 dark:text-gray-300"><code><slot name="code"></slot></code></pre>
+        <pre class="code-block"><code><slot name="code"></slot></code></pre>
       </div>
       
       <!-- Props tab -->
       <div v-if="activeTab === 'props'" class="p-6">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+          <table class="min-w-full divide-y showcase-table-divider">
             <thead>
               <tr>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Prop</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Type</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Default</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Description</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider table-header">Prop</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider table-header">Type</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider table-header">Default</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider table-header">Description</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-800">
+            <tbody class="showcase-table-body showcase-table-divider">
               <slot name="props"></slot>
             </tbody>
           </table>
@@ -94,5 +94,68 @@ const activeTab = ref('preview');
 </template>
 
 <style scoped>
-/* Any additional scoped styles */
+.showcase-container {
+  background-color: var(--color-surface-primary-rest);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border-primary-rest);
+  overflow: hidden;
+}
+
+.showcase-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-primary-rest);
+}
+
+.showcase-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary-rest);
+}
+
+.showcase-description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary-rest);
+}
+
+.showcase-tabs-border {
+  border-bottom: 1px solid var(--color-border-primary-rest);
+}
+
+.tab-active {
+  border-color: var(--color-primary-rest);
+  color: var(--color-primary-rest);
+}
+
+.tab-inactive {
+  border-color: transparent;
+  color: var(--color-text-secondary-rest);
+}
+
+.tab-inactive:hover {
+  color: var(--color-text-secondary-hover);
+  border-color: var(--color-border-secondary-hover);
+}
+
+.code-block {
+  background-color: var(--color-surface-secondary-rest);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary-rest);
+}
+
+.showcase-table-divider {
+  border-color: var(--color-border-primary-rest);
+}
+
+.showcase-table-body {
+  background-color: var(--color-surface-primary-rest);
+}
+
+.table-header {
+  color: var(--color-text-secondary-rest);
+}
 </style> 

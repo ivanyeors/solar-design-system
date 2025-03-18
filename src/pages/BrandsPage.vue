@@ -23,7 +23,18 @@ const changeBrand = (brandId: string) => {
 
 <template>
   <div class="brands-page">
-    <h1 class="text-3xl font-bold text-primary mb-6">Brand Variants</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-primary">Brand Variants</h1>
+      <router-link 
+        to="/foundation/colors" 
+        class="px-4 py-2 rounded-md border border-border-primary flex items-center"
+      >
+        <span>View Color Tokens</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-2">
+          <path fill-rule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clip-rule="evenodd" />
+        </svg>
+      </router-link>
+    </div>
     <p class="text-secondary mb-8 max-w-3xl">
       The design system supports multiple brand variants through semantic tokens. 
       Each brand has its own color palette, but uses the same semantic token names, 

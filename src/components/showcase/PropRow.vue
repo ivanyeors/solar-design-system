@@ -12,15 +12,37 @@ defineProps<{
   <tr>
     <td class="px-4 py-3 text-sm">
       <div class="flex items-center">
-        <span class="font-mono text-gray-900 dark:text-white">{{ name }}</span>
-        <span v-if="required" class="ml-2 text-xs font-medium text-red-500">Required</span>
+        <span class="font-mono prop-name">{{ name }}</span>
+        <span v-if="required" class="ml-2 text-xs font-medium required-badge">Required</span>
       </div>
     </td>
-    <td class="px-4 py-3 text-sm font-mono text-gray-700 dark:text-gray-300">{{ type }}</td>
-    <td class="px-4 py-3 text-sm font-mono text-gray-700 dark:text-gray-300">
+    <td class="px-4 py-3 text-sm font-mono prop-type">{{ type }}</td>
+    <td class="px-4 py-3 text-sm font-mono prop-default">
       <span v-if="defaultValue">{{ defaultValue }}</span>
-      <span v-else class="text-gray-400 dark:text-gray-600">-</span>
+      <span v-else class="prop-default-empty">-</span>
     </td>
-    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ description }}</td>
+    <td class="px-4 py-3 text-sm prop-description">{{ description }}</td>
   </tr>
-</template> 
+</template>
+
+<style scoped>
+.prop-name {
+  color: var(--color-text-primary-rest);
+}
+
+.required-badge {
+  color: var(--color-error-rest);
+}
+
+.prop-type, .prop-description {
+  color: var(--color-text-secondary-rest);
+}
+
+.prop-default {
+  color: var(--color-text-secondary-rest);
+}
+
+.prop-default-empty {
+  color: var(--color-text-tertiary-rest);
+}
+</style> 

@@ -28,42 +28,43 @@ const copyToClipboard = async (token: Token) => {
 
 <template>
   <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead class="bg-gray-50 dark:bg-gray-800">
+    <table class="min-w-full divide-y token-table-divider">
+      <thead class="token-table-header">
         <tr>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium token-header-text uppercase tracking-wider">
             Token
           </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium token-header-text uppercase tracking-wider">
             Value
           </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium token-header-text uppercase tracking-wider">
             Usage
           </th>
         </tr>
       </thead>
-      <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tbody class="token-table-body divide-y token-table-divider">
         <tr v-for="token in tokens" :key="token.name">
           <td class="px-6 py-4 whitespace-nowrap">
-            <code class="font-mono text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            <code class="font-mono text-sm token-code-text token-code-bg px-2 py-1 rounded">
               {{ token.name }}
             </code>
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex items-center gap-2">
-              <code class="font-mono text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+              <code class="font-mono text-sm token-code-text token-code-bg px-2 py-1 rounded">
                 {{ token.value }}
               </code>
               <button
-                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                class="copy-button"
+                :class="{ 'copied': copiedToken === token.name }"
                 @click="copyToClipboard(token)"
                 :title="'Copy token value'"
               >
-                <i class="icon-copy w-4 h-4" :class="{ 'text-green-500': copiedToken === token.name }"></i>
+                <i class="icon-copy w-4 h-4"></i>
               </button>
             </div>
           </td>
-          <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+          <td class="px-6 py-4 text-sm token-usage-text">
             {{ token.usage }}
           </td>
         </tr>
@@ -73,7 +74,48 @@ const copyToClipboard = async (token: Token) => {
 </template>
 
 <style scoped>
+.token-table-divider {
+  border-color: var(--color-border-primary-rest);
+}
+
+.token-table-header {
+  background-color: var(--color-surface-secondary-rest);
+}
+
+.token-table-body {
+  background-color: var(--color-surface-primary-rest);
+}
+
+.token-header-text {
+  color: var(--color-text-secondary-rest);
+}
+
+.token-code-text {
+  color: var(--color-text-primary-rest);
+}
+
+.token-code-bg {
+  background-color: var(--color-surface-secondary-rest);
+}
+
+.token-usage-text {
+  color: var(--color-text-secondary-rest);
+}
+
+.copy-button {
+  color: var(--color-text-tertiary-rest);
+  transition: all 0.2s;
+}
+
+.copy-button:hover {
+  color: var(--color-text-secondary-hover);
+}
+
+.copy-button.copied {
+  color: var(--color-success-rest);
+}
+
 .icon-copy {
-  @apply transition-colors duration-200;
+  transition: color 0.2s;
 }
 </style> 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Button from '../ui/Button.vue';
-import ConfigPanel from '../ConfigPanel.vue';
+import ConfigPanel from './ConfigPanel.vue';
 
 type ButtonSize = 'sm' | 'md' | 'lg';
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -73,7 +73,7 @@ const types = [
 <template>
   <div class="flex flex-col lg:flex-row gap-8">
     <!-- Preview Area -->
-    <div class="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-8 flex items-center justify-center">
+    <div class="flex-1 preview-background rounded-lg p-8 flex items-center justify-center">
       <Button
         :size="size"
         :variant="type"
@@ -131,6 +131,11 @@ const types = [
 
 <style scoped>
 .icon-copy {
-  @apply w-4 h-4;
+  width: 1rem;
+  height: 1rem;
+}
+
+.preview-background {
+  background-color: var(--color-surface-secondary-rest);
 }
 </style> 

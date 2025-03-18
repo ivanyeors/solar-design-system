@@ -7,7 +7,14 @@
 
 @layer base {
   :root {
-    --primary: var(--color-fill-brand-rest);
+    /* Core theme variables - light mode defaults */
+    --background-primary: var(--color-fill-neutral-rest);
+    --background-secondary: var(--color-surface-primary-rest);
+    --text-primary: var(--color-text-primary-rest);
+    --text-secondary: var(--color-text-secondary-rest);
+    --border-primary: var(--color-border-primary-rest);
+    --icon-primary: var(--color-icon-primary-rest);
+    --icon-secondary: var(--color-icon-secondary-rest);
   }
 
   html {
@@ -15,32 +22,32 @@
   }
 
   body {
-    @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-white;
-    color: var(--color-text-primary-rest);
-    background-color: var(--color-fill-neutral-rest);
-  }
-
-  [data-theme="dark"] body {
-    color: var(--color-text-primary-rest);
-    background-color: var(--color-fill-neutral-rest);
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   #app {
     @apply min-h-screen w-full;
+    background-color: var(--background-primary);
   }
 
   svg {
     @apply h-5 w-5;
+    color: var(--icon-secondary);
   }
 }
 
 @layer components {
   .sidebar-container {
     @apply fixed inset-y-0 left-0 z-40 lg:static lg:z-auto;
+    background-color: var(--background-secondary);
+    border-right: 1px solid var(--border-primary);
   }
 
   .nav-link {
     @apply flex items-center px-4 py-2 text-sm font-medium rounded-md;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .nav-link-active {
@@ -54,26 +61,110 @@
   }
 
   .nav-link-inactive {
-    color: var(--color-text-secondary-rest);
+    color: var(--text-secondary);
   }
   
   .nav-link-inactive:hover {
     background-color: var(--color-surface-primary-hover);
-    color: var(--color-text-primary-hover);
+    color: var(--text-primary);
   }
 
   .icon-button {
     @apply p-2 rounded-md focus:outline-none;
-    color: var(--color-icon-secondary-rest);
+    color: var(--icon-secondary);
+    background-color: transparent;
     border-radius: var(--comp-button-main-radius);
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   }
   
   .icon-button:hover {
     background-color: var(--color-surface-primary-hover);
-    color: var(--color-icon-primary-hover);
+    color: var(--icon-primary);
   }
   
   .icon-button:focus {
     box-shadow: 0 0 0 2px var(--color-border-brand-focus);
   }
+
+  /* Button styles */
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--color-fill-brand-rest);
+    color: var(--color-text-primary-inverse);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-fill-brand-hover);
+  }
+
+  .btn-primary:active {
+    background-color: var(--color-fill-brand-press);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-surface-primary-rest);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-surface-primary-hover);
+  }
+
+  /* Card styles */
+  .card {
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--comp-card-report-radius);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Input styles */
+  .input {
+    @apply px-3 py-2 rounded-md;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+  }
+
+  .input:focus {
+    border-color: var(--color-border-brand-focus);
+    outline: none;
+  }
+
+  /* Table styles */
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table th {
+    @apply px-4 py-2 text-left;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  .table td {
+    @apply px-4 py-2;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  /* Header styles */
+  .header {
+    background-color: var(--background-secondary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+}
+
+/* Transitions */
+.theme-transition {
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
 }

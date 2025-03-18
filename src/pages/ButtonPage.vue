@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Button from '../components/ui/Button.vue';
 import ButtonPreview from '../components/showcase/ButtonPreview.vue';
 import ComponentShowcase from '../components/showcase/ComponentShowcase.vue';
@@ -26,6 +26,12 @@ const sections = [
   { id: 'version', label: 'Version History' }
 ];
 
+// Current theme tracking
+const currentTheme = ref('light');
+
+// Computed value to determine if dark mode is active
+const isDarkTheme = computed(() => currentTheme.value === 'dark');
+
 // Intersection Observer for active section
 onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
@@ -40,6 +46,32 @@ onMounted(() => {
     const element = document.getElementById(section.id);
     if (element) observer.observe(element);
   });
+
+  // Get initial theme from document
+  const dataTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  currentTheme.value = dataTheme;
+
+  // Add event listener for theme changes
+  const updateTheme = () => {
+    currentTheme.value = document.documentElement.getAttribute('data-theme') || 'light';
+  };
+
+  // Create a MutationObserver to watch for data-theme changes
+  const themeObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (
+        mutation.type === 'attributes' && 
+        mutation.attributeName === 'data-theme'
+      ) {
+        updateTheme();
+      }
+    });
+  });
+
+  // Start observing the document element for data-theme attribute changes
+  themeObserver.observe(document.documentElement, { attributes: true });
+
+  return () => themeObserver.disconnect();
 });
 
 const scrollToSection = (sectionId: string) => {
@@ -184,7 +216,7 @@ const relatedComponents = [
 </script>
 
 <template>
-  <div class="flex h-screen w-full overflow-hidden fixed inset-0 bg-white dark:bg-gray-900">
+  <div class="main-container">
     <!-- Navigation Sidebar -->
     <SideNavigation
       :is-mobile-menu-open="showMobileNav"
@@ -193,7 +225,7 @@ const relatedComponents = [
 
     <!-- Main Content -->
     <main 
-      class="main-content flex-1 h-screen overflow-y-auto bg-white dark:bg-gray-900 transition-all duration-300"
+      class="main-content"
       :class="{ 
         'lg:ml-[280px]': !showMobileNav, 
         'lg:ml-[48px]': showMobileNav 
@@ -202,7 +234,7 @@ const relatedComponents = [
       <!-- Mobile Navigation Toggle -->
       <button 
         v-if="isMobile"
-        class="fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
+        class="mobile-nav-toggle"
         @click="showMobileNav = !showMobileNav"
         aria-label="Toggle navigation menu"
       >
@@ -213,24 +245,24 @@ const relatedComponents = [
       <div class="content-wrapper max-w-[1440px] mx-auto px-6 pt-20 pb-12">
         <div class="content-container max-w-[1080px] mx-auto">
           <section id="overview" class="mb-10 scroll-mt-16">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Button</h1>
-            <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+            <h1 class="text-3xl font-bold section-heading mb-4">Button</h1>
+            <p class="text-lg section-text mb-6">
               Buttons help people take actions, such as sending an email, sharing a document, or liking a comment.
             </p>
             
             <div class="flex flex-wrap gap-2 mb-6">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+              <span class="status-badge status-badge-success">
                 <span class="w-2 h-2 mr-1 rounded-full bg-green-500"></span> Stable
               </span>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+              <span class="status-badge status-badge-info">
                 WCAG AA Compliant
               </span>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+              <span class="status-badge status-badge-neutral">
                 v1.2.0
               </span>
             </div>
             
-            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 mb-6">
+            <div class="showcase-container p-6 mb-6">
               <div class="flex flex-wrap gap-4">
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>
@@ -241,19 +273,19 @@ const relatedComponents = [
           </section>
 
           <section id="playground" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Interactive Playground</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-6">
+            <h2 class="text-2xl font-bold section-heading mb-4">Interactive Playground</h2>
+            <p class="section-text mb-6">
               Customize the button properties to see different variations and use cases.
             </p>
             
             <!-- Interactive Preview -->
-            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 lg:p-6">
+            <div class="showcase-container p-4 lg:p-6">
               <ButtonPreview />
             </div>
           </section>
 
           <section id="implementation" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Implementation</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Implementation</h2>
             
             <!-- Design Tokens -->
             <div class="mb-8">
@@ -288,20 +320,20 @@ const relatedComponents = [
             
             <div class="mb-8">
               <h3 class="text-xl font-semibold mb-4">Event Handlers</h3>
-              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
+              <div class="event-handlers-container">
                 <table class="w-full">
                   <thead>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                    <tr class="event-row">
                       <th class="text-left p-2">Event</th>
                       <th class="text-left p-2">Description</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                    <tr class="event-row">
                       <td class="p-2 font-mono text-sm">@click</td>
                       <td class="p-2">Triggered when button is clicked</td>
                     </tr>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                    <tr class="event-row">
                       <td class="p-2 font-mono text-sm">@focus</td>
                       <td class="p-2">Triggered when button receives focus</td>
                     </tr>
@@ -316,12 +348,12 @@ const relatedComponents = [
           </section>
 
           <section id="guidelines" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Design Guidelines</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Design Guidelines</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
               <div>
                 <h3 class="text-xl font-semibold mb-4">When to use</h3>
-                <ul class="space-y-3 text-gray-600 dark:text-gray-400">
+                <ul class="guideline-item">
                   <li>• Use buttons to help users take clear actions</li>
                   <li>• Primary buttons for main actions in a section</li>
                   <li>• Secondary buttons for alternative actions</li>
@@ -330,7 +362,7 @@ const relatedComponents = [
               </div>
               <div>
                 <h3 class="text-xl font-semibold mb-4">When not to use</h3>
-                <ul class="space-y-3 text-gray-600 dark:text-gray-400">
+                <ul class="guideline-item">
                   <li>• Avoid using too many primary buttons on one page</li>
                   <li>• Don't use buttons for navigation - use links instead</li>
                   <li>• Avoid using ghost buttons for primary actions</li>
@@ -340,28 +372,28 @@ const relatedComponents = [
 
             <!-- Best Practices -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
-                <h3 class="text-green-700 dark:text-green-400 font-semibold mb-4">Do</h3>
+              <div class="guideline-panel-do">
+                <h3 class="font-semibold mb-4">Do</h3>
                 <div class="flex gap-4 items-center">
                   <Button variant="primary">Save Changes</Button>
                   <Button variant="secondary">Cancel</Button>
                 </div>
-                <p class="mt-4 text-gray-700 dark:text-gray-300">Use clear, concise action verbs that describe what the button does</p>
+                <p class="mt-4 guideline-text">Use clear, concise action verbs that describe what the button does</p>
               </div>
-              <div class="bg-red-50 dark:bg-red-900/20 p-6 rounded-lg">
-                <h3 class="text-red-700 dark:text-red-400 font-semibold mb-4">Don't</h3>
+              <div class="guideline-panel-dont">
+                <h3 class="font-semibold mb-4">Don't</h3>
                 <div class="flex gap-4 items-center">
                   <Button variant="primary">Click Here</Button>
                   <Button variant="secondary">Submit</Button>
                 </div>
-                <p class="mt-4 text-gray-700 dark:text-gray-300">Avoid vague labels that don't clearly communicate the action</p>
+                <p class="mt-4 guideline-text">Avoid vague labels that don't clearly communicate the action</p>
               </div>
             </div>
           </section>
 
           <section id="anatomy" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Anatomy</h2>
-            <div class="relative p-4 lg:p-6 border border-gray-200 dark:border-gray-700 rounded-xl">
+            <h2 class="text-2xl font-bold section-heading mb-4">Anatomy</h2>
+            <div class="anatomy-container">
               <Button variant="primary" size="lg" class="mx-auto">
                 <template #leading-icon>
                   <i class="icon-mail"></i>
@@ -374,26 +406,26 @@ const relatedComponents = [
               
               <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                 <div>
-                  <h4 class="font-semibold mb-2">1. Container</h4>
-                  <p class="text-gray-600 dark:text-gray-400">
+                  <h4 class="font-semibold mb-2 anatomy-label">1. Container</h4>
+                  <p class="anatomy-text">
                     The button's background container that provides visual prominence
                   </p>
                 </div>
                 <div>
-                  <h4 class="font-semibold mb-2">2. Label</h4>
-                  <p class="text-gray-600 dark:text-gray-400">
+                  <h4 class="font-semibold mb-2 anatomy-label">2. Label</h4>
+                  <p class="anatomy-text">
                     Text that describes the button's action
                   </p>
                 </div>
                 <div>
-                  <h4 class="font-semibold mb-2">3. Leading Icon (Optional)</h4>
-                  <p class="text-gray-600 dark:text-gray-400">
+                  <h4 class="font-semibold mb-2 anatomy-label">3. Leading Icon (Optional)</h4>
+                  <p class="anatomy-text">
                     Icon that appears before the label
                   </p>
                 </div>
                 <div>
-                  <h4 class="font-semibold mb-2">4. Trailing Icon (Optional)</h4>
-                  <p class="text-gray-600 dark:text-gray-400">
+                  <h4 class="font-semibold mb-2 anatomy-label">4. Trailing Icon (Optional)</h4>
+                  <p class="anatomy-text">
                     Icon that appears after the label
                   </p>
                 </div>
@@ -402,30 +434,30 @@ const relatedComponents = [
           </section>
 
           <section id="states" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">States & Variations</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">States & Variations</h2>
             
             <div class="mb-8">
               <h3 class="text-xl font-semibold mb-4">States</h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="flex flex-col items-center">
                   <Button variant="primary">Default</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Default</span>
+                  <span class="mt-2 text-sm state-label">Default</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" class="hover">Hover</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Hover</span>
+                  <span class="mt-2 text-sm state-label">Hover</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" class="active">Active</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Active</span>
+                  <span class="mt-2 text-sm state-label">Active</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" class="focus">Focus</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Focus</span>
+                  <span class="mt-2 text-sm state-label">Focus</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" disabled>Disabled</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Disabled</span>
+                  <span class="mt-2 text-sm state-label">Disabled</span>
                 </div>
               </div>
             </div>
@@ -435,19 +467,19 @@ const relatedComponents = [
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="flex flex-col items-center">
                   <Button variant="primary">Primary</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Primary</span>
+                  <span class="mt-2 text-sm state-label">Primary</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="secondary">Secondary</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Secondary</span>
+                  <span class="mt-2 text-sm state-label">Secondary</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="outline">Outline</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Outline</span>
+                  <span class="mt-2 text-sm state-label">Outline</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="ghost">Ghost</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Ghost</span>
+                  <span class="mt-2 text-sm state-label">Ghost</span>
                 </div>
               </div>
             </div>
@@ -457,24 +489,24 @@ const relatedComponents = [
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="flex flex-col items-center">
                   <Button variant="primary" size="sm">Small</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Small</span>
+                  <span class="mt-2 text-sm state-label">Small</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" size="md">Medium</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Medium</span>
+                  <span class="mt-2 text-sm state-label">Medium</span>
                 </div>
                 <div class="flex flex-col items-center">
                   <Button variant="primary" size="lg">Large</Button>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-400">Large</span>
+                  <span class="mt-2 text-sm state-label">Large</span>
                 </div>
               </div>
             </div>
           </section>
 
           <section id="accessibility" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Accessibility</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Accessibility</h2>
             
-            <p class="text-gray-600 dark:text-gray-400 mb-6">
+            <p class="section-text mb-6">
               Buttons are designed to be accessible to all users, including those using assistive technologies.
             </p>
             
@@ -483,7 +515,7 @@ const relatedComponents = [
             <div class="mt-6 space-y-4">
               <div>
                 <h3 class="text-xl font-semibold mb-2">Keyboard Support</h3>
-                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-400">
+                <ul class="accessibility-list">
                   <li>Focusable with <kbd>Tab</kbd> key</li>
                   <li>Activate with <kbd>Enter</kbd> or <kbd>Space</kbd> key</li>
                 </ul>
@@ -491,7 +523,7 @@ const relatedComponents = [
               
               <div>
                 <h3 class="text-xl font-semibold mb-2">Screen Reader Considerations</h3>
-                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-400">
+                <ul class="accessibility-list">
                   <li>Use <code>aria-label</code> for buttons with icons only</li>
                   <li>Use appropriate semantic HTML (<code>&lt;button&gt;</code> element)</li>
                   <li>Dynamically update <code>aria-disabled</code> to match disabled state</li>
@@ -501,12 +533,13 @@ const relatedComponents = [
           </section>
 
           <section id="examples" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Examples</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Examples</h2>
             
             <!-- Basic Example -->
             <ComponentShowcase
               title="Basic Button Examples"
               componentName="Button"
+              class="component-showcase"
             >
               <template #preview>
                 <div class="flex gap-4">
@@ -528,7 +561,7 @@ import Button from '@/components/ui/Button.vue';
             <ComponentShowcase
               title="Button Sizes"
               componentName="Button"
-              class="mt-6"
+              class="mt-6 component-showcase"
             >
               <template #preview>
                 <div class="flex items-center gap-4">
@@ -550,22 +583,22 @@ import Button from '@/components/ui/Button.vue';
             <ComponentShowcase
               title="Button Variants"
               componentName="Button"
-              class="mt-6"
+              class="mt-6 component-showcase"
             >
               <template #preview>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div class="space-y-3">
-                    <h4 class="font-medium text-sm text-gray-600">Light Background</h4>
-                    <div class="flex flex-wrap gap-3 p-4 bg-white rounded">
+                <div class="grid grid-cols-1 gap-4">
+                  <div v-if="!isDarkTheme" class="space-y-3">
+                    <h4 class="font-medium text-sm section-subheading">Light Theme</h4>
+                    <div class="theme-preview-light flex flex-wrap gap-3 p-4 rounded">
                       <Button variant="primary">Primary</Button>
                       <Button variant="secondary">Secondary</Button>
                       <Button variant="outline">Outline</Button>
                       <Button variant="ghost">Ghost</Button>
                     </div>
                   </div>
-                  <div class="space-y-3">
-                    <h4 class="font-medium text-sm text-gray-600">Dark Background</h4>
-                    <div class="flex flex-wrap gap-3 p-4 bg-gray-900 rounded">
+                  <div v-if="isDarkTheme" class="space-y-3">
+                    <h4 class="font-medium text-sm section-subheading">Dark Theme</h4>
+                    <div class="theme-preview-dark flex flex-wrap gap-3 p-4 rounded">
                       <Button variant="primary">Primary</Button>
                       <Button variant="secondary">Secondary</Button>
                       <Button variant="outline">Outline</Button>
@@ -588,7 +621,7 @@ import Button from '@/components/ui/Button.vue';
             <ComponentShowcase
               title="Button with Icons"
               componentName="Button"
-              class="mt-6"
+              class="mt-6 component-showcase"
             >
               <template #preview>
                 <div class="flex gap-4">
@@ -642,7 +675,7 @@ import Button from '@/components/ui/Button.vue';
             <ComponentShowcase
               title="Using the Icon Component"
               componentName="Icon"
-              class="mt-6"
+              class="mt-6 component-showcase"
             >
               <template #preview>
                 <div class="flex gap-4">
@@ -697,7 +730,7 @@ import Icon from '@/components/ui/Icon.vue';
             <ComponentShowcase
               title="Button States"
               componentName="Button"
-              class="mt-6"
+              class="mt-6 component-showcase"
             >
               <template #preview>
                 <div class="space-y-4">
@@ -730,32 +763,46 @@ import Button from '@/components/ui/Button.vue';
           </section>
 
           <section id="related" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Related Components</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Related Components</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <RelatedComponentCard 
+              <a 
                 v-for="component in relatedComponents" 
                 :key="component.name"
-                :name="component.name"
-                :description="component.description"
-                :path="component.path"
-              />
+                :href="component.path"
+                class="related-component-card"
+              >
+                <h3 class="text-lg font-semibold mb-2">{{ component.name }}</h3>
+                <p class="text-sm section-text">{{ component.description }}</p>
+              </a>
             </div>
           </section>
 
           <section id="version" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Version History</h2>
+            <h2 class="text-2xl font-bold section-heading mb-4">Version History</h2>
             
-            <VersionHistory :versions="versionHistory" />
+            <div class="version-history">
+              <div v-for="(version, index) in versionHistory" :key="index" class="version-item">
+                <div class="flex justify-between items-center mb-2">
+                  <h3 class="text-lg font-semibold version-title">{{ version.version }}</h3>
+                  <span class="text-sm version-date">{{ version.date }}</span>
+                </div>
+                <ul class="space-y-1">
+                  <li v-for="(change, changeIndex) in version.changes" :key="changeIndex" class="version-change">
+                    • {{ change }}
+                  </li>
+                </ul>
+              </div>
+            </div>
           </section>
         </div>
       </div>
     </main>
 
     <!-- Right Sidebar -->
-    <aside class="fixed top-16 right-0 z-40 w-[280px] h-[calc(100vh-4rem)] overflow-y-auto border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+    <aside class="right-sidebar">
       <nav class="p-5">
-        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400 mb-4">
+        <h3 class="text-sm font-semibold sidebar-heading uppercase tracking-wider mb-4">
           On This Page
         </h3>
         <ul class="space-y-2">
@@ -763,11 +810,11 @@ import Button from '@/components/ui/Button.vue';
             <a 
               :href="`#${section.id}`"
               @click="scrollToSection(section.id)"
-              class="block py-2 px-3 rounded-lg transition-colors duration-200"
+              class="sidebar-link"
               :class="[
                 activeSection === section.id 
-                  ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'sidebar-link-active'
+                  : 'sidebar-link-inactive'
               ]"
             >
               {{ section.label }}
@@ -780,18 +827,18 @@ import Button from '@/components/ui/Button.vue';
     <!-- Mobile Navigation Overlay -->
     <div 
       v-if="showMobileNav"
-      class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"
+      class="mobile-nav-overlay"
       @click="showMobileNav = false"
     >
       <div 
-        class="w-64 h-full bg-white dark:bg-gray-900 p-6 shadow-xl transform transition-transform"
+        class="mobile-nav-panel"
         :class="showMobileNav ? 'translate-x-0' : '-translate-x-full'"
         @click.stop
       >
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold">Navigation</h2>
+          <h2 class="text-lg font-semibold mobile-panel-heading">Navigation</h2>
           <button 
-            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            class="mobile-close-btn"
             @click="showMobileNav = false"
             aria-label="Close navigation menu"
           >
@@ -803,11 +850,11 @@ import Button from '@/components/ui/Button.vue';
             <a 
               :href="`#${section.id}`"
               @click="scrollToSection(section.id); showMobileNav = false"
-              class="block py-2 px-4 rounded-lg transition-colors duration-200"
+              class="mobile-nav-link"
               :class="[
                 activeSection === section.id 
-                  ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'mobile-nav-link-active'
+                  : 'mobile-nav-link-inactive'
               ]"
             >
               {{ section.label }}
@@ -825,25 +872,337 @@ import Button from '@/components/ui/Button.vue';
   scroll-behavior: smooth;
 }
 
-/* Navigation link styles */
+/* Container styles */
+.main-container {
+  @apply flex h-screen w-full overflow-hidden fixed inset-0;
+  background-color: var(--color-surface-primary-rest);
+}
+
+/* Main content styles */
+.main-content {
+  @apply flex-1 h-screen overflow-y-auto transition-all duration-300;
+  background-color: var(--color-surface-primary-rest);
+  margin-right: 280px; /* Right sidebar margin */
+}
+
+/* Section text styles */
+.section-heading {
+  color: var(--color-text-primary-rest);
+}
+
+.section-subheading {
+  color: var(--color-text-secondary-rest);
+}
+
+.section-text {
+  color: var(--color-text-secondary-rest);
+}
+
+/* Component preview area */
+.preview-area {
+  @apply flex-1 rounded-lg p-8 flex items-center justify-center;
+  background-color: var(--color-surface-secondary-rest);
+}
+
+/* Table and divide styling */
+.table-divide {
+  @apply min-w-full divide-y;
+  border-color: var(--color-border-primary-rest);
+}
+
+.table-divide tr {
+  border-color: var(--color-border-primary-rest);
+}
+
+/* API Reference section */
+.api-reference-container {
+  @apply rounded-xl p-4;
+  background-color: var(--color-surface-secondary-rest);
+}
+
+/* Event handlers section */
+.event-handlers-container {
+  @apply rounded-xl p-4;
+  background-color: var(--color-surface-secondary-rest);
+}
+
+.event-row {
+  border-color: var(--color-border-primary-rest);
+}
+
+/* Design guidelines do/don't panels */
+.guideline-item {
+  @apply space-y-3;
+  color: var(--color-text-secondary-rest);
+}
+
+.guideline-panel-do {
+  @apply p-6 rounded-lg;
+  background-color: var(--color-surface-success-muted);
+}
+
+.guideline-panel-do h3 {
+  color: var(--color-text-success-rest);
+}
+
+.guideline-panel-dont {
+  @apply p-6 rounded-lg;
+  background-color: var(--color-surface-error-muted);
+}
+
+.guideline-panel-dont h3 {
+  color: var(--color-text-error-rest);
+}
+
+.guideline-text {
+  color: var(--color-text-secondary-rest);
+}
+
+/* Anatomy section */
+.anatomy-container {
+  @apply relative p-4 lg:p-6 rounded-xl;
+  border: 1px solid var(--color-border-primary-rest);
+}
+
+.anatomy-label {
+  color: var(--color-text-primary-rest);
+}
+
+.anatomy-text {
+  color: var(--color-text-secondary-rest);
+}
+
+/* States section */
+.state-label {
+  color: var(--color-text-secondary-rest);
+}
+
+/* Accessibility section */
+.accessibility-container {
+  @apply rounded-xl p-4 lg:p-6;
+  background-color: var(--color-surface-secondary-rest);
+}
+
+.accessibility-list {
+  @apply list-disc pl-5;
+  color: var(--color-text-secondary-rest);
+}
+
+/* Examples section */
+.example-header {
+  @apply px-6 py-4 border-b;
+  border-color: var(--color-border-primary-rest);
+}
+
+.example-title {
+  @apply text-xl font-semibold;
+  color: var(--color-text-primary-rest);
+}
+
+.example-container {
+  background-color: var(--color-surface-primary-rest);
+  border: 1px solid var(--color-border-primary-rest);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.example-description {
+  color: var(--color-text-secondary-rest);
+}
+
+.example-preview {
+  padding: 1.5rem;
+  background-color: var(--color-surface-secondary-rest);
+}
+
+.example-tab {
+  @apply px-4 py-3 text-sm font-medium border-b-2 focus:outline-none;
+  color: var(--color-text-secondary-rest);
+  border-color: transparent;
+}
+
+.example-tab:hover {
+  color: var(--color-text-secondary-hover);
+  border-color: var(--color-border-secondary-hover);
+}
+
+.example-tab-active {
+  color: var(--color-text-brand-rest);
+  border-color: var(--color-border-brand-rest);
+}
+
+.example-code {
+  @apply p-4 rounded-md overflow-x-auto text-sm;
+  background-color: var(--color-surface-code-rest);
+  color: var(--color-text-code-rest);
+}
+
+.example-tabs-border {
+  border-color: var(--color-border-primary-rest);
+}
+
+/* Related components */
+.related-component-card {
+  @apply block p-5 rounded-xl border transition-all duration-200;
+  background-color: var(--color-surface-secondary-rest);
+  border-color: var(--color-border-primary-rest);
+}
+
+.related-component-card:hover {
+  @apply shadow-md;
+  border-color: var(--color-border-brand-hover);
+  background-color: var(--color-surface-brand-muted);
+}
+
+/* Version history */
+.version-item {
+  @apply border-b pb-4 mb-4;
+  border-color: var(--color-border-primary-rest);
+}
+
+.version-title {
+  color: var(--color-text-primary-rest);
+}
+
+.version-date {
+  color: var(--color-text-secondary-rest);
+}
+
+.version-change {
+  color: var(--color-text-secondary-rest);
+}
+
+/* Status badges */
+.status-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-badge-success {
+  background-color: var(--color-surface-success-rest);
+  color: var(--color-text-success-rest);
+}
+
+.status-badge-info {
+  background-color: var(--color-surface-info-rest);
+  color: var(--color-text-info-rest);
+}
+
+.status-badge-neutral {
+  background-color: var(--color-surface-neutral-rest);
+  color: var(--color-text-neutral-rest);
+}
+
+/* Showcase containers */
+.showcase-container {
+  background-color: var(--color-surface-secondary-rest);
+  border-radius: 0.75rem;
+}
+
+/* Theme preview containers */
+.theme-preview-light {
+  background-color: var(--color-surface-light-rest);
+}
+
+.theme-preview-dark {
+  background-color: var(--color-surface-dark-rest);
+}
+
+/* Right sidebar styles */
+.right-sidebar {
+  @apply fixed top-16 right-0 z-40 w-[280px] h-[calc(100vh-4rem)] overflow-y-auto;
+  background-color: var(--color-surface-primary-rest);
+  border-left: 1px solid var(--color-border-primary-rest);
+}
+
+.sidebar-heading {
+  color: var(--color-text-secondary-rest);
+}
+
+.sidebar-link {
+  @apply block py-2 px-3 rounded-lg transition-colors duration-200;
+}
+
+.sidebar-link-active {
+  background-color: var(--color-surface-brand-rest);
+  color: var(--color-text-brand-rest);
+}
+
+.sidebar-link-inactive {
+  color: var(--color-text-secondary-rest);
+}
+
+.sidebar-link-inactive:hover {
+  background-color: var(--color-surface-secondary-hover);
+  color: var(--color-text-secondary-hover);
+}
+
+/* Mobile navigation toggle button */
+.mobile-nav-toggle {
+  @apply fixed top-4 left-4 z-50 p-2 rounded-lg shadow-lg;
+  background-color: var(--color-surface-primary-rest);
+}
+
+/* Mobile navigation overlay */
+.mobile-nav-overlay {
+  @apply fixed inset-0 z-40;
+  background-color: var(--color-overlay-rest);
+  backdrop-filter: blur(4px);
+}
+
+/* Mobile navigation panel */
+.mobile-nav-panel {
+  @apply w-64 h-full p-6 shadow-xl transform transition-transform;
+  background-color: var(--color-surface-primary-rest);
+}
+
+.mobile-panel-heading {
+  color: var(--color-text-primary-rest);
+}
+
+.mobile-close-btn {
+  @apply p-2 rounded-lg;
+  color: var(--color-icon-secondary-rest);
+  background-color: transparent;
+}
+
+.mobile-close-btn:hover {
+  background-color: var(--color-surface-secondary-hover);
+  color: var(--color-icon-secondary-hover);
+}
+
+.mobile-nav-link {
+  @apply block py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.mobile-nav-link-active {
+  background-color: var(--color-surface-brand-rest);
+  color: var(--color-text-brand-rest);
+}
+
+.mobile-nav-link-inactive {
+  color: var(--color-text-secondary-rest);
+}
+
+.mobile-nav-link-inactive:hover {
+  background-color: var(--color-surface-secondary-hover);
+  color: var(--color-text-secondary-hover);
+}
+
+/* Navigation link styles - remove as handled by individual link styles */
 :deep(.nav-link) {
   @apply block py-2 px-3 rounded-lg transition-colors duration-200;
 }
 
 :deep(.nav-link-active) {
-  @apply bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400;
+  background-color: var(--color-surface-brand-rest);
+  color: var(--color-text-brand-rest);
 }
 
 :deep(.nav-link-inactive) {
-  @apply text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800;
+  color: var(--color-text-secondary-rest);
 }
 
 /* Content layout */
-.main-content {
-  @apply relative;
-  margin-right: 280px; /* Right sidebar margin */
-}
-
 .content-container {
   @apply w-full;
 }
@@ -902,13 +1261,13 @@ section {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
+  background-color: var(--color-scrollbar-thumb-rest);
   border-radius: 3px;
   transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+  background-color: var(--color-scrollbar-thumb-hover);
 }
 
 /* Smooth transitions for interactive elements */
@@ -926,12 +1285,14 @@ button, a {
 }
 
 .focus {
-  @apply ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900;
+  @apply ring-2;
+  ring-color: var(--color-border-brand-focus);
+  ring-offset-color: var(--color-surface-primary-rest);
 }
 
 /* ResizableSidebar overrides */
 :deep(.resizable-sidebar) {
-  @apply bg-white dark:bg-gray-900;
+  background-color: var(--color-surface-primary-rest);
   transition: transform 0.3s ease-in-out;
   z-index: 30; /* Lower than the anchor navigation */
 }
@@ -942,5 +1303,57 @@ button, a {
 
 :deep(.resize-handle) {
   @apply opacity-0 hover:opacity-100 transition-opacity duration-200;
+}
+
+/* For ComponentShowcase */
+:deep(.component-showcase) {
+  background-color: var(--color-surface-primary-rest) !important;
+  border-color: var(--color-border-primary-rest) !important;
+}
+
+:deep(.component-showcase-header) {
+  border-color: var(--color-border-primary-rest) !important;
+}
+
+:deep(.component-showcase-title) {
+  color: var(--color-text-primary-rest) !important;
+}
+
+:deep(.component-showcase-description) {
+  color: var(--color-text-secondary-rest) !important;
+}
+
+:deep(.component-showcase-tab) {
+  color: var(--color-text-secondary-rest) !important;
+}
+
+:deep(.component-showcase-tab-active) {
+  color: var(--color-text-brand-rest) !important;
+  border-color: var(--color-border-brand-rest) !important;
+}
+
+:deep(.component-showcase-tab-border) {
+  border-color: var(--color-border-primary-rest) !important;
+}
+
+:deep(.component-showcase-code) {
+  background-color: var(--color-surface-code-rest) !important;
+  color: var(--color-text-code-rest) !important;
+}
+
+:deep(.component-showcase-preview) {
+  background-color: var(--color-surface-secondary-rest) !important;
+}
+
+:deep(.component-showcase-props-header) {
+  color: var(--color-text-secondary-rest) !important;
+}
+
+:deep(.component-showcase-props-row) {
+  border-color: var(--color-border-primary-rest) !important;
+}
+
+:deep(.component-showcase-props-body) {
+  background-color: var(--color-surface-primary-rest) !important;
 }
 </style> 

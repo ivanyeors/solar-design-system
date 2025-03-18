@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/foundation/colors',
     name: 'Colors',
-    component: PlaceholderPage,
+    component: TokensPage,
     props: { title: 'Colors' }
   },
   {
