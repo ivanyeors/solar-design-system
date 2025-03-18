@@ -83,13 +83,49 @@ jobs:
           find token-studio -type d | sort
           echo "Generated SCSS files:"
           find token-studio -name "*.scss" | sort
-        
-      - name: Run token organizer after split
-        if: steps.check_changes.outputs.token_changes == 'true'
+      
+      # Process design tokens to compiled CSS
+      - name: Process design tokens
         run: |
-          # Add PYTHONPATH to include the repository root
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
-          python token-studio/src/styles/organize_tokens.py
+          echo "Processing design tokens to compiled CSS..."
+          # Ensure target directories exist
+          mkdir -p src/styles
+          # Run the token processor script
+          python scripts/process_tokens.py
+          
+          # Check for successful processing
+          if [ -f "src/styles/compiled-tokens.css" ]; then
+            echo "✅ Successfully generated compiled-tokens.css"
+            ls -la src/styles/compiled-tokens.css
+            
+            # Analyze resolved vs unresolved tokens
+            resolved_tokens=$(grep -c "^  --" src/styles/compiled-tokens.css || echo "0")
+            unresolved_color_tokens=$(grep -c "#CCCCCC" src/styles/compiled-tokens.css || echo "0")
+            
+            echo "📊 Token stats: $resolved_tokens total CSS variables, $unresolved_color_tokens unresolved color tokens"
+            
+            # If too many unresolved tokens, just warn but don't fail (we use fallbacks)
+            if [ "$unresolved_color_tokens" -gt "50" ]; then
+              echo "⚠️ Warning: $unresolved_color_tokens unresolved color tokens found"
+              echo "Consider improving token definitions or adding better fallbacks"
+            fi
+          else
+            echo "❌ Failed to generate compiled-tokens.css"
+            exit 1
+          fi
+      
+      # Generate Tailwind semantic utility classes
+      - name: Generate token utilities
+        run: |
+          echo "Generating semantic token utilities..."
+          node scripts/generate-token-utilities.js
+          if [ -f "src/styles/semanticTokenPlugin.js" ]; then
+            echo "✅ Successfully generated semanticTokenPlugin.js"
+            ls -la src/styles/semanticTokenPlugin.js
+          else
+            echo "❌ Failed to generate semanticTokenPlugin.js"
+            exit 1
+          fi
         
       # Creating a proper vite.config.js that includes the Vue plugin
       - name: Configure Vite
@@ -131,8 +167,8 @@ jobs:
                 }
               }
             });' > vite.config.js
-          fi
-          cat vite.config.js
+            fi
+              cat vite.config.js
         
       - name: Build for GitHub Pages
         run: npm run build

@@ -1,13 +1,5 @@
 <script setup lang="ts">
-defineProps<{
-  isDarkMode: boolean;
-}>();
-
-const emit = defineEmits(['toggleDarkMode', 'toggleMobileMenu']);
-
-const toggleDarkMode = () => {
-  emit('toggleDarkMode');
-};
+const emit = defineEmits(['toggleMobileMenu']);
 
 const toggleMobileMenu = () => {
   emit('toggleMobileMenu');
@@ -15,7 +7,7 @@ const toggleMobileMenu = () => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 w-full bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+  <header class="sticky top-0 z-30 w-full bg-surface-primary-rest border-b border-border-primary-rest">
     <div class="px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <!-- Mobile menu button -->
@@ -31,7 +23,7 @@ const toggleMobileMenu = () => {
         
         <!-- Logo (visible on mobile) -->
         <div class="flex lg:hidden">
-          <span class="text-xl font-bold text-gray-900 dark:text-white">Solar Design</span>
+          <span class="text-xl font-bold text-primary">Solar Design</span>
         </div>
         
         <!-- Search (hidden on mobile) -->
@@ -40,15 +32,14 @@ const toggleMobileMenu = () => {
             <label for="search" class="sr-only">Search</label>
             <div class="relative">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg class="text-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                 </svg>
               </div>
               <input
                 id="search"
                 name="search"
-                class="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6
-                       dark:bg-gray-800 dark:text-white dark:ring-gray-700 dark:placeholder:text-gray-500 dark:focus:ring-primary-500"
+                class="block w-full rounded-md border border-border-primary-rest bg-surface-primary-rest py-1.5 pl-10 pr-3 text-primary ring-1 ring-inset focus:ring-2 focus:ring-inset focus:ring-fill-brand-focus sm:text-sm sm:leading-6"
                 placeholder="Search components..."
                 type="search"
               />
@@ -59,18 +50,7 @@ const toggleMobileMenu = () => {
         <!-- Right side actions -->
         <div class="flex items-center">
           <!-- Theme toggle -->
-          <button
-            @click="toggleDarkMode"
-            class="icon-button ml-4"
-            aria-label="Toggle theme"
-          >
-            <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          </button>
+          <slot name="theme-controls"></slot>
           
           <!-- GitHub link -->
           <a

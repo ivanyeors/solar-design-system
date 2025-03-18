@@ -1,10 +1,13 @@
+/* Load semantic tokens */
+@import './styles/compiled-tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --primary: #0ea5e9;
+    --primary: var(--color-fill-brand-rest);
   }
 
   html {
@@ -13,6 +16,13 @@
 
   body {
     @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-white;
+    color: var(--color-text-primary-rest);
+    background-color: var(--color-fill-neutral-rest);
+  }
+
+  [data-theme="dark"] body {
+    color: var(--color-text-primary-rest);
+    background-color: var(--color-fill-neutral-rest);
   }
 
   #app {
@@ -34,14 +44,36 @@
   }
 
   .nav-link-active {
-    @apply bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400;
+    background-color: var(--color-fill-brand-pale-rest);
+    color: var(--color-text-brand-rest); 
+  }
+  
+  .nav-link-active:hover {
+    background-color: var(--color-fill-brand-pale-hover);
+    color: var(--color-text-brand-hover);
   }
 
   .nav-link-inactive {
-    @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800;
+    color: var(--color-text-secondary-rest);
+  }
+  
+  .nav-link-inactive:hover {
+    background-color: var(--color-surface-primary-hover);
+    color: var(--color-text-primary-hover);
   }
 
   .icon-button {
-    @apply p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200;
+    @apply p-2 rounded-md focus:outline-none;
+    color: var(--color-icon-secondary-rest);
+    border-radius: var(--comp-button-main-radius);
+  }
+  
+  .icon-button:hover {
+    background-color: var(--color-surface-primary-hover);
+    color: var(--color-icon-primary-hover);
+  }
+  
+  .icon-button:focus {
+    box-shadow: 0 0 0 2px var(--color-border-brand-focus);
   }
 }

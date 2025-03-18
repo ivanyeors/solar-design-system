@@ -9,6 +9,7 @@ import SideNavigation from '../components/layout/SideNavigation.vue';
 import AccessibilityChecklist from '../components/showcase/AccessibilityChecklist.vue';
 import VersionHistory from '../components/showcase/VersionHistory.vue';
 import RelatedComponentCard from '../components/showcase/RelatedComponentCard.vue';
+import Icon from '../components/ui/Icon.vue';
 
 // Active section tracking
 const activeSection = ref('overview');
@@ -444,13 +445,18 @@ const relatedComponents = [
               <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
               <TokenTable
                 :tokens="[
-                  { name: '--btn-height-sm', value: '32px', usage: 'Small button height' },
-                  { name: '--btn-height-md', value: '40px', usage: 'Medium button height' },
-                  { name: '--btn-height-lg', value: '48px', usage: 'Large button height' },
-                  { name: '--btn-padding-x', value: '16px', usage: 'Horizontal padding' },
-                  { name: '--btn-radius', value: '8px', usage: 'Corner radius' },
-                  { name: '--btn-font-weight', value: '500', usage: 'Font weight' },
-                  { name: '--btn-transition', value: '150ms ease', usage: 'Animation timing' }
+                  { name: '--comp-button-main-radius', value: '8px', usage: 'Button corner radius' },
+                  { name: '--comp-button-main-gap', value: '8px', usage: 'Gap between elements in button' },
+                  { name: '--comp-button-main-text-weight', value: '500', usage: 'Button text font weight' },
+                  { name: '--comp-button-main-transition', value: '0.2s ease', usage: 'Transition timing for state changes' },
+                  { name: '--comp-button-main-height-s', value: '32px', usage: 'Height for small buttons' },
+                  { name: '--comp-button-main-height-m', value: '40px', usage: 'Height for medium buttons' },
+                  { name: '--comp-button-main-height-l', value: '48px', usage: 'Height for large buttons' },
+                  { name: '--comp-button-main-fill-rest-pri', value: 'var(--color-fill-brand-rest)', usage: 'Primary button background' },
+                  { name: '--comp-button-main-text-color-fill-pri', value: 'var(--color-text-neutrallight-rest)', usage: 'Primary button text color' },
+                  { name: '--comp-button-main-focus-width', value: '3px', usage: 'Width of focus outline' },
+                  { name: '--comp-button-main-focus-offset', value: '2px', usage: 'Offset for focus outline' },
+                  { name: '--comp-button-main-disabled-opacity', value: '0.5', usage: 'Opacity for disabled buttons' }
                 ]"
               />
             </div>
@@ -518,6 +524,66 @@ import Button from '@/components/ui/Button.vue';
               </template>
             </ComponentShowcase>
             
+            <!-- Size Variations -->
+            <ComponentShowcase
+              title="Button Sizes"
+              componentName="Button"
+              class="mt-6"
+            >
+              <template #preview>
+                <div class="flex items-center gap-4">
+                  <Button variant="primary" size="sm">Small</Button>
+                  <Button variant="primary" size="md">Medium</Button>
+                  <Button variant="primary" size="lg">Large</Button>
+                </div>
+              </template>
+              <template #code>
+import Button from '@/components/ui/Button.vue';
+
+&lt;Button variant="primary" size="sm"&gt;Small&lt;/Button&gt;
+&lt;Button variant="primary" size="md"&gt;Medium&lt;/Button&gt;
+&lt;Button variant="primary" size="lg"&gt;Large&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+            
+            <!-- Variant Showcase -->
+            <ComponentShowcase
+              title="Button Variants"
+              componentName="Button"
+              class="mt-6"
+            >
+              <template #preview>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="space-y-3">
+                    <h4 class="font-medium text-sm text-gray-600">Light Background</h4>
+                    <div class="flex flex-wrap gap-3 p-4 bg-white rounded">
+                      <Button variant="primary">Primary</Button>
+                      <Button variant="secondary">Secondary</Button>
+                      <Button variant="outline">Outline</Button>
+                      <Button variant="ghost">Ghost</Button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <h4 class="font-medium text-sm text-gray-600">Dark Background</h4>
+                    <div class="flex flex-wrap gap-3 p-4 bg-gray-900 rounded">
+                      <Button variant="primary">Primary</Button>
+                      <Button variant="secondary">Secondary</Button>
+                      <Button variant="outline">Outline</Button>
+                      <Button variant="ghost">Ghost</Button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template #code>
+import Button from '@/components/ui/Button.vue';
+
+&lt;Button variant="primary"&gt;Primary&lt;/Button&gt;
+&lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;
+&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;
+&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+            
             <!-- Icon Button Example -->
             <ComponentShowcase
               title="Button with Icons"
@@ -528,15 +594,21 @@ import Button from '@/components/ui/Button.vue';
                 <div class="flex gap-4">
                   <Button variant="primary">
                     <template #leading-icon>
-                      <i class="icon-plus"></i>
+                      <span class="material-symbols-rounded">add</span>
                     </template>
                     Add Item
                   </Button>
                   <Button variant="outline">
                     Share
                     <template #trailing-icon>
-                      <i class="icon-share"></i>
+                      <span class="material-symbols-rounded">share</span>
                     </template>
+                  </Button>
+                  <Button variant="secondary" size="sm">
+                    <template #leading-icon>
+                      <span class="material-symbols-rounded">cloud_download</span>
+                    </template>
+                    Download
                   </Button>
                 </div>
               </template>
@@ -545,7 +617,7 @@ import Button from '@/components/ui/Button.vue';
 
 &lt;Button variant="primary"&gt;
   &lt;template #leading-icon&gt;
-    &lt;i class="icon-plus"&gt;&lt;/i&gt;
+    &lt;span class="material-symbols-rounded"&gt;add&lt;/span&gt;
   &lt;/template&gt;
   Add Item
 &lt;/Button&gt;
@@ -553,29 +625,106 @@ import Button from '@/components/ui/Button.vue';
 &lt;Button variant="outline"&gt;
   Share
   &lt;template #trailing-icon&gt;
-    &lt;i class="icon-share"&gt;&lt;/i&gt;
+    &lt;span class="material-symbols-rounded"&gt;share&lt;/span&gt;
   &lt;/template&gt;
+&lt;/Button&gt;
+
+&lt;Button variant="secondary" size="sm"&gt;
+  &lt;template #leading-icon&gt;
+    &lt;span class="material-symbols-rounded"&gt;cloud_download&lt;/span&gt;
+  &lt;/template&gt;
+  Download
 &lt;/Button&gt;
               </template>
             </ComponentShowcase>
             
-            <!-- Loading Button Example -->
+            <!-- Icon Component Example -->
             <ComponentShowcase
-              title="Loading State"
-              componentName="Button"
+              title="Using the Icon Component"
+              componentName="Icon"
               class="mt-6"
             >
               <template #preview>
                 <div class="flex gap-4">
-                  <Button variant="primary" loading>Saving</Button>
-                  <Button variant="secondary" loading>Loading</Button>
+                  <Button variant="primary">
+                    <template #leading-icon>
+                      <Icon name="favorite" filled color="inherit" />
+                    </template>
+                    Favorite
+                  </Button>
+                  <Button variant="secondary">
+                    Settings
+                    <template #trailing-icon>
+                      <Icon name="settings" size="md" />
+                    </template>
+                  </Button>
+                  <Button variant="outline">
+                    <template #leading-icon>
+                      <Icon name="notifications" :weight="500" color="brand" />
+                    </template>
+                    Notifications
+                  </Button>
+                </div>
+              </template>
+              <template #code>
+import Button from '@/components/ui/Button.vue';
+import Icon from '@/components/ui/Icon.vue';
+
+&lt;Button variant="primary"&gt;
+  &lt;template #leading-icon&gt;
+    &lt;Icon name="favorite" filled color="inherit" /&gt;
+  &lt;/template&gt;
+  Favorite
+&lt;/Button&gt;
+
+&lt;Button variant="secondary"&gt;
+  Settings
+  &lt;template #trailing-icon&gt;
+    &lt;Icon name="settings" size="md" /&gt;
+  &lt;/template&gt;
+&lt;/Button&gt;
+
+&lt;Button variant="outline"&gt;
+  &lt;template #leading-icon&gt;
+    &lt;Icon name="notifications" :weight="500" color="brand" /&gt;
+  &lt;/template&gt;
+  Notifications
+&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+            
+            <!-- State Examples -->
+            <ComponentShowcase
+              title="Button States"
+              componentName="Button"
+              class="mt-6"
+            >
+              <template #preview>
+                <div class="space-y-4">
+                  <div class="flex flex-wrap gap-4">
+                    <Button variant="primary" loading>Loading</Button>
+                    <Button variant="secondary" loading>Loading</Button>
+                    <Button variant="outline" loading>Loading</Button>
+                  </div>
+                  <div class="flex flex-wrap gap-4">
+                    <Button variant="primary" disabled>Disabled</Button>
+                    <Button variant="secondary" disabled>Disabled</Button>
+                    <Button variant="outline" disabled>Disabled</Button>
+                  </div>
                 </div>
               </template>
               <template #code>
 import Button from '@/components/ui/Button.vue';
 
-&lt;Button variant="primary" loading&gt;Saving&lt;/Button&gt;
+// Loading States
+&lt;Button variant="primary" loading&gt;Loading&lt;/Button&gt;
 &lt;Button variant="secondary" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="outline" loading&gt;Loading&lt;/Button&gt;
+
+// Disabled States
+&lt;Button variant="primary" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="secondary" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="outline" disabled&gt;Disabled&lt;/Button&gt;
               </template>
             </ComponentShowcase>
           </section>

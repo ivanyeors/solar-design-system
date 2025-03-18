@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from './pages/HomePage.vue';
 import ButtonPage from './pages/ButtonPage.vue';
+import TokensPage from './pages/TokensPage.vue';
+import BrandsPage from './pages/BrandsPage.vue';
 import PlaceholderPage from './components/PlaceholderPage.vue';
 
 const routes = [
@@ -10,6 +12,16 @@ const routes = [
     component: HomePage,
   },
   // Foundation routes
+  {
+    path: '/foundation/tokens',
+    name: 'Design Tokens',
+    component: TokensPage,
+  },
+  {
+    path: '/foundation/brands',
+    name: 'Brands',
+    component: BrandsPage,
+  },
   {
     path: '/foundation/colors',
     name: 'Colors',
