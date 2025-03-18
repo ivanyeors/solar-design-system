@@ -30,58 +30,59 @@ const buttonStyles = computed(() => {
   const baseStyles = {
     borderRadius: `var(--comp-button-main-radius)`,
     gap: `var(--comp-button-main-gap)`,
-    fontWeight: `var(--comp-button-main-text-weight)`,
-    transition: `var(--comp-button-main-transition)`,
+    // Use default values if tokens aren't available
+    fontWeight: 'var(--font-weight-medium-500, 500)',
+    transition: 'all 0.2s ease-in-out',
   };
   
-  // Variant-specific styles
+  // Variant-specific styles with corrected token naming to match compiled-tokens.css
   const variantStyles = {
-    primary: createTokenStyles({
-      backgroundColor: 'comp-button-main-fill-rest-pri',
-      color: 'comp-button-main-text-color-fill-pri',
-      borderWidth: 'comp-button-main-border-width',
-      borderStyle: 'comp-button-main-border-style',
-      borderColor: 'comp-button-main-border-color-fill-pri',
-    }),
-    secondary: createTokenStyles({
-      backgroundColor: 'comp-button-main-fill-rest-sec',
-      color: 'comp-button-main-text-color-fill-sec',
-      borderWidth: 'comp-button-main-border-width',
-      borderStyle: 'comp-button-main-border-style',
-      borderColor: 'comp-button-main-border-color-fill-sec',
-    }),
-    outline: createTokenStyles({
-      backgroundColor: 'comp-button-main-fill-rest-out',
-      color: 'comp-button-main-text-color-out',
-      borderWidth: 'comp-button-main-border-width',
-      borderStyle: 'comp-button-main-border-style',
-      borderColor: 'comp-button-main-border-color-out',
-    }),
-    ghost: createTokenStyles({
-      backgroundColor: 'comp-button-main-fill-rest-ghost',
-      color: 'comp-button-main-text-color-ghost',
-      borderWidth: 'comp-button-main-border-width',
-      borderStyle: 'comp-button-main-border-style',
-      borderColor: 'comp-button-main-border-color-ghost',
-    }),
+    primary: {
+      backgroundColor: `var(--comp-button-main-fill-pri-focused, #257bdf)`, // Use focused as default since 'rest' doesn't exist
+      color: `var(--comp-button-main-text-color-fill-pri, #17191a)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--comp-button-main-color-stroke-pri-focused, #18304a)`,
+    },
+    secondary: {
+      backgroundColor: `var(--comp-button-main-fill-rest-sec, #17191a)`,
+      color: `var(--comp-button-main-text-color-fill-sec, #dadee3)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--comp-button-main-border-primary-rest, #313438)`, // Fallback to standard border color
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      color: `var(--color-text-primary-rest, #dadee3)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--color-border-primary-rest, #313438)`,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+      color: `var(--color-text-primary-rest, #dadee3)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: 'transparent',
+    },
   };
   
   // Size-specific styles
   const sizeStyles = {
     sm: {
-      padding: `var(--comp-button-main-v-padding-s) var(--comp-button-main-h-padding-s)`,
-      fontSize: `var(--comp-button-main-text-size-s)`,
-      height: `var(--comp-button-main-height-s)`,
+      padding: `var(--comp-button-main-v-padding-s, 8px) var(--comp-button-main-h-padding-s, 16px)`,
+      fontSize: `var(--font-size-14, 14px)`,
+      height: `auto`,
     },
     md: {
-      padding: `var(--comp-button-main-v-padding-m) var(--comp-button-main-h-padding-m)`,
-      fontSize: `var(--comp-button-main-text-size-m)`,
-      height: `var(--comp-button-main-height-m)`,
+      padding: `var(--comp-button-main-v-padding-m, 12px) var(--comp-button-main-h-padding-m, 20px)`,
+      fontSize: `var(--font-size-16, 16px)`,
+      height: `auto`,
     },
     lg: {
-      padding: `var(--comp-button-main-v-padding-l) var(--comp-button-main-h-padding-l)`,
-      fontSize: `var(--comp-button-main-text-size-l)`,
-      height: `var(--comp-button-main-height-l)`,
+      padding: `var(--comp-button-main-v-padding-l, 16px) var(--comp-button-main-h-padding-l, 24px)`,
+      fontSize: `var(--font-size-18, 18px)`,
+      height: `auto`,
     },
   };
   
@@ -138,70 +139,70 @@ const variantClasses = {
 </template>
 
 <style scoped>
-/* Using hover states for buttons based on semantic tokens */
+/* Using hover states for buttons based on semantic tokens with corrected token naming */
 .btn-primary:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-hover-pri);
-  border-color: var(--comp-button-main-border-color-fill-hover-pri);
-  color: var(--comp-button-main-text-color-fill-hover-pri);
+  background-color: var(--comp-button-main-fill-pri-hover, #2768b2);
+  border-color: var(--color-border-brand-hover, #5397e5);
+  color: var(--color-text-primary-hover, #dadee3);
 }
 .btn-primary:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-press-pri);
-  border-color: var(--comp-button-main-border-color-fill-press-pri);
-  color: var(--comp-button-main-text-color-fill-press-pri);
+  background-color: var(--comp-button-main-fill-pri-pressed, #5397e5);
+  border-color: var(--color-border-brand-press, #9dc5f2);
+  color: var(--color-text-primary-press, #dadee3);
 }
 .btn-primary:focus {
-  outline: var(--comp-button-main-focus-width) solid var(--comp-button-main-focus-color-pri);
-  outline-offset: var(--comp-button-main-focus-offset);
+  outline: 2px solid var(--comp-button-main-color-stroke-pri-focused, #18304a);
+  outline-offset: 2px;
 }
 
 .btn-secondary:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-hover-sec);
-  border-color: var(--comp-button-main-border-color-fill-hover-sec);
-  color: var(--comp-button-main-text-color-fill-hover-sec);
+  background-color: var(--comp-button-main-fill-hover-sec, #242629);
+  border-color: var(--color-border-primary-hover, #3e4247);
+  color: var(--color-text-primary-hover, #dadee3);
 }
 .btn-secondary:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-press-sec);
-  border-color: var(--comp-button-main-border-color-fill-press-sec);
-  color: var(--comp-button-main-text-color-fill-press-sec);
+  background-color: var(--comp-button-main-fill-pressed-sec, #17191a);
+  border-color: var(--color-border-primary-press, #4b5057);
+  color: var(--color-text-primary-press, #dadee3);
 }
 .btn-secondary:focus {
-  outline: var(--comp-button-main-focus-width) solid var(--comp-button-main-focus-color-sec);
-  outline-offset: var(--comp-button-main-focus-offset);
+  outline: 2px solid var(--comp-button-main-fill-focused-sec, #17191a);
+  outline-offset: 2px;
 }
 
 .btn-outline:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-hover-out);
-  border-color: var(--comp-button-main-border-color-hover-out);
-  color: var(--comp-button-main-text-color-hover-out);
+  background-color: var(--color-surface-primary-hover, #242629);
+  border-color: var(--color-border-primary-hover, #3e4247);
+  color: var(--color-text-primary-hover, #dadee3);
 }
 .btn-outline:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-press-out);
-  border-color: var(--comp-button-main-border-color-press-out);
-  color: var(--comp-button-main-text-color-press-out);
+  background-color: var(--color-surface-primary-press, #313438);
+  border-color: var(--color-border-primary-press, #4b5057);
+  color: var(--color-text-primary-press, #dadee3);
 }
 .btn-outline:focus {
-  outline: var(--comp-button-main-focus-width) solid var(--comp-button-main-focus-color-out);
-  outline-offset: var(--comp-button-main-focus-offset);
+  outline: 2px solid var(--color-border-primary-focus, #313438);
+  outline-offset: 2px;
 }
 
 .btn-ghost:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-hover-ghost);
-  border-color: var(--comp-button-main-border-color-hover-ghost);
-  color: var(--comp-button-main-text-color-hover-ghost);
+  background-color: var(--comp-button-main-ghost-fill-press, #eaecf0);
+  border-color: transparent;
+  color: var(--color-text-primary-hover, #dadee3);
 }
 .btn-ghost:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-press-ghost);
-  border-color: var(--comp-button-main-border-color-press-ghost);
-  color: var(--comp-button-main-text-color-press-ghost);
+  background-color: var(--color-surface-primary-press, #313438);
+  border-color: transparent;
+  color: var(--color-text-primary-press, #dadee3);
 }
 .btn-ghost:focus {
-  outline: var(--comp-button-main-focus-width) solid var(--comp-button-main-focus-color-ghost);
-  outline-offset: var(--comp-button-main-focus-offset);
+  outline: 2px solid var(--color-border-primary-focus, #313438);
+  outline-offset: 2px;
 }
 
 /* Handle disabled state */
 button:disabled {
-  opacity: var(--comp-button-main-disabled-opacity);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 

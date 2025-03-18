@@ -1,5 +1,5 @@
 /* Generated Semantic Tokens - DO NOT EDIT DIRECTLY */
-/* Generated on: 2025-03-18 13:06:13 */
+/* Generated on: 2025-03-18 13:45:24 */
 
 :root {
   --16px-scale-0percent: 0px;
@@ -555,6 +555,8 @@
   --comp-indicator-group-brand-bg: #122233;
   --comp-indicator-group-dark-bg: #17191a;
   --comp-indicator-radius: 80px;
+  --comp-indicator-dot-width: #CCCCCC;
+  --comp-indicator-pill-width: #CCCCCC;
   --comp-indicator-group-gap: 12px;
   --comp-indicator-group-h-padding: 2px;
   --comp-indicator-group-v-padding: 2px;
@@ -565,14 +567,22 @@
   --comp-calendar-date-selected-radius: 80px;
   --comp-calendar-date-startdate-radius: 80px;
   --comp-calendar-date-enddate-radius: 80px;
+  --comp-calendar-date-selected-width: #CCCCCC;
+  --comp-calendar-date-selected-height: #CCCCCC;
+  --comp-calendar-date-startdate-width: #CCCCCC;
+  --comp-calendar-date-startdate-height: #CCCCCC;
   --comp-calendar-date-selected-h-padding: 12px;
   --comp-calendar-date-selected-v-padding: 12px;
   --comp-calendar-date-hover-radius: 80px;
   --comp-calendar-date-press-radius: 80px;
   --comp-calendar-date-default-v-padding: 12px;
+  --comp-calendar-date-default-width: #CCCCCC;
+  --comp-calendar-date-default-height: #CCCCCC;
   --comp-calendar-date-default-h-padding: 12px;
   --comp-calendar-date-startdate-h-padding: 12px;
   --comp-calendar-date-startdate-v-padding: 12px;
+  --comp-calendar-date-enddate-width: #CCCCCC;
+  --comp-calendar-date-enddate-height: #CCCCCC;
   --comp-calendar-date-enddate-h-padding: 12px;
   --comp-calendar-date-enddate-v-padding: 12px;
   --comp-calendar-date-default-radius: 80px;
