@@ -137,10 +137,10 @@ def main():
         start_time = time.time()
         
         # Step 1: Load base token definitions - both CSS variables and Sass variables
-        base_tokens = {}
-        sass_tokens = {}
+        base_tokens = {'light': {}, 'dark': {}}
+        sass_tokens = {'light': {}, 'dark': {}}
         
-        # Process color token files
+        # Process color token files separately for each theme
         color_light_file = option_tokens_dir / "colors_light.scss"
         color_dark_file = option_tokens_dir / "colors_dark.scss"
         scale_file = option_tokens_dir / "_scale.scss"
@@ -151,11 +151,8 @@ def main():
             logger.error(f"Tokens directory not found at {tokens_dir}")
             sys.exit(1)
         
-        # Load all base tokens (CSS variables with -- prefix)
-        css_var_count = 0
-        sass_var_count = 0
-        
-        for file_path in [color_light_file, color_dark_file, scale_file, typography_file]:
+        # Load theme-independent tokens first
+        for file_path in [scale_file, typography_file]:
             if file_path.exists():
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
@@ -163,144 +160,124 @@ def main():
                         # Extract --token-name: value; pairs (CSS variables)
                         css_token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
                         for name, value in css_token_matches:
-                            base_tokens[name] = value.strip()
-                        css_var_count += len(css_token_matches)
+                            base_tokens['light'][name] = value.strip()
+                            base_tokens['dark'][name] = value.strip()
                         
                         # Extract $token-name: value; pairs (Sass variables)
                         sass_token_matches = re.findall(r'\$([a-zA-Z0-9-]+):\s*([^;]+);', content)
                         for name, value in sass_token_matches:
-                            sass_tokens[name] = value.strip()
-                        sass_var_count += len(sass_token_matches)
-                        
-                    logger.info(f"Processed {file_path.name} - found {len(css_token_matches)} CSS vars, {len(sass_token_matches)} Sass vars")
+                            sass_tokens['light'][name] = value.strip()
+                            sass_tokens['dark'][name] = value.strip()
                 except Exception as e:
                     logger.error(f"Error processing {file_path}: {str(e)}")
         
-        logger.info(f"Loaded {css_var_count} CSS variables and {sass_var_count} Sass variables from base tokens")
+        # Load theme-specific tokens
+        if color_light_file.exists():
+            with open(color_light_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                css_token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
+                for name, value in css_token_matches:
+                    base_tokens['light'][name] = value.strip()
+                sass_token_matches = re.findall(r'\$([a-zA-Z0-9-]+):\s*([^;]+);', content)
+                for name, value in sass_token_matches:
+                    sass_tokens['light'][name] = value.strip()
+        
+        if color_dark_file.exists():
+            with open(color_dark_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                css_token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
+                for name, value in css_token_matches:
+                    base_tokens['dark'][name] = value.strip()
+                sass_token_matches = re.findall(r'\$([a-zA-Z0-9-]+):\s*([^;]+);', content)
+                for name, value in sass_token_matches:
+                    sass_tokens['dark'][name] = value.strip()
         
         # Step 2: Process semantic token files that use placeholders
-        semantic_tokens = {}
+        semantic_tokens = {'light': {}, 'dark': {}}
         
         # Find all semantic token files
         semantic_files = []
         if semantic_tokens_dir.exists():
-            # Get all SCSS files, including those in subdirectories
             semantic_files = list(semantic_tokens_dir.glob("**/*.scss")) + list(semantic_tokens_dir.glob("**/_*.scss"))
-        else:
-            logger.warning(f"Semantic tokens directory not found at {semantic_tokens_dir}")
         
-        # Process each semantic token file
+        # Process each semantic token file for both themes
         for file_path in semantic_files:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    # Extract --token-name: {placeholder}; pairs
                     token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
                     for name, value in token_matches:
-                        semantic_tokens[name] = value.strip()
-                logger.info(f"Processed {file_path.name} - found {len(token_matches)} tokens")
+                        semantic_tokens['light'][name] = value.strip()
+                        semantic_tokens['dark'][name] = value.strip()
             except Exception as e:
                 logger.error(f"Error processing {file_path}: {str(e)}")
         
-        # Step 3: Resolve placeholders in semantic tokens using multiple passes
-        resolved_tokens = {}
-        unresolved_tokens = set()
+        # Step 3: Resolve placeholders for both themes
+        resolved_tokens = {'light': {}, 'dark': {}}
         
-        # Initialize with empty values
-        for token_name in semantic_tokens:
-            resolved_tokens[token_name] = None
-        
-        # Process in multiple passes to handle dependencies between tokens
-        max_passes = 5
-        for pass_num in range(1, max_passes + 1):
-            logger.info(f"Resolution pass {pass_num}/{max_passes}")
-            unresolved_count_before = len([t for t in resolved_tokens.values() if t is None or '{' in t])
+        for theme in ['light', 'dark']:
+            # Initialize with empty values
+            for token_name in semantic_tokens[theme]:
+                resolved_tokens[theme][token_name] = None
             
-            for token_name, token_value in semantic_tokens.items():
-                # Skip already resolved tokens
-                if resolved_tokens[token_name] is not None and '{' not in resolved_tokens[token_name]:
-                    continue
-                
-                # Process tokens with placeholders
-                if '{' in token_value and '}' in token_value:
-                    # Handle multiple placeholders in one value
-                    resolved_value = token_value
-                    placeholders = re.findall(r'\{([^}]+)\}', token_value)
-                    all_resolved = True
-                    
-                    for placeholder in placeholders:
-                        placeholder_value = resolve_placeholder(
-                            placeholder, 
-                            base_tokens, 
-                            sass_tokens, 
-                            resolved_tokens
-                        )
+            # Process in multiple passes
+            max_passes = 5
+            for pass_num in range(1, max_passes + 1):
+                logger.info(f"Resolution pass {pass_num}/{max_passes} for {theme} theme")
+                for token_name, token_value in semantic_tokens[theme].items():
+                    if '{' in token_value and '}' in token_value:
+                        resolved_value = token_value
+                        placeholders = re.findall(r'\{([^}]+)\}', token_value)
                         
-                        if placeholder_value:
-                            # Replace the placeholder with its value
-                            resolved_value = resolved_value.replace(f"{{{placeholder}}}", placeholder_value)
-                        else:
-                            all_resolved = False
-                            unresolved_tokens.add(placeholder)
-                    
-                    if all_resolved:
-                        resolved_tokens[token_name] = resolved_value
-                    elif pass_num == max_passes:
-                        # On the final pass, use partially resolved values
-                        resolved_tokens[token_name] = resolved_value
-                else:
-                    # No placeholder, use as is
-                    resolved_tokens[token_name] = token_value
-            
-            # Check if we've made progress in this pass
-            unresolved_count_after = len([t for t in resolved_tokens.values() if t is None or '{' in t])
-            logger.info(f"Pass {pass_num}: Resolved {unresolved_count_before - unresolved_count_after} additional tokens")
-            
-            # If all tokens are resolved, break early
-            if unresolved_count_after == 0:
-                logger.info(f"All tokens resolved after {pass_num} passes")
-                break
+                        for placeholder in placeholders:
+                            placeholder_value = resolve_placeholder(
+                                placeholder,
+                                base_tokens[theme],
+                                sass_tokens[theme],
+                                resolved_tokens[theme]
+                            )
+                            
+                            if placeholder_value:
+                                resolved_value = resolved_value.replace(f"{{{placeholder}}}", placeholder_value)
+                        
+                        resolved_tokens[theme][token_name] = resolved_value
+                    else:
+                        resolved_tokens[theme][token_name] = token_value
         
-        # Step 4: Generate compiled CSS output
-        try:
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write("/* Generated Semantic Tokens - DO NOT EDIT DIRECTLY */\n")
-                f.write("/* Generated on: " + time.strftime("%Y-%m-%d %H:%M:%S") + " */\n\n")
-                
-                f.write(":root {\n")
-                
-                # Write all base tokens first
-                for name, value in base_tokens.items():
+        # Step 4: Generate compiled CSS output with theme support
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write("/* Generated Semantic Tokens - DO NOT EDIT DIRECTLY */\n")
+            f.write("/* Generated on: " + time.strftime("%Y-%m-%d %H:%M:%S") + " */\n\n")
+            
+            # Write theme-independent tokens
+            f.write(":root {\n")
+            # Write scale and typography tokens that are theme-independent
+            for name, value in base_tokens['light'].items():
+                if name in base_tokens['dark'] and base_tokens['dark'][name] == value:
                     f.write(f"  --{name}: {value};\n")
-                
-                f.write("\n  /* Semantic Tokens */\n")
-                
-                # Write all resolved semantic tokens
-                for name, value in resolved_tokens.items():
-                    if value is not None:
-                        # Handle any leftover unresolved placeholders
-                        if '{' in value and '}' in value:
-                            value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
-                        f.write(f"  --{name}: {value};\n")
-                
-                f.write("}\n")
-        except Exception as e:
-            logger.error(f"Error writing output file {output_file}: {str(e)}")
-            sys.exit(1)
+            f.write("}\n\n")
+            
+            # Write light theme tokens
+            f.write(":root[data-theme=\"light\"] {\n")
+            for name, value in resolved_tokens['light'].items():
+                if value is not None:
+                    if '{' in value and '}' in value:
+                        value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
+                    f.write(f"  --{name}: {value};\n")
+            f.write("}\n\n")
+            
+            # Write dark theme tokens
+            f.write(":root[data-theme=\"dark\"] {\n")
+            for name, value in resolved_tokens['dark'].items():
+                if value is not None:
+                    if '{' in value and '}' in value:
+                        value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
+                    f.write(f"  --{name}: {value};\n")
+            f.write("}\n")
         
         elapsed_time = time.time() - start_time
         logger.info(f"Tokens processed successfully in {elapsed_time:.2f} seconds")
         logger.info(f"Generated compiled tokens at: {output_file}")
-        logger.info(f"Processed {len(base_tokens)} base tokens, {len(sass_tokens)} Sass variables, and {len(resolved_tokens)} semantic tokens")
-        
-        # Summarize unresolved tokens
-        if unresolved_tokens:
-            resolved_percentage = ((len(semantic_tokens) - len(unresolved_tokens)) / len(semantic_tokens)) * 100
-            logger.warning(f"Found {len(unresolved_tokens)} unique unresolved token types ({resolved_percentage:.1f}% tokens resolved)")
-            if "--verbose" in sys.argv:
-                logger.warning("Unresolved tokens:")
-                for token in sorted(unresolved_tokens):
-                    logger.warning(f"  - {token}")
         
         return 0
     except Exception as e:

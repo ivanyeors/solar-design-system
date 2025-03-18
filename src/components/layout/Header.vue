@@ -7,7 +7,7 @@ const toggleMobileMenu = () => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 w-full bg-surface-primary-rest border-b border-border-primary-rest">
+  <header class="header">
     <div class="px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <!-- Mobile menu button -->
@@ -23,7 +23,7 @@ const toggleMobileMenu = () => {
         
         <!-- Logo (visible on mobile) -->
         <div class="flex lg:hidden">
-          <span class="text-xl font-bold text-primary">Solar Design</span>
+          <span class="text-xl font-bold logo-text">Solar Design</span>
         </div>
         
         <!-- Search (hidden on mobile) -->
@@ -32,14 +32,14 @@ const toggleMobileMenu = () => {
             <label for="search" class="sr-only">Search</label>
             <div class="relative">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg class="text-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                 </svg>
               </div>
               <input
                 id="search"
                 name="search"
-                class="block w-full rounded-md border border-border-primary-rest bg-surface-primary-rest py-1.5 pl-10 pr-3 text-primary ring-1 ring-inset focus:ring-2 focus:ring-inset focus:ring-fill-brand-focus sm:text-sm sm:leading-6"
+                class="search-input"
                 placeholder="Search components..."
                 type="search"
               />
@@ -70,5 +70,100 @@ const toggleMobileMenu = () => {
 </template>
 
 <style scoped>
-/* Any additional scoped styles */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: 100%;
+  background-color: var(--color-surface-primary-rest);
+  border-bottom: 1px solid var(--color-border-primary-rest);
+  transition: all 0.2s ease;
+}
+
+.logo-text {
+  color: var(--color-text-primary-rest);
+  transition: color 0.2s ease;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--comp-button-main-radius);
+  transition: all 0.2s ease;
+  color: var(--color-icon-primary-rest);
+}
+
+.icon-button:hover {
+  background-color: var(--color-surface-primary-hover);
+  color: var(--color-icon-primary-hover);
+}
+
+.icon-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.search-icon {
+  color: var(--color-icon-secondary-rest);
+  transition: color 0.2s ease;
+}
+
+.search-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border-primary-rest);
+  background-color: var(--color-surface-primary-rest);
+  color: var(--color-text-primary-rest);
+  padding: 0.375rem 0.75rem;
+  padding-left: 2.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-secondary-rest);
+  transition: color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-border-brand-focus);
+  box-shadow: 0 0 0 1px var(--color-border-brand-focus);
+}
+
+/* Theme-specific styles */
+:root[data-theme="light"] .header {
+  background-color: var(--color-surface-primary-rest);
+  border-color: var(--color-border-primary-rest);
+}
+
+:root[data-theme="light"] .icon-button {
+  color: var(--color-icon-primary-rest);
+}
+
+:root[data-theme="light"] .search-input {
+  background-color: var(--color-surface-primary-rest);
+  border-color: var(--color-border-primary-rest);
+  color: var(--color-text-primary-rest);
+}
+
+:root[data-theme="dark"] .header {
+  background-color: var(--color-surface-primary-rest);
+  border-color: var(--color-border-primary-rest);
+}
+
+:root[data-theme="dark"] .icon-button {
+  color: var(--color-icon-primary-rest);
+}
+
+:root[data-theme="dark"] .search-input {
+  background-color: var(--color-surface-primary-rest);
+  border-color: var(--color-border-primary-rest);
+  color: var(--color-text-primary-rest);
+}
 </style> 

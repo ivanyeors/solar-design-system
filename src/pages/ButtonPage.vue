@@ -16,11 +16,11 @@ const activeSection = ref('overview');
 const sections = [
   { id: 'overview', label: 'Overview' },
   { id: 'playground', label: 'Playground' },
+  { id: 'implementation', label: 'Implementation' },
   { id: 'guidelines', label: 'Guidelines' },
   { id: 'anatomy', label: 'Anatomy' },
   { id: 'states', label: 'States & Variations' },
   { id: 'accessibility', label: 'Accessibility' },
-  { id: 'implementation', label: 'Implementation' },
   { id: 'examples', label: 'Examples' },
   { id: 'related', label: 'Related Components' },
   { id: 'version', label: 'Version History' }
@@ -252,6 +252,69 @@ const relatedComponents = [
             </div>
           </section>
 
+          <section id="implementation" class="mb-10 scroll-mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Implementation</h2>
+            
+            <!-- Design Tokens -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
+              <TokenTable
+                :tokens="[
+                  { name: '--comp-button-main-radius', value: '8px', usage: 'Button corner radius' },
+                  { name: '--comp-button-main-gap', value: '8px', usage: 'Gap between elements in button' },
+                  { name: '--comp-button-main-text-weight', value: '500', usage: 'Button text font weight' },
+                  { name: '--comp-button-main-transition', value: '0.2s ease', usage: 'Transition timing for state changes' },
+                  { name: '--comp-button-main-height-s', value: '32px', usage: 'Height for small buttons' },
+                  { name: '--comp-button-main-height-m', value: '40px', usage: 'Height for medium buttons' },
+                  { name: '--comp-button-main-height-l', value: '48px', usage: 'Height for large buttons' },
+                  { name: '--comp-button-main-fill-rest-pri', value: 'var(--color-fill-brand-rest)', usage: 'Primary button background' },
+                  { name: '--comp-button-main-text-color-fill-pri', value: 'var(--color-text-neutrallight-rest)', usage: 'Primary button text color' },
+                  { name: '--comp-button-main-focus-width', value: '3px', usage: 'Width of focus outline' },
+                  { name: '--comp-button-main-focus-offset', value: '2px', usage: 'Offset for focus outline' },
+                  { name: '--comp-button-main-disabled-opacity', value: '0.5', usage: 'Opacity for disabled buttons' }
+                ]"
+              />
+            </div>
+            
+            <!-- API Reference -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">API Reference</h3>
+              <PropRow
+                v-for="prop in props"
+                :key="prop.name"
+                v-bind="prop"
+              />
+            </div>
+            
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Event Handlers</h3>
+              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <th class="text-left p-2">Event</th>
+                      <th class="text-left p-2">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <td class="p-2 font-mono text-sm">@click</td>
+                      <td class="p-2">Triggered when button is clicked</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                      <td class="p-2 font-mono text-sm">@focus</td>
+                      <td class="p-2">Triggered when button receives focus</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 font-mono text-sm">@blur</td>
+                      <td class="p-2">Triggered when button loses focus</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
           <section id="guidelines" class="mb-10 scroll-mt-16">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Design Guidelines</h2>
             
@@ -433,69 +496,6 @@ const relatedComponents = [
                   <li>Use appropriate semantic HTML (<code>&lt;button&gt;</code> element)</li>
                   <li>Dynamically update <code>aria-disabled</code> to match disabled state</li>
                 </ul>
-              </div>
-            </div>
-          </section>
-
-          <section id="implementation" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Implementation</h2>
-            
-            <!-- Design Tokens -->
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
-              <TokenTable
-                :tokens="[
-                  { name: '--comp-button-main-radius', value: '8px', usage: 'Button corner radius' },
-                  { name: '--comp-button-main-gap', value: '8px', usage: 'Gap between elements in button' },
-                  { name: '--comp-button-main-text-weight', value: '500', usage: 'Button text font weight' },
-                  { name: '--comp-button-main-transition', value: '0.2s ease', usage: 'Transition timing for state changes' },
-                  { name: '--comp-button-main-height-s', value: '32px', usage: 'Height for small buttons' },
-                  { name: '--comp-button-main-height-m', value: '40px', usage: 'Height for medium buttons' },
-                  { name: '--comp-button-main-height-l', value: '48px', usage: 'Height for large buttons' },
-                  { name: '--comp-button-main-fill-rest-pri', value: 'var(--color-fill-brand-rest)', usage: 'Primary button background' },
-                  { name: '--comp-button-main-text-color-fill-pri', value: 'var(--color-text-neutrallight-rest)', usage: 'Primary button text color' },
-                  { name: '--comp-button-main-focus-width', value: '3px', usage: 'Width of focus outline' },
-                  { name: '--comp-button-main-focus-offset', value: '2px', usage: 'Offset for focus outline' },
-                  { name: '--comp-button-main-disabled-opacity', value: '0.5', usage: 'Opacity for disabled buttons' }
-                ]"
-              />
-            </div>
-            
-            <!-- API Reference -->
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">API Reference</h3>
-              <PropRow
-                v-for="prop in props"
-                :key="prop.name"
-                v-bind="prop"
-              />
-            </div>
-            
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Event Handlers</h3>
-              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
-                <table class="w-full">
-                  <thead>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                      <th class="text-left p-2">Event</th>
-                      <th class="text-left p-2">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                      <td class="p-2 font-mono text-sm">@click</td>
-                      <td class="p-2">Triggered when button is clicked</td>
-                    </tr>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                      <td class="p-2 font-mono text-sm">@focus</td>
-                      <td class="p-2">Triggered when button receives focus</td>
-                    </tr>
-                    <tr>
-                      <td class="p-2 font-mono text-sm">@blur</td>
-                      <td class="p-2">Triggered when button loses focus</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
           </section>
