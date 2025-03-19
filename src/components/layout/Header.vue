@@ -107,8 +107,10 @@ const toggleTheme = () => {
   z-index: 30;
   width: 100%;
   background-color: var(--color-surface-primary-rest);
-  border-bottom: 1px solid var(--color-border-primary-rest);
+  border-bottom: 2px solid var(--color-border-primary-rest);
   transition: all 0.2s ease;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .logo-text {
@@ -169,8 +171,8 @@ const toggleTheme = () => {
 
 /* Theme-specific styles */
 :root[data-theme="light"] .header {
-  background-color: var(--color-surface-primary-rest);
-  border-color: var(--color-border-primary-rest);
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 :root[data-theme="light"] .icon-button {
@@ -178,14 +180,14 @@ const toggleTheme = () => {
 }
 
 :root[data-theme="light"] .search-input {
-  background-color: var(--color-surface-primary-rest);
-  border-color: var(--color-border-primary-rest);
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
   color: var(--color-text-primary-rest);
 }
 
 :root[data-theme="dark"] .header {
-  background-color: var(--color-surface-primary-rest);
-  border-color: var(--color-border-primary-rest);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 :root[data-theme="dark"] .icon-button {
@@ -193,8 +195,8 @@ const toggleTheme = () => {
 }
 
 :root[data-theme="dark"] .search-input {
-  background-color: var(--color-surface-primary-rest);
-  border-color: var(--color-border-primary-rest);
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary-rest);
 }
 </style> 

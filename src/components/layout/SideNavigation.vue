@@ -119,8 +119,8 @@ const closeMobileMenu = () => {
 
 /* Sidebar */
 .sidebar {
-  @apply fixed top-16 left-0 z-50 h-[calc(100vh-4rem)] w-64 transform overflow-y-auto 
-         transition-transform duration-300 ease-in-out lg:top-16 lg:translate-x-0;
+  @apply fixed top-[calc(4rem+1px)] left-0 z-50 h-[calc(100vh-4rem-1px)] w-64 transform overflow-y-auto 
+         transition-transform duration-300 ease-in-out lg:top-[calc(4rem+1px)] lg:translate-x-0;
   background-color: var(--color-surface-primary-rest);
   border-right: 1px solid var(--color-border-primary-rest);
 }

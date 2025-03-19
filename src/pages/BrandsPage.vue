@@ -47,16 +47,38 @@ const getOtherBrand = computed(() =>
   <div class="brands-page">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-primary">Brand Variants</h1>
-      <router-link 
-        to="/foundation/colors" 
-        class="px-4 py-2 rounded-md border border-border-primary flex items-center"
-      >
-        <span>View Color Tokens</span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-2">
-          <path fill-rule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clip-rule="evenodd" />
-        </svg>
-      </router-link>
+      
+      <!-- Brand Toggle Switch - Centralized control -->
+      <div class="flex items-center gap-3">
+        <span class="text-secondary">Select Brand:</span>
+        <div class="brand-toggle bg-surface-secondary-rest border border-border-primary rounded-full p-1 flex">
+          <button 
+            v-for="brand in brands" 
+            :key="brand.id"
+            @click="changeBrand(brand.id)"
+            :class="[
+              'brand-toggle-btn px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300',
+              currentBrand === brand.id 
+                ? 'bg-fill-brand-rest text-text-on-brand shadow-sm' 
+                : 'text-secondary hover:text-primary'
+            ]"
+          >
+            {{ brand.name }}
+          </button>
+        </div>
+        
+        <router-link 
+          to="/foundation/colors" 
+          class="px-4 py-2 rounded-md border border-border-primary flex items-center ml-2"
+        >
+          <span>View Color Tokens</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-2">
+            <path fill-rule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clip-rule="evenodd" />
+          </svg>
+        </router-link>
+      </div>
     </div>
+    
     <p class="text-secondary mb-8 max-w-3xl">
       The design system supports multiple brand variants through semantic tokens. 
       Each brand has its own color palette, but uses the same semantic token names, 
@@ -64,48 +86,32 @@ const getOtherBrand = computed(() =>
     </p>
     
     <div class="mb-12">
-      <div class="flex justify-between items-center mb-6">
+      <div class="mb-6">
         <h2 class="text-2xl font-semibold text-primary">Available Brands</h2>
-        <Button 
-          variant="outline"
-          size="sm"
-          @click="changeBrand(getOtherBrand.id)"
-          class="transition-colors duration-300"
-        >
-          Switch to {{ getOtherBrand.name }}
-        </Button>
+        <p class="text-secondary mt-1">Click on a brand card to activate it and preview its theme.</p>
       </div>
+      
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div 
           v-for="brand in brands" 
           :key="brand.id"
           :class="[
-            'p-6 rounded-lg border transition-all duration-300',
+            'p-6 rounded-lg border transition-all duration-300 cursor-pointer',
             currentBrand === brand.id 
               ? 'border-border-brand-rest bg-fill-brand-pale-rest shadow-sm' 
-              : 'border-border-primary-rest bg-surface-primary-rest hover:bg-surface-primary-hover'
+              : 'border-border-primary-rest bg-surface-primary-rest hover:bg-surface-primary-hover hover:border-border-brand-rest'
           ]"
+          @click="changeBrand(brand.id)"
         >
           <div class="flex justify-between items-start mb-4">
             <h3 class="text-xl font-medium text-primary">{{ brand.name }}</h3>
-            <div class="flex items-center gap-2">
-              <Badge 
-                v-if="currentBrand === brand.id" 
-                variant="brand" 
-                class="transition-colors duration-300"
-              >
-                Active Brand
-              </Badge>
-              <Button 
-                v-else
-                size="sm" 
-                variant="outline"
-                @click="changeBrand(brand.id)"
-                class="transition-colors duration-300"
-              >
-                Switch to {{ brand.name }}
-              </Button>
-            </div>
+            <Badge 
+              v-if="currentBrand === brand.id" 
+              variant="brand" 
+              class="transition-colors duration-300"
+            >
+              Active
+            </Badge>
           </div>
           <p class="text-secondary mb-6">{{ brand.description }}</p>
           
@@ -140,18 +146,10 @@ const getOtherBrand = computed(() =>
           <Badge variant="brand" class="transition-colors duration-300">
             {{ currentBrandInfo.name }}
           </Badge>
-          <Button 
-            variant="outline"
-            size="sm"
-            @click="changeBrand(getOtherBrand.id)"
-            class="transition-colors duration-300 ml-4"
-          >
-            Switch to {{ getOtherBrand.name }}
-          </Button>
         </div>
       </div>
       <p class="text-secondary mb-6">
-        See how components adapt to the current brand. Try switching brands to see the difference.
+        See how components adapt to the current brand. Use the brand toggle at the top of the page to switch brands and see the changes.
       </p>
       
       <div class="p-6 bg-surface-secondary-rest rounded-lg">
@@ -224,5 +222,20 @@ const getOtherBrand = computed(() =>
 /* Enhance hover states */
 .color-sample:hover .h-10 {
   transform: scale(1.05);
+}
+
+/* Brand toggle styling */
+.brand-toggle {
+  position: relative;
+}
+
+.brand-toggle-btn {
+  position: relative;
+  z-index: 1;
+}
+
+/* Add visual feedback on card hover */
+.grid > div:hover {
+  transform: translateY(-2px);
 }
 </style> 
