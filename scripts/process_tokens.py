@@ -136,7 +136,11 @@ def main():
         logger.info("Processing design system tokens...")
         start_time = time.time()
         
+        # Define brands to process
+        brands = ['evydcore', 'bruhealth']
+        
         # Step 1: Load base token definitions - both CSS variables and Sass variables
+        # Initialize dictionaries for each theme and brand
         base_tokens = {'light': {}, 'dark': {}}
         sass_tokens = {'light': {}, 'dark': {}}
         
@@ -192,59 +196,84 @@ def main():
                 for name, value in sass_token_matches:
                     sass_tokens['dark'][name] = value.strip()
         
-        # Step 2: Process semantic token files that use placeholders
-        semantic_tokens = {'light': {}, 'dark': {}}
+        # Step 2: Process semantic token files for each brand
+        semantic_tokens = {
+            'evydcore': {'light': {}, 'dark': {}},
+            'bruhealth': {'light': {}, 'dark': {}}
+        }
         
-        # Find all semantic token files
-        semantic_files = []
+        # Common semantic tokens that are brand-independent
+        common_semantic_files = []
         if semantic_tokens_dir.exists():
-            semantic_files = list(semantic_tokens_dir.glob("**/*.scss")) + list(semantic_tokens_dir.glob("**/_*.scss"))
+            common_semantic_files = list(semantic_tokens_dir.glob("_common*.scss"))
         
-        # Process each semantic token file for both themes
-        for file_path in semantic_files:
+        # Process each common semantic token file
+        for file_path in common_semantic_files:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
                     for name, value in token_matches:
-                        semantic_tokens['light'][name] = value.strip()
-                        semantic_tokens['dark'][name] = value.strip()
+                        for brand in brands:
+                            semantic_tokens[brand]['light'][name] = value.strip()
+                            semantic_tokens[brand]['dark'][name] = value.strip()
             except Exception as e:
-                logger.error(f"Error processing {file_path}: {str(e)}")
+                logger.error(f"Error processing common file {file_path}: {str(e)}")
         
-        # Step 3: Resolve placeholders for both themes
-        resolved_tokens = {'light': {}, 'dark': {}}
-        
-        for theme in ['light', 'dark']:
-            # Initialize with empty values
-            for token_name in semantic_tokens[theme]:
-                resolved_tokens[theme][token_name] = None
+        # Process brand-specific semantic token files
+        for brand in brands:
+            brand_files = []
+            if semantic_tokens_dir.exists():
+                brand_files = list(semantic_tokens_dir.glob(f"_{brand}*.scss"))
             
-            # Process in multiple passes
-            max_passes = 5
-            for pass_num in range(1, max_passes + 1):
-                logger.info(f"Resolution pass {pass_num}/{max_passes} for {theme} theme")
-                for token_name, token_value in semantic_tokens[theme].items():
-                    if '{' in token_value and '}' in token_value:
-                        resolved_value = token_value
-                        placeholders = re.findall(r'\{([^}]+)\}', token_value)
-                        
-                        for placeholder in placeholders:
-                            placeholder_value = resolve_placeholder(
-                                placeholder,
-                                base_tokens[theme],
-                                sass_tokens[theme],
-                                resolved_tokens[theme]
-                            )
-                            
-                            if placeholder_value:
-                                resolved_value = resolved_value.replace(f"{{{placeholder}}}", placeholder_value)
-                        
-                        resolved_tokens[theme][token_name] = resolved_value
-                    else:
-                        resolved_tokens[theme][token_name] = token_value
+            for file_path in brand_files:
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        token_matches = re.findall(r'--([a-zA-Z0-9-]+):\s*([^;]+);', content)
+                        for name, value in token_matches:
+                            semantic_tokens[brand]['light'][name] = value.strip()
+                            semantic_tokens[brand]['dark'][name] = value.strip()
+                except Exception as e:
+                    logger.error(f"Error processing brand file {file_path}: {str(e)}")
         
-        # Step 4: Generate compiled CSS output with theme support
+        # Step 3: Resolve placeholders for both themes and brands
+        resolved_tokens = {
+            'evydcore': {'light': {}, 'dark': {}},
+            'bruhealth': {'light': {}, 'dark': {}}
+        }
+        
+        for brand in brands:
+            for theme in ['light', 'dark']:
+                # Initialize with empty values
+                for token_name in semantic_tokens[brand][theme]:
+                    resolved_tokens[brand][theme][token_name] = None
+                
+                # Process in multiple passes
+                max_passes = 5
+                for pass_num in range(1, max_passes + 1):
+                    logger.info(f"Resolution pass {pass_num}/{max_passes} for {brand} in {theme} theme")
+                    for token_name, token_value in semantic_tokens[brand][theme].items():
+                        if '{' in token_value and '}' in token_value:
+                            resolved_value = token_value
+                            placeholders = re.findall(r'\{([^}]+)\}', token_value)
+                            
+                            for placeholder in placeholders:
+                                placeholder_value = resolve_placeholder(
+                                    placeholder,
+                                    base_tokens[theme],
+                                    sass_tokens[theme],
+                                    resolved_tokens[brand][theme]
+                                )
+                                
+                                if placeholder_value:
+                                    resolved_value = resolved_value.replace(f"{{{placeholder}}}", placeholder_value)
+                            
+                            resolved_tokens[brand][theme][token_name] = resolved_value
+                        else:
+                            resolved_tokens[brand][theme][token_name] = token_value
+        
+        # Step 4: Generate compiled CSS output with theme and brand support
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write("/* Generated Semantic Tokens - DO NOT EDIT DIRECTLY */\n")
             f.write("/* Generated on: " + time.strftime("%Y-%m-%d %H:%M:%S") + " */\n\n")
@@ -257,27 +286,55 @@ def main():
                     f.write(f"  --{name}: {value};\n")
             f.write("}\n\n")
             
-            # Write light theme tokens
-            f.write(":root[data-theme=\"light\"] {\n")
-            for name, value in resolved_tokens['light'].items():
+            # Write theme tokens for each brand
+            for brand in brands:
+                # Light theme tokens
+                f.write(f":root[data-brand=\"{brand}\"][data-theme=\"light\"], ")
+                # Default case when brand is set but theme is not explicitly set
+                if brand == 'evydcore':
+                    f.write(f":root[data-brand=\"{brand}\"]:not([data-theme=\"dark\"]) {{\n")
+                else:
+                    f.write(f":root[data-brand=\"{brand}\"]:not([data-theme]) {{\n")
+                    
+                for name, value in resolved_tokens[brand]['light'].items():
+                    if value is not None:
+                        if '{' in value and '}' in value:
+                            value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
+                        f.write(f"  --{name}: {value};\n")
+                f.write("}\n\n")
+                
+                # Dark theme tokens
+                f.write(f":root[data-brand=\"{brand}\"][data-theme=\"dark\"] {{\n")
+                for name, value in resolved_tokens[brand]['dark'].items():
+                    if value is not None:
+                        if '{' in value and '}' in value:
+                            value = re.sub(r'\{[^}]+\}', "#333333", value)
+                        f.write(f"  --{name}: {value};\n")
+                f.write("}\n\n")
+            
+            # Write default tokens (using evydcore as the default)
+            # Light theme (default)
+            f.write(":root[data-theme=\"light\"], :root:not([data-theme=\"dark\"]) {\n")
+            for name, value in resolved_tokens['evydcore']['light'].items():
                 if value is not None:
                     if '{' in value and '}' in value:
                         value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
                     f.write(f"  --{name}: {value};\n")
             f.write("}\n\n")
             
-            # Write dark theme tokens
+            # Dark theme
             f.write(":root[data-theme=\"dark\"] {\n")
-            for name, value in resolved_tokens['dark'].items():
+            for name, value in resolved_tokens['evydcore']['dark'].items():
                 if value is not None:
                     if '{' in value and '}' in value:
-                        value = re.sub(r'\{[^}]+\}', "#CCCCCC", value)
+                        value = re.sub(r'\{[^}]+\}', "#333333", value)
                     f.write(f"  --{name}: {value};\n")
             f.write("}\n")
         
         elapsed_time = time.time() - start_time
         logger.info(f"Tokens processed successfully in {elapsed_time:.2f} seconds")
-        logger.info(f"Generated compiled tokens at: {output_file}")
+        logger.info(f"Generated compiled tokens for brands: {', '.join(brands)}")
+        logger.info(f"Output file: {output_file}")
         
         return 0
     except Exception as e:

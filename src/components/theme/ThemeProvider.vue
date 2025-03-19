@@ -27,10 +27,13 @@ const setThemeMode = (mode: ThemeMode) => {
 // Function to set the brand
 const setBrand = (brand: BrandMode) => {
   currentBrand.value = brand;
+  
+  // Update data-brand attribute to trigger CSS changes
   document.documentElement.setAttribute('data-brand', brand);
   
-  // Update theme attribute for fonts
-  document.documentElement.setAttribute('data-theme', brand === 'bruhealth' ? 'bruhealth' : 'evyd');
+  // Preserve the current theme when changing brands, don't override it
+  const currentThemeValue = document.documentElement.getAttribute('data-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', currentThemeValue);
   
   // Save preference
   localStorage.setItem('brandMode', brand);
@@ -44,9 +47,12 @@ const updateEffectiveTheme = () => {
     effectiveTheme.value = themeMode.value as 'light' | 'dark';
   }
   
-  // Apply the theme to the document while preserving the brand theme
-  const currentBrandTheme = document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-color-theme', effectiveTheme.value);
+  // Apply the theme to the document
+  document.documentElement.setAttribute('data-theme', effectiveTheme.value);
+  
+  // Make sure brand is preserved when changing themes
+  const currentBrandValue = document.documentElement.getAttribute('data-brand') || 'evydcore';
+  document.documentElement.setAttribute('data-brand', currentBrandValue);
   
   if (effectiveTheme.value === 'dark') {
     document.documentElement.classList.add('dark');
@@ -74,6 +80,7 @@ onMounted(() => {
   const savedThemeMode = localStorage.getItem('themeMode') as ThemeMode | null;
   const savedBrandMode = localStorage.getItem('brandMode') as BrandMode | null;
   
+  // Set initial values from saved preferences or defaults
   if (savedThemeMode) {
     themeMode.value = savedThemeMode;
   }
@@ -82,12 +89,17 @@ onMounted(() => {
     currentBrand.value = savedBrandMode;
   }
   
-  // Apply initial settings
+  // Apply initial theme
   updateEffectiveTheme();
+  
+  // Ensure data-brand attribute is set
   document.documentElement.setAttribute('data-brand', currentBrand.value);
   
   // Setup system theme watcher
   setupSystemThemeWatcher();
+  
+  // Log initial state
+  console.log(`Theme provider initialized: Brand=${currentBrand.value}, ThemeMode=${themeMode.value}, EffectiveTheme=${effectiveTheme.value}`);
 });
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, computed } from 'vue';
 import Badge from '../components/ui/Badge.vue';
 import Button from '../components/ui/Button.vue';
 
@@ -7,18 +7,40 @@ import Button from '../components/ui/Button.vue';
 const currentBrand = inject('currentBrand', ref('evydcore'));
 const setBrand = inject('setBrand', (brand: string) => {});
 
-// Available brands
+// Available brands with enhanced metadata
 const brands = [
-  { id: 'evydcore', name: 'EvydCore', description: 'Default brand with blue accents' },
-  { id: 'bruhealth', name: 'BruHealth', description: 'Health-focused brand with teal accents' },
+  { 
+    id: 'evydcore', 
+    name: 'EvydCore', 
+    description: 'Default brand with blue accents',
+    accentColor: 'var(--color-fill-brand-rest)'
+  },
+  { 
+    id: 'bruhealth', 
+    name: 'BruHealth', 
+    description: 'Health-focused brand with teal accents',
+    accentColor: 'var(--color-fill-brand-rest)'
+  },
 ];
 
-// Change the current brand
+// Change the current brand with immediate UI update
 const changeBrand = (brandId: string) => {
   if (typeof setBrand === 'function') {
     setBrand(brandId);
+    // Update data-brand attribute to trigger immediate CSS changes
+    document.documentElement.setAttribute('data-brand', brandId);
   }
 };
+
+// Computed property to get current brand info
+const currentBrandInfo = computed(() => 
+  brands.find(b => b.id === currentBrand.value) || brands[0]
+);
+
+// Get the other brand option for switching
+const getOtherBrand = computed(() => 
+  brands.find(b => b.id !== currentBrand.value) || brands[0]
+);
 </script>
 
 <template>
@@ -42,49 +64,68 @@ const changeBrand = (brandId: string) => {
     </p>
     
     <div class="mb-12">
-      <h2 class="text-2xl font-semibold text-primary mb-4">Available Brands</h2>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-primary">Available Brands</h2>
+        <Button 
+          variant="outline"
+          size="sm"
+          @click="changeBrand(getOtherBrand.id)"
+          class="transition-colors duration-300"
+        >
+          Switch to {{ getOtherBrand.name }}
+        </Button>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div 
           v-for="brand in brands" 
           :key="brand.id"
           :class="[
-            'p-6 rounded-lg border transition-colors',
+            'p-6 rounded-lg border transition-all duration-300',
             currentBrand === brand.id 
-              ? 'border-border-brand-rest bg-fill-brand-pale-rest' 
+              ? 'border-border-brand-rest bg-fill-brand-pale-rest shadow-sm' 
               : 'border-border-primary-rest bg-surface-primary-rest hover:bg-surface-primary-hover'
           ]"
         >
           <div class="flex justify-between items-start mb-4">
             <h3 class="text-xl font-medium text-primary">{{ brand.name }}</h3>
-            <Button 
-              v-if="currentBrand !== brand.id"
-              size="sm" 
-              variant="outline"
-              @click="changeBrand(brand.id)"
-            >
-              Switch to {{ brand.name }}
-            </Button>
-            <Badge v-else variant="brand">Active Brand</Badge>
+            <div class="flex items-center gap-2">
+              <Badge 
+                v-if="currentBrand === brand.id" 
+                variant="brand" 
+                class="transition-colors duration-300"
+              >
+                Active Brand
+              </Badge>
+              <Button 
+                v-else
+                size="sm" 
+                variant="outline"
+                @click="changeBrand(brand.id)"
+                class="transition-colors duration-300"
+              >
+                Switch to {{ brand.name }}
+              </Button>
+            </div>
           </div>
           <p class="text-secondary mb-6">{{ brand.description }}</p>
           
-          <!-- Color samples -->
+          <!-- Color samples with transitions -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="color-sample">
-              <div class="h-10 rounded-md bg-fill-brand-rest mb-1"></div>
-              <span class="text-xs text-secondary">Brand</span>
-            </div>
-            <div class="color-sample">
-              <div class="h-10 rounded-md bg-fill-success-rest mb-1"></div>
-              <span class="text-xs text-secondary">Success</span>
-            </div>
-            <div class="color-sample">
-              <div class="h-10 rounded-md bg-fill-warning-rest mb-1"></div>
-              <span class="text-xs text-secondary">Warning</span>
-            </div>
-            <div class="color-sample">
-              <div class="h-10 rounded-md bg-fill-danger-rest mb-1"></div>
-              <span class="text-xs text-secondary">Danger</span>
+            <div 
+              v-for="(type, index) in ['Brand', 'Success', 'Warning', 'Danger']" 
+              :key="type"
+              class="color-sample transition-all duration-300"
+            >
+              <div 
+                class="h-10 rounded-md mb-1 transition-colors duration-300"
+                :class="{
+                  'bg-fill-brand-rest': type === 'Brand',
+                  'bg-fill-success-rest': type === 'Success',
+                  'bg-fill-warning-rest': type === 'Warning',
+                  'bg-fill-danger-rest': type === 'Danger'
+                }"
+              ></div>
+              <span class="text-xs text-secondary">{{ type }}</span>
             </div>
           </div>
         </div>
@@ -92,7 +133,23 @@ const changeBrand = (brandId: string) => {
     </div>
     
     <div class="component-preview mb-12">
-      <h2 class="text-2xl font-semibold text-primary mb-4">Component Examples</h2>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-primary">Component Examples</h2>
+        <div class="flex items-center gap-2">
+          <span class="text-secondary">Current Brand:</span>
+          <Badge variant="brand" class="transition-colors duration-300">
+            {{ currentBrandInfo.name }}
+          </Badge>
+          <Button 
+            variant="outline"
+            size="sm"
+            @click="changeBrand(getOtherBrand.id)"
+            class="transition-colors duration-300 ml-4"
+          >
+            Switch to {{ getOtherBrand.name }}
+          </Button>
+        </div>
+      </div>
       <p class="text-secondary mb-6">
         See how components adapt to the current brand. Try switching brands to see the difference.
       </p>
@@ -100,20 +157,20 @@ const changeBrand = (brandId: string) => {
       <div class="p-6 bg-surface-secondary-rest rounded-lg">
         <h3 class="text-xl font-medium text-primary mb-4">Buttons</h3>
         <div class="flex flex-wrap gap-4 mb-8">
-          <Button variant="primary">Primary Button</Button>
-          <Button variant="secondary">Secondary Button</Button>
-          <Button variant="outline">Outline Button</Button>
-          <Button variant="ghost">Ghost Button</Button>
+          <Button variant="primary" class="transition-colors duration-300">Primary Button</Button>
+          <Button variant="secondary" class="transition-colors duration-300">Secondary Button</Button>
+          <Button variant="outline" class="transition-colors duration-300">Outline Button</Button>
+          <Button variant="ghost" class="transition-colors duration-300">Ghost Button</Button>
         </div>
         
         <h3 class="text-xl font-medium text-primary mb-4">Badges</h3>
         <div class="flex flex-wrap gap-4">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="brand">Brand</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="danger">Danger</Badge>
-          <Badge variant="outline">Outline</Badge>
+          <Badge variant="default" class="transition-colors duration-300">Default</Badge>
+          <Badge variant="brand" class="transition-colors duration-300">Brand</Badge>
+          <Badge variant="success" class="transition-colors duration-300">Success</Badge>
+          <Badge variant="warning" class="transition-colors duration-300">Warning</Badge>
+          <Badge variant="danger" class="transition-colors duration-300">Danger</Badge>
+          <Badge variant="outline" class="transition-colors duration-300">Outline</Badge>
         </div>
       </div>
     </div>
@@ -150,10 +207,22 @@ const changeBrand = (brandId: string) => {
 .brands-page {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem;
 }
 
 .color-sample {
   display: flex;
   flex-direction: column;
+}
+
+/* Add smooth transitions for brand changes */
+:deep(.button),
+:deep(.badge) {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Enhance hover states */
+.color-sample:hover .h-10 {
+  transform: scale(1.05);
 }
 </style> 

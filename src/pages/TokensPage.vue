@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue';
 import { TOKEN_TYPES, TOKEN_STATES, getCssVar } from '../lib/tokens';
+import Button from '../components/ui/Button.vue';
 
 // Define props including an optional title
 const props = defineProps({
@@ -16,6 +17,9 @@ const effectiveTheme = inject('effectiveTheme', ref('light'));
 const currentBrand = inject('currentBrand', ref('evydcore'));
 const setThemeMode = inject('setThemeMode', (mode: string) => {});
 const setBrand = inject('setBrand', (brand: string) => {});
+
+// Add a refresh trigger to force component updates when theme/brand changes
+const refreshTrigger = ref(Date.now());
 
 const brands = [
   { id: 'evydcore', name: 'EvydCore' },
@@ -89,19 +93,22 @@ const getTokensForCategory = (category: string, prefix: string): TokenInfo[] => 
   const tokens: TokenInfo[] = [];
   const baseNames = commonTokens[category] || ['main'];
 
-  baseNames.forEach((baseName: string) => {
-    states.forEach(state => {
-      const tokenName = `${prefix}-${baseName}-${state.id}`;
-      const value = getCssVar(tokenName);
-      if (value) {
-        tokens.push({
-          name: tokenName,
-          displayName: `${baseName} (${state.name})`,
-          value
-        });
-      }
+  // Use refreshTrigger to force reevaluation when theme/brand changes
+  if (refreshTrigger.value) {
+    baseNames.forEach((baseName: string) => {
+      states.forEach(state => {
+        const tokenName = `${prefix}-${baseName}-${state.id}`;
+        const value = getCssVar(tokenName);
+        if (value) {
+          tokens.push({
+            name: tokenName,
+            displayName: `${baseName} (${state.name})`,
+            value
+          });
+        }
+      });
     });
-  });
+  }
 
   return tokens;
 };
@@ -110,11 +117,31 @@ const getTokensForCategory = (category: string, prefix: string): TokenInfo[] => 
 const toggleMode = () => {
   const newMode = effectiveTheme.value === 'light' ? 'dark' : 'light';
   setThemeMode(newMode);
+  
+  // Update UI immediately to reflect changes
+  document.documentElement.setAttribute('data-theme', newMode);
+  
+  if (newMode === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  
+  // Force refresh all displayed token values
+  refreshTrigger.value = Date.now();
 };
 
 // Switch brand
 const switchBrand = (brand: string) => {
   setBrand(brand);
+  
+  // Update data-brand attribute to trigger CSS changes
+  document.documentElement.setAttribute('data-brand', brand);
+  
+  // Force refresh token values after brand switch
+  setTimeout(() => {
+    refreshTrigger.value = Date.now();
+  }, 50);
 };
 
 // Get contrasting text color for a background
@@ -152,55 +179,133 @@ const getContrastText = (hexColor: string): string => {
   // Use white text for dark backgrounds, black for light
   return luminance > 0.5 ? 'var(--color-text-primary-rest)' : 'var(--color-text-neutrallight-rest)';
 };
+
+// Watch for theme/brand changes from the provider
+watch([effectiveTheme, currentBrand], () => {
+  refreshTrigger.value = Date.now();
+});
+
+// Setup observer for theme attribute changes
+onMounted(() => {
+  // Initialize based on document state
+  const dataTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const dataBrand = document.documentElement.getAttribute('data-brand') || 'evydcore';
+  
+  // Ensure UI is in sync with actual DOM state
+  if (effectiveTheme.value !== dataTheme) {
+    effectiveTheme.value = dataTheme as 'light' | 'dark';
+  }
+  
+  if (currentBrand.value !== dataBrand) {
+    currentBrand.value = dataBrand as 'evydcore' | 'bruhealth';
+  }
+  
+  // Setup observer for attribute changes on document element
+  const themeObserver = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      if (mutation.type === 'attributes') {
+        if (mutation.attributeName === 'data-theme') {
+          const newTheme = document.documentElement.getAttribute('data-theme') || 'light';
+          effectiveTheme.value = newTheme as 'light' | 'dark';
+          refreshTrigger.value = Date.now();
+        } else if (mutation.attributeName === 'data-brand') {
+          const newBrand = document.documentElement.getAttribute('data-brand') || 'evydcore';
+          currentBrand.value = newBrand as 'evydcore' | 'bruhealth';
+          refreshTrigger.value = Date.now();
+        }
+      }
+    });
+  });
+  
+  // Start observing
+  themeObserver.observe(document.documentElement, { 
+    attributes: true, 
+    attributeFilter: ['data-theme', 'data-brand'] 
+  });
+  
+  // Cleanup function
+  onUnmounted(() => {
+    themeObserver.disconnect();
+  });
+});
 </script>
 
 <template>
   <div class="tokens-page">
-    <div class="header-controls bg-surface-primary mb-8 p-4 rounded-lg">
-      <h1 class="text-3xl font-bold text-text-primary-rest mb-4">{{ props.title }}</h1>
-      
-      <div class="flex flex-wrap gap-4 mt-4">
-        <div class="mode-toggle">
-          <button 
-            class="px-4 py-2 rounded-md border border-border-primary-rest hover:border-border-primary-hover focus:outline-none" 
-            @click="toggleMode"
-          >
-            {{ effectiveTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode' }}
-          </button>
-        </div>
+    <div class="header-controls bg-surface-primary mb-12 rounded-lg">
+      <div class="px-8 py-6">
+        <h1 class="text-3xl font-bold text-text-primary-rest mb-6">{{ props.title }}</h1>
         
-        <div class="brand-selector flex space-x-2">
-          <button 
-            v-for="brand in brands" 
-            :key="brand.id"
-            :class="[
-              'px-4 py-2 rounded-md border focus:outline-none transition-colors',
-              currentBrand === brand.id 
-                ? 'bg-fill-brand-rest text-text-neutrallight-rest border-border-brand-rest' 
-                : 'border-border-primary-rest hover:border-border-primary-hover'
-            ]"
-            @click="switchBrand(brand.id)"
-          >
-            {{ brand.name }}
-          </button>
-        </div>
-        
-        <div class="link-to-brands ml-auto">
-          <router-link 
-            to="/foundation/brands" 
-            class="px-4 py-2 rounded-md border border-border-primary-rest hover:border-border-primary-hover focus:outline-none flex items-center transition-colors"
-          >
-            <span>View Brand Details</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-2">
-              <path fill-rule="evenodd" d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z" clip-rule="evenodd" />
-            </svg>
-          </router-link>
+        <div class="flex flex-col space-y-6">
+          <!-- Theme Controls Row -->
+          <div class="flex items-center justify-between">
+            <button 
+              class="px-4 py-2 rounded-md bg-fill-brand-pale-rest text-text-brand-rest border border-border-brand-rest hover:bg-fill-brand-pale-hover focus:outline-none transition-colors flex items-center space-x-2" 
+              @click="toggleMode"
+            >
+              <span class="text-sm font-medium">Switch to {{ effectiveTheme === 'light' ? 'Dark' : 'Light' }} Mode</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path v-if="effectiveTheme === 'light'" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                <path v-else fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Brand Controls Row -->
+          <div class="flex items-center space-x-6">
+            <div class="brand-selector flex space-x-2">
+              <button 
+                v-for="brand in brands" 
+                :key="brand.id"
+                :class="[
+                  'px-4 py-2 rounded-md border focus:outline-none transition-colors flex items-center space-x-2',
+                  currentBrand === brand.id 
+                    ? 'bg-fill-brand-rest text-text-neutrallight-rest border-border-brand-rest shadow-sm' 
+                    : 'border-border-primary-rest hover:border-border-primary-hover text-text-primary-rest hover:bg-fill-neutral-hover'
+                ]"
+                @click="switchBrand(brand.id)"
+              >
+                <span class="text-sm font-medium">{{ brand.name }}</span>
+                <div 
+                  v-if="currentBrand === brand.id"
+                  class="w-2 h-2 rounded-full bg-current"
+                ></div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+      
+      <!-- Bottom Border Line -->
+      <div class="h-1 w-full bg-surface-secondary-rest rounded-b-lg"></div>
     </div>
     
     <section class="token-categories mb-12">
-      <h2 class="text-2xl font-bold text-text-primary-rest mb-4">Semantic Tokens</h2>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-text-primary-rest">Semantic Tokens</h2>
+        <router-link to="/foundation/brands">
+          <Button 
+            variant="secondary"
+            size="md"
+          >
+            View Brands
+            <template #trailing-icon>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                class="button__icon button__icon--trailing"
+              >
+                <path 
+                  fill="currentColor" 
+                  d="M8.59 16.59L13.17 12L8.59 7.41L10 6l6 6l-6 6l-1.41-1.41z"
+                />
+              </svg>
+            </template>
+          </Button>
+        </router-link>
+      </div>
       <p class="text-text-secondary-rest mb-6">
         These tokens are used to maintain consistent design across the application. Values will change based on theme (light/dark) and brand.
       </p>
@@ -342,6 +447,11 @@ const elementStyles = computed(() => {
   padding: 2rem;
 }
 
+.header-controls {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border-primary-rest);
+}
+
 .color-swatch {
   display: flex;
   align-items: center;
@@ -359,5 +469,32 @@ const elementStyles = computed(() => {
 
 .token-states {
   flex-grow: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-controls .flex-col {
+    gap: 1.5rem;
+  }
+  
+  .header-controls .flex {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-controls .space-x-6 {
+    margin-top: 1rem;
+  }
+  
+  .brand-selector {
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .brand-selector button {
+    flex: 1;
+    min-width: 140px;
+  }
 }
 </style> 
