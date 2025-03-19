@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue';
 import { createTokenStyles, TOKEN_TYPES, TOKEN_STATES } from '../../lib/tokens';
+import { getThemeAwareToken, watchThemeChanges } from '../../utils/tokenUtils';
 
 const props = defineProps<{
   /**
@@ -10,7 +11,7 @@ const props = defineProps<{
   /**
    * The button size
    */
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   /**
    * Whether the button is disabled
    */
@@ -21,6 +22,17 @@ const props = defineProps<{
   loading?: boolean
 }>();
 
+// Token mapping for size suffixes
+const sizeSuffixMap = {
+  'sm': '-s',
+  'md': '-m',
+  'lg': '-l',
+  'xl': '-xl'
+} as const;
+
+// Track current theme for token changes
+const currentTheme = ref(document.documentElement.getAttribute('data-theme') || 'light');
+
 // Using the token utility to create style bindings
 const buttonStyles = computed(() => {
   const variantKey = props.variant || 'primary';
@@ -30,90 +42,130 @@ const buttonStyles = computed(() => {
   const baseStyles = {
     borderRadius: `var(--comp-button-main-radius)`,
     gap: `var(--comp-button-main-gap)`,
-    fontWeight: 'var(--font-weight-medium-500, 500)',
+    fontFamily: 'var(--font-family-DM-Sans)',
+    fontWeight: 'var(--font-weight-semibold-600)',
+    lineHeight: 'var(--font-line-height-20)',
     transition: 'all 0.2s ease-in-out',
+    display: 'inline-flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   };
   
-  // Variant-specific styles with corrected token naming to match compiled-tokens.css
-  const variantStyles = {
-    primary: {
-      backgroundColor: `var(--comp-button-main-fill-pri-focused, #257bdf)`,
-      color: `var(--comp-button-main-text-color-fill-pri, #17191a)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--comp-button-main-color-stroke-pri-focused, #18304a)`,
-    },
-    secondary: {
-      backgroundColor: `var(--comp-button-main-fill-rest-sec, #17191a)`,
-      color: `var(--comp-button-main-text-color-fill-sec, #dadee3)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--comp-button-main-border-primary-rest, #313438)`,
-    },
-    outline: {
-      backgroundColor: 'transparent',
-      color: `var(--color-text-primary-rest, #dadee3)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--color-border-primary-rest, #313438)`,
-    },
-    ghost: {
-      backgroundColor: 'transparent',
-      color: `var(--color-text-primary-rest, #dadee3)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: 'transparent',
-    },
-    danger: {
-      backgroundColor: `var(--color-fill-danger-rest, #f04437)`,
-      color: `var(--color-text-primary-inverse, #fafbfc)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--color-border-danger-rest, #8c1e16)`,
-    },
-    warning: {
-      backgroundColor: `var(--color-fill-warning-rest, #eda011)`,
-      color: `var(--color-text-primary-inverse, #fafbfc)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--color-border-warning-rest, #f0ab2b)`,
-    },
-    success: {
-      backgroundColor: `var(--color-fill-success-rest, #12b869)`,
-      color: `var(--color-text-primary-inverse, #fafbfc)`,
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: `var(--color-border-success-rest, #12b869)`,
-    },
-  };
-  
-  // Size-specific styles
+  // Size-specific styles mapped to tokens
+  const sizeSuffix = sizeSuffixMap[sizeKey as keyof typeof sizeSuffixMap];
   const sizeStyles = {
-    sm: {
-      padding: `var(--comp-button-main-v-padding-s, 8px) var(--comp-button-main-h-padding-s, 16px)`,
-      fontSize: `var(--font-size-14, 14px)`,
-      height: `auto`,
+    padding: `var(--comp-button-main-v-padding${sizeSuffix}) var(--comp-button-main-h-padding${sizeSuffix})`,
+    fontSize: sizeKey === 'sm' ? `var(--font-size-14)` :
+              sizeKey === 'md' ? `var(--font-size-16)` :
+              sizeKey === 'lg' ? `var(--font-size-18)` :
+              `var(--font-size-20)`,
+    gap: `var(--comp-button-main-gap)`,
+  };
+
+  // Variant-specific styles with state handling - dynamically compiled tokens
+  const getVariantToken = (tokenType: string, state: string): string => {
+    const stateToken = state || 'rest';
+    
+    // Special case for primary variant using brand tokens
+    if (variantKey === 'primary') {
+      if (tokenType === 'fill') {
+        return `var(--color-fill-brand-${stateToken})`;
+      }
+      if (tokenType === 'border') {
+        return `var(--color-border-brand-${stateToken})`;
+      }
+      if (tokenType === 'text') {
+        return `var(--color-text-neutrallight-${stateToken})`;
+      }
+    }
+
+    // Special case for ghost variant
+    if (variantKey === 'ghost') {
+      if (tokenType === 'fill' && stateToken === 'rest') {
+        return 'transparent';
+      }
+      if (tokenType === 'border') {
+        return 'transparent';
+      }
+      if (tokenType === 'fill' && stateToken === 'hover') {
+        return `var(--comp-button-main-ghost-fill-press)`;
+      }
+    }
+
+    // Special case for outline variant
+    if (variantKey === 'outline' && tokenType === 'fill' && stateToken === 'rest') {
+      return 'transparent';
+    }
+
+    // Secondary variant special case
+    if (variantKey === 'secondary') {
+      if (tokenType === 'fill') {
+        return `var(--comp-button-main-fill-${stateToken}-sec)`;
+      }
+      if (tokenType === 'text' && stateToken === 'rest') {
+        return `var(--comp-button-main-text-color-fill-sec)`;
+      }
+    }
+
+    // Default token mapping - use standard token naming pattern
+    if (tokenType === 'fill') {
+      return `var(--color-fill-${variantKey}-${stateToken})`;
+    }
+    if (tokenType === 'text') {
+      // For danger/warning/success variants, use inverse text
+      if (['danger', 'warning', 'success'].includes(variantKey)) {
+        return `var(--color-text-primary-inverse)`;
+      }
+      return `var(--color-text-primary-${stateToken})`;
+    }
+    if (tokenType === 'border') {
+      return `var(--color-border-${variantKey}-${stateToken})`;
+    }
+    
+    // Fallback
+    return '';
+  };
+
+  // Build variant styles
+  const variantStyles = {
+    backgroundColor: getVariantToken('fill', 'rest'),
+    color: getVariantToken('text', 'rest'),
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: getVariantToken('border', 'rest'),
+    '&:hover': {
+      backgroundColor: getVariantToken('fill', 'hover'),
+      borderColor: getVariantToken('border', 'hover'),
+      color: getVariantToken('text', 'hover'),
     },
-    md: {
-      padding: `var(--comp-button-main-v-padding-m, 12px) var(--comp-button-main-h-padding-m, 20px)`,
-      fontSize: `var(--font-size-16, 16px)`,
-      height: `auto`,
+    '&:focus': {
+      backgroundColor: getVariantToken('fill', 'focus'),
+      borderColor: getVariantToken('border', 'focus'),
+      outline: `4px solid ${getVariantToken('border', 'focus')}`,
+      color: getVariantToken('text', 'focus'),
     },
-    lg: {
-      padding: `var(--comp-button-main-v-padding-l, 16px) var(--comp-button-main-h-padding-l, 24px)`,
-      fontSize: `var(--font-size-18, 18px)`,
-      height: `auto`,
+    '&:active': {
+      backgroundColor: getVariantToken('fill', 'press'),
+      borderColor: getVariantToken('border', 'press'),
+      color: getVariantToken('text', 'press'),
+    },
+    '&:disabled': {
+      backgroundColor: getVariantToken('fill', 'disabled'),
+      borderColor: getVariantToken('border', 'disabled'),
+      color: getVariantToken('text', 'disabled'),
+      opacity: '0.5',
+      cursor: 'not-allowed',
     },
   };
   
   return {
     ...baseStyles,
-    ...variantStyles[variantKey],
-    ...sizeStyles[sizeKey],
+    ...sizeStyles,
+    ...variantStyles,
   };
 });
 
-// Using CSS variables from semantic tokens for hover/focus states
+// CSS class mapping
 const variantClasses = {
   primary: 'btn-primary',
   secondary: 'btn-secondary',
@@ -123,148 +175,229 @@ const variantClasses = {
   warning: 'btn-warning',
   success: 'btn-success',
 };
+
+// Monitor theme changes
+onMounted(() => {
+  // Watch for theme changes and update styles
+  const cleanup = watchThemeChanges(() => {
+    currentTheme.value = document.documentElement.getAttribute('data-theme') || 'light';
+  });
+  
+  // Cleanup on component unmount
+  onUnmounted(cleanup);
+});
 </script>
 
 <template>
   <button
     :class="[
-      'inline-flex items-center justify-center focus:outline-none transition-colors',
-      variantClasses[variant || 'primary'],
-      disabled || loading ? 'opacity-50 cursor-not-allowed' : '',
+      'button',
+      `button--${variant || 'primary'}`,
+      `button--${size || 'md'}`,
+      {
+        'button--disabled': disabled,
+        'button--loading': loading,
+      }
     ]"
     :style="buttonStyles"
     :disabled="disabled || loading"
     type="button"
   >
-    <!-- Leading Icon Slot -->
-    <span v-if="$slots['leading-icon']" class="btn-leading-icon mr-2">
+    <span v-if="$slots['leading-icon']" class="button__icon button__icon--leading">
       <slot name="leading-icon"></slot>
     </span>
     
-    <!-- Loading Spinner -->
-    <span v-if="loading" class="btn-loading-icon mr-2">
+    <span v-if="loading" class="button__loading">
       <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
     </span>
     
-    <!-- Main Button Content -->
-    <span class="btn-content">
+    <span class="button__content">
       <slot></slot>
     </span>
     
-    <!-- Trailing Icon Slot -->
-    <span v-if="$slots['trailing-icon']" class="btn-trailing-icon ml-2">
+    <span v-if="$slots['trailing-icon']" class="button__icon button__icon--trailing">
       <slot name="trailing-icon"></slot>
     </span>
   </button>
 </template>
 
 <style scoped>
+.button {
+  position: relative;
+  overflow: hidden;
+  width: auto;
+  height: auto;
+}
+
+.button__icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button__icon--leading {
+  margin-right: var(--comp-button-main-gap);
+}
+
+.button__icon--trailing {
+  margin-left: var(--comp-button-main-gap);
+}
+
+/* Icon colors based on variant and state */
+.button--primary .button__icon {
+  color: var(--color-icon-primary-inverse);
+}
+
+.button--primary:disabled .button__icon {
+  color: var(--color-icon-brand-disabled);
+}
+
+/* State-based styles */
+.button--primary:hover:not(:disabled) {
+  background-color: var(--color-fill-brand-hover);
+  border-color: var(--color-border-brand-hover);
+}
+
+.button--primary:focus:not(:disabled) {
+  background-color: var(--color-fill-brand-focus);
+  border-color: var(--color-border-brand-focus);
+  outline: 4px solid var(--color-border-brand-focus);
+  outline-offset: 1px;
+}
+
+.button--primary:active:not(:disabled) {
+  background-color: var(--color-fill-brand-press);
+  border-color: var(--color-border-brand-press);
+}
+
+.button--primary:disabled {
+  background-color: var(--color-fill-brand-disabled);
+  border-color: var(--color-border-brand-disabled);
+  color: var(--comp-button-main-text-color-fill-pri-disabled);
+}
+
+/* Loading state */
+.button--loading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.button__loading {
+  display: inline-flex;
+  align-items: center;
+  margin-right: var(--comp-button-main-gap);
+}
+
 /* Using hover states for buttons based on semantic tokens with corrected token naming */
 .btn-primary:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-pri-hover, #2768b2);
-  border-color: var(--color-border-brand-hover, #5397e5);
-  color: var(--color-text-primary-hover, #dadee3);
+  background-color: var(--color-fill-brand-hover);
+  border-color: var(--color-border-brand-hover);
+  color: var(--color-text-neutrallight-hover);
 }
 .btn-primary:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-pri-pressed, #5397e5);
-  border-color: var(--color-border-brand-press, #9dc5f2);
-  color: var(--color-text-primary-press, #dadee3);
+  background-color: var(--color-fill-brand-press);
+  border-color: var(--color-border-brand-press);
+  color: var(--color-text-neutrallight-press);
 }
 .btn-primary:focus {
-  outline: 2px solid var(--comp-button-main-color-stroke-pri-focused, #18304a);
+  outline: 2px solid var(--color-border-brand-focus);
   outline-offset: 2px;
 }
 
 .btn-secondary:not(:disabled):hover {
-  background-color: var(--comp-button-main-fill-hover-sec, #242629);
-  border-color: var(--color-border-primary-hover, #3e4247);
-  color: var(--color-text-primary-hover, #dadee3);
+  background-color: var(--comp-button-main-fill-hover-sec);
+  border-color: var(--color-border-primary-hover);
+  color: var(--color-text-primary-hover);
 }
 .btn-secondary:not(:disabled):active {
-  background-color: var(--comp-button-main-fill-pressed-sec, #17191a);
-  border-color: var(--color-border-primary-press, #4b5057);
-  color: var(--color-text-primary-press, #dadee3);
+  background-color: var(--comp-button-main-fill-pressed-sec);
+  border-color: var(--color-border-primary-press);
+  color: var(--color-text-primary-press);
 }
 .btn-secondary:focus {
-  outline: 2px solid var(--comp-button-main-fill-focused-sec, #17191a);
+  outline: 2px solid var(--comp-button-main-fill-focused-sec);
   outline-offset: 2px;
 }
 
 .btn-outline:not(:disabled):hover {
-  background-color: var(--color-surface-primary-hover, #242629);
-  border-color: var(--color-border-primary-hover, #3e4247);
-  color: var(--color-text-primary-hover, #dadee3);
+  background-color: var(--color-surface-primary-hover);
+  border-color: var(--color-border-primary-hover);
+  color: var(--color-text-primary-hover);
 }
 .btn-outline:not(:disabled):active {
-  background-color: var(--color-surface-primary-press, #313438);
-  border-color: var(--color-border-primary-press, #4b5057);
-  color: var(--color-text-primary-press, #dadee3);
+  background-color: var(--color-surface-primary-press);
+  border-color: var(--color-border-primary-press);
+  color: var(--color-text-primary-press);
 }
 .btn-outline:focus {
-  outline: 2px solid var(--color-border-primary-focus, #313438);
+  outline: 2px solid var(--color-border-primary-focus);
   outline-offset: 2px;
 }
 
 .btn-ghost:not(:disabled):hover {
-  background-color: var(--comp-button-main-ghost-fill-press, #eaecf0);
+  background-color: var(--comp-button-main-ghost-fill-press);
   border-color: transparent;
-  color: var(--color-text-primary-hover, #dadee3);
+  color: var(--color-text-primary-hover);
 }
 .btn-ghost:not(:disabled):active {
-  background-color: var(--color-surface-primary-press, #313438);
+  background-color: var(--color-surface-primary-press);
   border-color: transparent;
-  color: var(--color-text-primary-press, #dadee3);
+  color: var(--color-text-primary-press);
 }
 .btn-ghost:focus {
-  outline: 2px solid var(--color-border-primary-focus, #313438);
+  outline: 2px solid var(--color-border-primary-focus);
   outline-offset: 2px;
 }
 
 .btn-danger:not(:disabled):hover {
-  background-color: var(--color-fill-danger-hover, #f2584e);
-  border-color: var(--color-border-danger-hover, #731711);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-danger-hover);
+  border-color: var(--color-border-danger-hover);
+  color: var(--color-text-primary-inverse);
 }
 .btn-danger:not(:disabled):active {
-  background-color: var(--color-fill-danger-press, #d6382d);
-  border-color: var(--color-border-danger-press, #59110c);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-danger-press);
+  border-color: var(--color-border-danger-press);
+  color: var(--color-text-primary-inverse);
 }
 .btn-danger:focus {
-  outline: 2px solid var(--color-border-danger-focus, #fcdedc);
+  outline: 2px solid var(--color-border-danger-focus);
   outline-offset: 2px;
 }
 
 .btn-warning:not(:disabled):hover {
-  background-color: var(--color-fill-warning-hover, #f0ab2b);
-  border-color: var(--color-border-warning-hover, #eda011);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-warning-hover);
+  border-color: var(--color-border-warning-hover);
+  color: var(--color-text-primary-inverse);
 }
 .btn-warning:not(:disabled):active {
-  background-color: var(--color-fill-warning-press, #d49115);
-  border-color: var(--color-border-warning-press, #d49115);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-warning-press);
+  border-color: var(--color-border-warning-press);
+  color: var(--color-text-primary-inverse);
 }
 .btn-warning:focus {
-  outline: 2px solid var(--color-border-warning-focus, #fae3b9);
+  outline: 2px solid var(--color-border-warning-focus);
   outline-offset: 2px;
 }
 
 .btn-success:not(:disabled):hover {
-  background-color: var(--color-fill-success-hover, #28bf78);
-  border-color: var(--color-border-success-hover, #11a660);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-success-hover);
+  border-color: var(--color-border-success-hover);
+  color: var(--color-text-primary-inverse);
 }
 .btn-success:not(:disabled):active {
-  background-color: var(--color-fill-success-press, #11a660);
-  border-color: var(--color-border-success-press, #0d804a);
-  color: var(--color-text-primary-inverse, #fafbfc);
+  background-color: var(--color-fill-success-press);
+  border-color: var(--color-border-success-press);
+  color: var(--color-text-primary-inverse);
 }
 .btn-success:focus {
-  outline: 2px solid var(--color-border-success-focus, #12b869);
+  outline: 2px solid var(--color-border-success-focus);
   outline-offset: 2px;
 }
 

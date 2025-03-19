@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Always check and go through the relevant files first before create new code files to avoid duplication of code or functions
+

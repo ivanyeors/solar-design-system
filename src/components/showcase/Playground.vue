@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { TokenDefinition } from '@/utils/tokenUtils';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { 
+  TokenDefinition, 
+  getComponentButtonTokens, 
+  getButtonSizeTokensBySize, 
+  getButtonStateTokens, 
+  getButtonVariantTokens,
+  getCommonButtonTokens,
+  getAllTokensForTheme,
+  watchThemeChanges,
+  getThemeAwareToken
+} from '../../utils/tokenUtils';
 import Button from '../ui/Button.vue';
 
 interface Option {
@@ -103,6 +113,7 @@ const copiedToken = ref<string | null>(null);
 const activeTab = ref<'config' | 'tokens'>('config');
 const showToast = ref(false);
 const toastMessage = ref('');
+const currentTheme = ref(document.documentElement.getAttribute('data-theme') || 'light');
 
 const updateConfig = (key: string, value: any) => {
   emit('update:config', key, value);
@@ -131,53 +142,136 @@ const sizeSuffixMap = {
   'xl': '-xl'
 } as const;
 
-// Update the computed properties and add new ones
-const currentTokenValues = computed(() => ({
-  padding: {
-    sm: 'var(--comp-button-main-h-padding-s)',
-    md: 'var(--comp-button-main-h-padding-m)',
-    lg: 'var(--comp-button-main-h-padding-l)'
-  }[props.currentSize],
-  fontSize: {
-    sm: 'var(--font-size-12)',
-    md: 'var(--font-size-14)',
-    lg: 'var(--font-size-16)'
-  }[props.currentSize],
-  background: `var(--color-fill-${props.currentType}-${props.currentState})`,
-  text: `var(--color-text-${props.currentType}-${props.currentState})`,
-  border: `var(--color-border-${props.currentType}-${props.currentState})`
-}));
+// Dynamic token retrieval functions
+const getThemeAwareTokenValue = (type: string, variant: string, state: string) => {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  const isDefaultState = state === 'rest';
+  
+  // Handle special cases for primary variant
+  if (variant === 'primary') {
+    if (type === 'text') {
+      return `var(--color-text-neutrallight-${state})`;
+    }
+    if (type === 'fill') {
+      return `var(--color-fill-brand-${state})`;
+    }
+    if (type === 'border') {
+      return `var(--color-border-brand-${state})`;
+    }
+  }
 
-// Update the activeTokens computed property
+  // Handle ghost variant special cases
+  if (variant === 'ghost') {
+    if (type === 'fill' && isDefaultState) {
+      return 'transparent';
+    }
+    if (type === 'border') {
+      return 'transparent';
+    }
+    if (type === 'surface' && state === 'hover') {
+      return `var(--comp-button-main-ghost-fill-press)`;
+    }
+  }
+
+  // Handle outline variant special cases
+  if (variant === 'outline' && type === 'fill' && isDefaultState) {
+    return 'transparent';
+  }
+
+  // Handle secondary variant special cases
+  if (variant === 'secondary') {
+    if (type === 'fill') {
+      return `var(--comp-button-main-fill-${state}-sec)`;
+    }
+    if (type === 'text' && isDefaultState) {
+      return `var(--comp-button-main-text-color-fill-sec)`;
+    }
+  }
+
+  // Default token mapping
+  const tokenMap = {
+    fill: `var(--color-fill-${variant}-${state})`,
+    text: `var(--color-text-primary-${state})`,
+    border: `var(--color-border-${variant}-${state})`,
+    icon: `var(--color-icon-${variant}-${state})`,
+    surface: `var(--color-surface-${variant}-${state})`
+  };
+
+  return tokenMap[type as keyof typeof tokenMap];
+};
+
+// Dynamically collect all relevant tokens
+const collectAllTokens = computed(() => {
+  const commonTokens = getCommonButtonTokens();
+  const sizeTokens = getButtonSizeTokensBySize(props.currentSize);
+  const stateTokens = getButtonStateTokens(props.currentState);
+  const variantTokens = getButtonVariantTokens(props.currentType);
+  const componentTokens = getComponentButtonTokens();
+
+  // Combine all tokens and ensure they're unique
+  const allTokens = [
+    ...commonTokens, 
+    ...sizeTokens, 
+    ...stateTokens, 
+    ...variantTokens,
+    ...componentTokens
+  ].reduce((unique: TokenDefinition[], token) => {
+    if (!unique.some(t => t.name === token.name)) {
+      unique.push(token);
+    }
+    return unique;
+  }, []);
+
+  return allTokens;
+});
+
+// Update the token filtering and display logic
 const activeTokens = computed(() => {
-  const tokens = [...props.tokens];
+  // Use both dynamically fetched tokens and any that were passed in as props
+  const allTokens = [...collectAllTokens.value, ...props.tokens];
   const currentState = props.currentState;
-  const currentSize = props.currentSize;
   const currentType = props.currentType;
-  const sizeSuffix = sizeSuffixMap[currentSize as keyof typeof sizeSuffixMap];
+  const sizeSuffix = sizeSuffixMap[props.currentSize as keyof typeof sizeSuffixMap];
 
-  return tokens.filter(token => {
+  return allTokens.filter(token => {
     // Always show token-code entries
     if (token.name.includes('token-code')) {
       return true;
     }
 
-    // Filter size-specific tokens - only show tokens matching current size suffix
+    // Filter size-specific tokens
     if (token.name.includes('padding') || token.name.includes('height') || token.name.includes('width')) {
       return token.name.endsWith(sizeSuffix);
     }
 
     // Filter state-specific tokens
-    if (token.name.includes(currentState)) return true;
+    if (token.name.includes(currentState) || 
+        (currentState === 'hover' && token.name.includes('-hover')) ||
+        (currentState === 'press' && token.name.includes('-press')) ||
+        (currentState === 'focus' && token.name.includes('-focus')) ||
+        (currentState === 'disabled' && token.name.includes('-disabled'))) {
+      return true;
+    }
 
     // Filter variant-specific tokens
-    if (currentType && token.name.includes(currentType)) return true;
+    if (currentType && (
+        token.name.includes(`-${currentType}-`) ||
+        token.name.includes(`-${currentType}.`) ||
+        token.name.includes(`${currentType}-`))) {
+      return true;
+    }
 
-    // Keep common tokens that don't have size variations
+    // Keep common tokens that don't have size/state/variant variations
     if (token.name.includes('main') && 
         !token.name.includes('padding') && 
         !token.name.includes('height') && 
-        !token.name.includes('width')) return true;
+        !token.name.includes('width') &&
+        !token.name.includes('hover') &&
+        !token.name.includes('press') &&
+        !token.name.includes('focus') &&
+        !token.name.includes('disabled')) {
+      return true;
+    }
 
     return false;
   });
@@ -188,14 +282,20 @@ const groupedTokens = computed(() => {
   const groups: { [key: string]: TokenDefinition[] } = {
     common: [],
     sizes: [],
-    states: []
+    states: [],
+    variants: [],
+    icons: []
   };
 
   const sizeSuffix = sizeSuffixMap[props.currentSize as keyof typeof sizeSuffixMap];
 
   activeTokens.value.forEach(token => {
+    // Group icon tokens
+    if (token.name.includes('icon')) {
+      groups.icons.push(token);
+    }
     // Group size-related tokens
-    if (token.name.includes('token-code') || 
+    else if (token.name.includes('token-code') || 
         (token.name.includes('padding') && token.name.endsWith(sizeSuffix)) || 
         (token.name.includes('height') && token.name.endsWith(sizeSuffix)) || 
         (token.name.includes('width') && token.name.endsWith(sizeSuffix))) {
@@ -203,12 +303,15 @@ const groupedTokens = computed(() => {
     }
     // Group state-related tokens
     else if (token.name.includes(props.currentState) || 
-             token.name.includes('rest') || 
              token.name.includes('hover') || 
              token.name.includes('press') || 
              token.name.includes('focus') || 
              token.name.includes('disabled')) {
       groups.states.push(token);
+    }
+    // Group variant-specific tokens
+    else if (token.name.includes(props.currentType)) {
+      groups.variants.push(token);
     }
     // Group common tokens
     else if (!token.name.includes('padding') && 
@@ -218,51 +321,138 @@ const groupedTokens = computed(() => {
     }
   });
 
-  // Sort size tokens to keep related tokens together
-  groups.sizes.sort((a, b) => {
-    // Keep token-code at the top
-    if (a.name.includes('token-code')) return -1;
-    if (b.name.includes('token-code')) return 1;
+  // Sort tokens within groups
+  Object.keys(groups).forEach(groupKey => {
+    groups[groupKey].sort((a, b) => {
+      // Keep token-code at the top
+      if (a.name.includes('token-code')) return -1;
+      if (b.name.includes('token-code')) return 1;
 
-    // Then sort by type (padding, height, width)
-    const order = ['padding', 'height', 'width'];
-    const aType = order.find(type => a.name.includes(type)) || '';
-    const bType = order.find(type => b.name.includes(type)) || '';
-    
-    if (aType !== bType) {
-      return order.indexOf(aType) - order.indexOf(bType);
-    }
+      // Sort by token type
+      const typeOrder = ['padding', 'height', 'width', 'icon', 'text', 'background', 'border'];
+      const aType = typeOrder.find(type => a.name.includes(type)) || '';
+      const bType = typeOrder.find(type => b.name.includes(type)) || '';
+      
+      if (aType !== bType) {
+        return typeOrder.indexOf(aType) - typeOrder.indexOf(bType);
+      }
 
-    // Then sort by orientation (h vs v) for padding
-    if (a.name.includes('padding') && b.name.includes('padding')) {
-      return a.name.includes('-h-') ? -1 : 1;
-    }
+      // Sort by state for state tokens
+      if (groupKey === 'states') {
+        const stateOrder = ['rest', 'hover', 'press', 'focus', 'disabled'];
+        const aState = stateOrder.find(state => a.name.includes(state)) || '';
+        const bState = stateOrder.find(state => b.name.includes(state)) || '';
+        if (aState !== bState) {
+          return stateOrder.indexOf(aState) - stateOrder.indexOf(bState);
+        }
+      }
 
-    return a.name.localeCompare(b.name);
+      return a.name.localeCompare(b.name);
+    });
   });
 
   return groups;
 });
 
-// Add methods for token group display logic
+// Update the token group display logic
 const shouldShowTokenGroup = (groupName: string) => {
   if (groupName === 'common' && props.showCommonTokens) return true;
   if (groupName === 'sizes' && props.showSizeTokens) return true;
-  if (groupName === 'states') return true;
+  if (['states', 'variants', 'icons'].includes(groupName)) return true;
   return false;
 };
 
-// Update the token group title to include size
+// Update the token group title
 const getTokenGroupTitle = (groupName: string) => {
+  const themeLabel = currentTheme.value === 'dark' ? '(Dark)' : '(Light)';
+  
   switch (groupName) {
     case 'common':
-      return 'Common Tokens';
+      return `Common Tokens ${themeLabel}`;
     case 'sizes':
       return `Size Tokens (${props.currentSize.toUpperCase()})`;
     case 'states':
-      return 'State Tokens';
+      return `State Tokens (${props.currentState})`;
+    case 'variants':
+      return `${props.currentType.charAt(0).toUpperCase() + props.currentType.slice(1)} Variant Tokens`;
+    case 'icons':
+      return `Icon Tokens ${themeLabel}`;
     default:
       return groupName;
+  }
+};
+
+// Update the currentTokenValues computed property
+const currentTokenValues = computed(() => {
+  const isDefaultState = props.currentState === 'rest';
+  const currentType = props.currentType;
+
+  return {
+    padding: {
+      sm: 'var(--comp-button-main-h-padding-s)',
+      md: 'var(--comp-button-main-h-padding-m)',
+      lg: 'var(--comp-button-main-h-padding-l)',
+      xl: 'var(--comp-button-main-h-padding-xl)'
+    }[props.currentSize],
+    fontSize: {
+      sm: 'var(--font-size-14)',
+      md: 'var(--font-size-16)',
+      lg: 'var(--font-size-18)',
+      xl: 'var(--font-size-20)'
+    }[props.currentSize],
+    background: getThemeAwareTokenValue('fill', currentType, props.currentState),
+    text: currentType === 'primary' 
+      ? getThemeAwareTokenValue('text', 'neutrallight', props.currentState)
+      : getThemeAwareTokenValue('text', currentType === 'secondary' && isDefaultState ? 'secondary' : 'primary', props.currentState),
+    border: getThemeAwareTokenValue('border', currentType, props.currentState),
+    icon: currentType === 'primary'
+      ? getThemeAwareTokenValue('icon', 'primary-inverse', props.currentState)
+      : getThemeAwareTokenValue('icon', currentType, props.currentState),
+    outline: getThemeAwareTokenValue('border', currentType, 'focus'),
+    surface: getThemeAwareTokenValue('surface', currentType, props.currentState),
+    surfaceHover: getThemeAwareTokenValue('surface', currentType, 'hover'),
+    surfacePress: getThemeAwareTokenValue('surface', currentType, 'press')
+  };
+});
+
+// Add theme observer and force recomputation on theme changes
+onMounted(() => {
+  // Set up theme observer to refresh tokens when theme changes
+  const cleanup = watchThemeChanges(() => {
+    currentTheme.value = document.documentElement.getAttribute('data-theme') || 'light';
+    
+    // Force recomputation of token values and dynamic tokens
+    activeTokens.value.forEach(token => {
+      token.value = getThemeAwareToken(token.name);
+    });
+    
+    // Force recompute of token values for the preview
+    emit('update:tokenValues', currentTokenValues.value);
+    
+    // Update preview styles
+    updatePreviewStyles();
+  });
+});
+
+// Cleanup on component unmount
+onUnmounted(() => {
+  if (typeof cleanup === 'function') {
+    cleanup();
+  }
+});
+
+// Function to update preview styles directly
+const updatePreviewStyles = () => {
+  const previewButton = document.querySelector('.preview-button');
+  if (previewButton) {
+    previewButton.style.setProperty('--button-background', currentTokenValues.value.background);
+    previewButton.style.setProperty('--button-text', currentTokenValues.value.text);
+    previewButton.style.setProperty('--button-border', currentTokenValues.value.border);
+    previewButton.style.setProperty('--button-icon', currentTokenValues.value.icon);
+    previewButton.style.setProperty('--button-outline', currentTokenValues.value.outline);
+    previewButton.style.setProperty('--button-surface', currentTokenValues.value.surface);
+    previewButton.style.setProperty('--button-surface-hover', currentTokenValues.value.surfaceHover);
+    previewButton.style.setProperty('--button-surface-press', currentTokenValues.value.surfacePress);
   }
 };
 
@@ -273,12 +463,7 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
     emit('update:tokenValues', currentTokenValues.value);
     
     // Update preview styles
-    const previewButton = document.querySelector('.preview-button');
-    if (previewButton) {
-      previewButton.style.setProperty('--button-background', currentTokenValues.value.background);
-      previewButton.style.setProperty('--button-text', currentTokenValues.value.text);
-      previewButton.style.setProperty('--button-border', currentTokenValues.value.border);
-    }
+    updatePreviewStyles();
   },
   { immediate: true }
 );
@@ -308,7 +493,7 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
       </div>
     </div>
 
-    <!-- Preview Section - Always visible -->
+    <!-- Preview Section -->
     <div class="preview-section">
       <div class="preview-area">
         <Button
@@ -320,22 +505,31 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
           :class="[
             `button-${currentType}`,
             `button-${currentSize}`,
-            currentState === 'hover' && 'hover',
-            currentState === 'press' && 'active',
-            currentState === 'focus' && 'focus'
+            {
+              'hover': currentState === 'hover',
+              'active': currentState === 'press',
+              'focus': currentState === 'focus',
+              'disabled': currentState === 'disabled'
+            }
           ]"
           :style="{
             '--button-background': currentTokenValues.background,
             '--button-text': currentTokenValues.text,
-            '--button-border': currentTokenValues.border
+            '--button-border': currentTokenValues.border,
+            '--button-icon': currentTokenValues.icon,
+            '--button-outline': currentTokenValues.outline,
+            '--button-surface': currentTokenValues.surface,
+            '--button-surface-hover': currentTokenValues.surfaceHover,
+            '--button-surface-press': currentTokenValues.surfacePress,
+            '--button-transition': 'all 0.2s ease-in-out'
           }"
         >
           <template v-if="showLeadingIcon" #leading-icon>
-            <i class="icon-mail"></i>
+            <i class="icon-mail" :style="{ color: 'var(--button-icon)' }"></i>
           </template>
           <span v-if="showLabel">{{ labelText }}</span>
           <template v-if="showTrailingIcon" #trailing-icon>
-            <i class="icon-arrow-right"></i>
+            <i class="icon-arrow-right" :style="{ color: 'var(--button-icon)' }"></i>
           </template>
         </Button>
       </div>
@@ -343,8 +537,84 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
 
     <!-- Split View Container -->
     <div class="split-view">
-      <!-- Left Side: Configuration -->
-      <div class="split-view-panel">
+      <!-- Left Side: Design Tokens -->
+      <div class="split-view-panel tokens-panel">
+        <h4 class="panel-title">Design Tokens</h4>
+        <div class="tokens-section">
+          <div v-for="(group, groupName) in groupedTokens" 
+               :key="groupName" 
+               class="token-table-container"
+               v-show="shouldShowTokenGroup(groupName)"
+          >
+            <h5 class="token-group-title">
+              {{ getTokenGroupTitle(groupName) }}
+              <span v-if="groupName === 'states' || groupName === 'variants'" class="token-variant-label">
+                {{ currentType }}/{{ currentState }}
+              </span>
+            </h5>
+            <div class="token-table">
+              <table class="min-w-full divide-y token-table-divider">
+                <thead class="token-table-header">
+                  <tr>
+                    <th class="token-table-th">Token</th>
+                    <th class="token-table-th">Value</th>
+                    <th class="token-table-th">Usage</th>
+                  </tr>
+                </thead>
+                <tbody class="token-table-body divide-y token-table-divider">
+                  <tr 
+                    v-for="token in group" 
+                    :key="token.name"
+                    @click="copyToClipboard(token)"
+                    class="token-row"
+                    :class="{
+                      'active-token': token.name.includes(currentState),
+                      'token-code-row': token.name.includes('token-code'),
+                      'variant-token': token.name.includes(currentType),
+                      'state-token': token.name.includes(currentState),
+                      'size-token': token.name.endsWith(sizeSuffixMap[currentSize])
+                    }"
+                  >
+                    <td class="token-table-td">
+                      <div class="token-name-container">
+                        <code class="token-code" :class="{ 
+                          'is-token-code': token.name.includes('token-code'),
+                          'is-active-token': token.name.includes(currentState),
+                          'is-variant-token': token.name.includes(currentType),
+                          'is-size-token': token.name.endsWith(sizeSuffixMap[currentSize])
+                        }">
+                          {{ token.name }}
+                        </code>
+                        <span class="copy-indicator" v-if="copiedToken === token.name">
+                          <i class="icon-check"></i>
+                        </span>
+                      </div>
+                    </td>
+                    <td class="token-table-td">
+                      <div class="token-value-container">
+                        <code class="token-code token-value" :class="{ 
+                          'is-token-code': token.name.includes('token-code'),
+                          'is-active-value': token.name.includes(currentState)
+                        }">
+                          {{ token.value }}
+                        </code>
+                        <div v-if="token.name.includes('color') || token.name.includes('fill')" 
+                             class="token-color-preview"
+                             :style="{ backgroundColor: `var(${token.name})` }"
+                        ></div>
+                      </div>
+                    </td>
+                    <td class="token-table-td token-usage">{{ token.usage }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Configuration -->
+      <div class="split-view-panel config-panel">
         <h4 class="panel-title">Configuration</h4>
         <div class="config-section">
           <!-- Existing configuration controls -->
@@ -433,67 +703,6 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
               >
                 <span class="toggle-switch__handle"></span>
               </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Side: Tokens -->
-      <div class="split-view-panel">
-        <h4 class="panel-title">Design Tokens</h4>
-        <div class="tokens-section">
-          <div v-for="(group, groupName) in groupedTokens" 
-               :key="groupName" 
-               class="token-table-container"
-               v-show="shouldShowTokenGroup(groupName)"
-          >
-            <h5 class="token-group-title">
-              {{ getTokenGroupTitle(groupName) }}
-              <span v-if="groupName === 'states'" class="token-variant-label">
-                {{ currentType }}/{{ currentState }}
-              </span>
-            </h5>
-            <div class="token-table">
-              <table class="min-w-full divide-y token-table-divider">
-                <thead class="token-table-header">
-                  <tr>
-                    <th class="token-table-th">Token</th>
-                    <th class="token-table-th">Value</th>
-                    <th class="token-table-th">Usage</th>
-                  </tr>
-                </thead>
-                <tbody class="token-table-body divide-y token-table-divider">
-                  <tr 
-                    v-for="token in group" 
-                    :key="token.name"
-                    @click="copyToClipboard(token)"
-                    class="token-row"
-                    :class="{
-                      'active-token': token.name.includes(currentState),
-                      'token-code-row': token.name.includes('token-code')
-                    }"
-                  >
-                    <td class="token-table-td">
-                      <div class="token-name-container">
-                        <code class="token-code" :class="{ 'is-token-code': token.name.includes('token-code') }">
-                          {{ token.name }}
-                        </code>
-                        <span class="copy-indicator" v-if="copiedToken === token.name">
-                          <i class="icon-check"></i>
-                        </span>
-                      </div>
-                    </td>
-                    <td class="token-table-td">
-                      <div class="token-value-container">
-                        <code class="token-code token-value" :class="{ 'is-token-code': token.name.includes('token-code') }">
-                          {{ token.value }}
-                        </code>
-                      </div>
-                    </td>
-                    <td class="token-table-td token-usage">{{ token.usage }}</td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
@@ -801,7 +1010,7 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
 /* Split View Styles */
 .split-view {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 60% 40%;
   gap: var(--comp-button-main-gap);
   margin-top: var(--comp-button-main-gap);
 }
@@ -836,6 +1045,18 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
 @media (max-width: 1024px) {
   .split-view {
     grid-template-columns: 1fr;
+  }
+  
+  .tokens-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-primary-rest);
+    padding-right: 0;
+    padding-bottom: var(--comp-button-main-v-padding-l);
+    margin-bottom: var(--comp-button-main-gap);
+  }
+  
+  .config-panel {
+    padding-left: 0;
   }
 }
 
@@ -968,6 +1189,32 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
   background-color: var(--button-background) !important;
   color: var(--button-text) !important;
   border-color: var(--button-border) !important;
+  transition: var(--button-transition) !important;
+}
+
+.preview-button:not(.disabled):hover {
+  background-color: var(--button-surface-hover) !important;
+  border-color: var(--button-border) !important;
+}
+
+.preview-button:not(.disabled).hover {
+  background-color: var(--button-surface-hover) !important;
+  border-color: var(--button-border) !important;
+}
+
+.preview-button:not(.disabled).active {
+  background-color: var(--button-surface-press) !important;
+  border-color: var(--button-border) !important;
+}
+
+.preview-button.focus {
+  outline: 2px solid var(--button-outline) !important;
+  outline-offset: 2px !important;
+}
+
+.preview-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Improve hover state visibility */
@@ -1106,5 +1353,62 @@ watch([() => props.currentSize, () => props.currentState, () => props.currentTyp
 
 :root[data-theme="dark"] .token-code.is-token-code {
   color: var(--color-text-brand-rest);
+}
+
+/* Add new token row styles */
+.token-row.variant-token {
+  background-color: var(--color-surface-brand-subtle);
+}
+
+.token-row.state-token {
+  background-color: var(--color-surface-info-subtle);
+}
+
+.token-row.size-token {
+  background-color: var(--color-surface-success-subtle);
+}
+
+.token-code.is-active-token {
+  color: var(--color-text-brand-rest);
+  font-weight: var(--font-weight-medium-500);
+}
+
+.token-code.is-variant-token {
+  color: var(--color-text-brand-rest);
+}
+
+.token-code.is-size-token {
+  color: var(--color-text-success-rest);
+}
+
+.token-value.is-active-value {
+  color: var(--color-text-brand-rest);
+}
+
+/* Add token color preview */
+.token-color-preview {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--comp-button-main-radius);
+  border: 1px solid var(--color-border-primary-rest);
+}
+
+/* Update token group title styles */
+.token-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--comp-button-main-gap);
+  padding-bottom: var(--comp-button-main-v-padding-s);
+  border-bottom: 1px solid var(--color-border-primary-rest);
+  margin-bottom: var(--comp-button-main-gap);
+}
+
+.token-variant-label {
+  font-size: var(--font-size-12);
+  font-weight: normal;
+  color: var(--color-text-brand-rest);
+  background-color: var(--color-surface-brand-subtle);
+  padding: var(--comp-button-main-v-padding-xs) var(--comp-button-main-h-padding-xs);
+  border-radius: calc(var(--comp-button-main-radius) * 0.75);
 }
 </style> 

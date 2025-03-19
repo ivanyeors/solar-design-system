@@ -9,31 +9,31 @@ defineProps({
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="version-history">
     <div 
       v-for="(version, index) in versions" 
       :key="index"
-      class="timeline-item"
-      :class="index !== versions.length - 1 ? 'timeline-line' : ''"
+      class="version-item"
+      :class="index !== versions.length - 1 ? 'version-item--with-line' : ''"
     >
-      <!-- Version dot -->
-      <div class="timeline-dot"></div>
+      <!-- Version marker -->
+      <div class="version-marker"></div>
       
       <!-- Version content -->
-      <div class="version-card">
-        <div class="flex flex-wrap justify-between items-start mb-3">
+      <div class="version-content">
+        <div class="version-header">
           <h3 class="version-title">{{ version.version }}</h3>
           <span class="version-date">{{ version.date }}</span>
         </div>
         
-        <ul class="space-y-2">
+        <ul class="version-changes">
           <li 
             v-for="(change, changeIndex) in version.changes" 
             :key="changeIndex"
-            class="version-change-item"
+            class="version-change"
           >
             <span class="change-bullet">•</span>
-            <span>{{ change }}</span>
+            <span class="change-text">{{ change }}</span>
           </li>
         </ul>
       </div>
@@ -42,57 +42,138 @@ defineProps({
 </template>
 
 <style scoped>
-.timeline-item {
-  position: relative;
-  padding-left: 2rem;
-  padding-bottom: 1.5rem;
+.version-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--comp-button-main-gap);
 }
 
-.timeline-line {
+.version-item {
+  position: relative;
+  padding-left: var(--comp-button-main-h-padding-l);
+  padding-bottom: var(--comp-button-main-v-padding-l);
+}
+
+.version-item--with-line {
   border-left: 2px solid var(--color-border-primary-rest);
 }
 
-.timeline-dot {
+.version-marker {
   position: absolute;
-  left: -8px;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 9999px;
-  background-color: var(--color-primary-rest);
-  border: 4px solid var(--color-surface-primary-rest);
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--comp-button-main-radius);
+  background-color: var(--color-fill-brand-rest);
+  border: 2px solid var(--color-surface-primary-rest);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.version-card {
+.version-content {
   background-color: var(--color-surface-secondary-rest);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-left: 1rem;
+  border-radius: var(--comp-button-main-radius);
+  padding: var(--comp-button-main-v-padding-m) var(--comp-button-main-h-padding-m);
+  margin-left: var(--comp-button-main-gap);
+  border: 1px solid var(--color-border-primary-rest);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.version-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--comp-button-main-gap);
 }
 
 .version-title {
-  font-weight: 600;
-  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold-600);
+  font-size: var(--font-size-16);
   color: var(--color-text-primary-rest);
+  transition: color 0.2s ease;
 }
 
 .version-date {
-  font-size: 0.875rem;
-  color: var(--color-text-tertiary-rest);
+  font-size: var(--font-size-14);
+  color: var(--color-text-secondary-rest);
+  transition: color 0.2s ease;
 }
 
-.version-change-item {
-  color: var(--color-text-secondary-rest);
+.version-changes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--comp-button-main-gap);
+}
+
+.version-change {
   display: flex;
   align-items: flex-start;
+  gap: var(--comp-button-main-gap);
+  color: var(--color-text-secondary-rest);
+  transition: color 0.2s ease;
 }
 
 .change-bullet {
-  color: var(--color-primary-rest);
-  margin-right: 0.5rem;
+  color: var(--color-text-brand-rest);
+  font-size: var(--font-size-16);
+  line-height: 1;
+  transition: color 0.2s ease;
 }
 
-/* Timeline styling */
-.timeline-item:last-child {
-  padding-bottom: 0;
+.change-text {
+  font-size: var(--font-size-14);
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] {
+  .version-marker {
+    background-color: var(--color-fill-brand-rest);
+    border-color: var(--color-surface-secondary-rest);
+  }
+
+  .version-content {
+    background-color: var(--color-surface-secondary-rest);
+    border-color: var(--color-border-primary-rest);
+  }
+
+  .version-title {
+    color: var(--color-text-primary-rest);
+  }
+
+  .version-date {
+    color: var(--color-text-secondary-rest);
+  }
+
+  .version-change {
+    color: var(--color-text-secondary-rest);
+  }
+
+  .change-bullet {
+    color: var(--color-text-brand-rest);
+  }
+
+  /* Add hover effects for dark mode */
+  .version-content:hover {
+    background-color: var(--color-surface-secondary-hover);
+    border-color: var(--color-border-brand-hover);
+  }
+
+  .version-marker:hover {
+    background-color: var(--color-fill-brand-hover);
+  }
+}
+
+/* Add hover effects for light mode */
+@media (hover: hover) {
+  .version-content:hover {
+    background-color: var(--color-surface-secondary-hover);
+    border-color: var(--color-border-brand-hover);
+  }
+
+  .version-marker:hover {
+    background-color: var(--color-fill-brand-hover);
+  }
 }
 </style> 

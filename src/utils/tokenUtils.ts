@@ -303,22 +303,216 @@ export const getButtonTokens = (variant: keyof typeof variantTokenCategories): T
  * @param sizes Array of size options ('sm' | 'md' | 'lg')
  * @returns Array of token definitions
  */
-export const getButtonSizeTokens = (sizes: Array<keyof typeof sizeTokens>): TokenDefinition[] => {
-  return sizes.map(size => ({
-    name: sizeTokens[size].name,
-    value: getCSSVariableValue(sizeTokens[size].name),
-    usage: sizeTokens[size].usage
-  }));
+export const getButtonSizeTokens = (sizes: Array<'sm' | 'md' | 'lg' | 'xl'>): TokenDefinition[] => {
+  const allSizeTokens = getDynamicButtonTokens().filter(token => 
+    token.name.includes('padding') || 
+    token.name.includes('height') || 
+    token.name.includes('width')
+  );
+  
+  return allSizeTokens.filter(token => {
+    return sizes.some(size => {
+      const sizeSuffix = size === 'sm' ? '-s' : 
+                        size === 'md' ? '-m' : 
+                        size === 'lg' ? '-l' : '-xl';
+      return token.name.endsWith(sizeSuffix);
+    });
+  });
 };
 
 /**
- * Gets common button tokens that apply to all variants
- * @returns Array of token definitions
+ * Returns common button tokens that are not specific to a variant or state
+ * @returns Array of common button tokens
  */
 export const getCommonButtonTokens = (): TokenDefinition[] => {
-  return commonButtonTokens.map(token => ({
-    name: token.name,
-    value: getCSSVariableValue(token.name),
-    usage: token.usage
-  }));
+  return getDynamicButtonTokens().filter(token => {
+    // Include all component button tokens that don't have state/variant specificity
+    return token.name.startsWith('--comp-button-main') && 
+           !token.name.includes('-hover') && 
+           !token.name.includes('-press') && 
+           !token.name.includes('-focus') && 
+           !token.name.includes('-disabled');
+  });
+};
+
+/**
+ * Gets all tokens for a specific selector (light or dark mode)
+ * @param selector CSS selector for theme (:root or :root[data-theme="dark"])
+ * @returns A collection of all tokens for the specified theme
+ */
+export const getAllTokensForTheme = (theme: 'light' | 'dark'): Record<string, string> => {
+  const selector = theme === 'light' ? ':root' : ':root[data-theme="dark"]';
+  const cssRules = Array.from(document.styleSheets)
+    .filter(sheet => {
+      try {
+        // Filter to only include our compiled tokens CSS
+        return sheet.href && sheet.href.includes('compiled-tokens.css');
+      } catch (e) {
+        // Cross-origin sheets will throw errors when attempting to access cssRules
+        return false;
+      }
+    })
+    .flatMap(sheet => Array.from(sheet.cssRules))
+    .find(rule => rule instanceof CSSStyleRule && rule.selectorText === selector) as CSSStyleRule;
+  
+  if (!cssRules) return {};
+  
+  const styleObj: Record<string, string> = {};
+  for (let i = 0; i < cssRules.style.length; i++) {
+    const prop = cssRules.style[i];
+    styleObj[prop] = cssRules.style.getPropertyValue(prop).trim();
+  }
+  
+  return styleObj;
+};
+
+/**
+ * Gets a token value for the current theme
+ * @param tokenName Token name including the -- prefix
+ * @returns The value of the token for the current theme
+ */
+export const getThemeAwareToken = (tokenName: string): string => {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const tokenValue = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
+  return tokenValue;
+};
+
+/**
+ * Formats a token value based on its type
+ * @param value Token value
+ * @returns Formatted value
+ */
+export const formatTokenValue = (value: string): string => {
+  // Try to detect colors and format them nicely
+  if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')) {
+    return value;
+  }
+  
+  // Try to detect sizes
+  if (value.endsWith('px') || value.endsWith('rem') || value.endsWith('em') || value.endsWith('%')) {
+    return value;
+  }
+  
+  // If it's a reference to another token, resolve it
+  if (value.startsWith('var(--')) {
+    const tokenName = value.substring(4, value.length - 1);
+    return `${value} → ${getThemeAwareToken(tokenName)}`;
+  }
+  
+  return value;
+};
+
+/**
+ * Checks if the token is a valid CSS variable from compiled-tokens.css
+ * @param tokenName Token name
+ * @returns True if valid token
+ */
+export const isValidToken = (tokenName: string): boolean => {
+  // Only check cache for the current theme to avoid unnecessary computation
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const allTokens = getAllTokensForTheme(currentTheme as 'light' | 'dark');
+  return tokenName.startsWith('--') && tokenName in allTokens;
+};
+
+/**
+ * Gets all button-related tokens from compiled-tokens.css for current theme
+ * @returns Array of button tokens
+ */
+export const getDynamicButtonTokens = (): TokenDefinition[] => {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const allTokens = getAllTokensForTheme(currentTheme as 'light' | 'dark');
+  
+  return Object.entries(allTokens)
+    .filter(([key]) => key.includes('button') || 
+                       (key.startsWith('--color-') && 
+                        (key.includes('-primary-') || 
+                         key.includes('-brand-') || 
+                         key.includes('-secondary-') || 
+                         key.includes('-danger-') || 
+                         key.includes('-warning-') || 
+                         key.includes('-success-'))))
+    .map(([key, value]) => {
+      // Try to determine usage based on the token name
+      let usage = '';
+      if (key.includes('radius')) usage = 'Border radius';
+      else if (key.includes('gap')) usage = 'Spacing between elements';
+      else if (key.includes('padding')) usage = 'Internal spacing';
+      else if (key.includes('text-color') || key.includes('color-text')) usage = 'Text color';
+      else if (key.includes('fill')) usage = 'Background color';
+      else if (key.includes('border')) usage = 'Border color';
+      else usage = 'Button style token';
+      
+      return {
+        name: key,
+        value: formatTokenValue(value),
+        usage
+      };
+    });
+};
+
+/**
+ * Returns tokens relevant to a specific button state
+ * @param state Button state (rest, hover, press, focus, disabled)
+ * @returns Array of tokens for the specified state
+ */
+export const getButtonStateTokens = (state: string): TokenDefinition[] => {
+  const allTokens = getDynamicButtonTokens();
+  return allTokens.filter(token => token.name.includes(`-${state}`));
+};
+
+/**
+ * Returns tokens relevant to a specific button variant
+ * @param variant Button variant
+ * @returns Array of tokens for the specified variant
+ */
+export const getButtonVariantTokens = (variant: string): TokenDefinition[] => {
+  const allTokens = getDynamicButtonTokens();
+  return allTokens.filter(token => {
+    // Map 'primary' to 'brand' for some token types
+    const searchVariant = variant === 'primary' ? 
+      (token.name.includes('fill-') || token.name.includes('border-') ? 'brand' : 'primary') 
+      : variant;
+    
+    return token.name.includes(`-${searchVariant}-`);
+  });
+};
+
+/**
+ * Returns tokens relevant to a specific button size
+ * @param size Button size (sm, md, lg, xl)
+ * @returns Array of tokens for the specified size
+ */
+export const getButtonSizeTokensBySize = (size: string): TokenDefinition[] => {
+  const sizeSuffix = size === 'sm' ? '-s' : 
+                     size === 'md' ? '-m' : 
+                     size === 'lg' ? '-l' : 
+                     size === 'xl' ? '-xl' : '';
+  
+  const allTokens = getDynamicButtonTokens();
+  return allTokens.filter(token => 
+    (token.name.includes('padding') || token.name.includes('height') || token.name.includes('width')) 
+    && token.name.endsWith(sizeSuffix)
+  );
+};
+
+/**
+ * Watch for theme changes and execute a callback
+ * @param callback Function to call when theme changes
+ * @returns Cleanup function
+ */
+export const watchThemeChanges = (callback: () => void): () => void => {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'data-theme') {
+        callback();
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+  });
+  
+  return () => observer.disconnect();
 }; 
