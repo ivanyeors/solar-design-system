@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'vue-router': 'vue-router/dist/vue-router.esm-bundler.js'
+      'vue-router': path.resolve(__dirname, './node_modules/vue-router/dist/vue-router.esm-bundler.js')
     },
   },
   
@@ -21,10 +21,11 @@ export default defineConfig({
       fileName: (format) => `solar-design-system.${format}.js`,
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'vue-router'],
       output: {
         globals: {
           vue: 'Vue',
+          'vue-router': 'VueRouter'
         },
         exports: 'named',
         manualChunks: {
