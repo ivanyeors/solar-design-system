@@ -144,6 +144,7 @@ jobs:
 
             export default defineConfig({
               plugins: [vue()],
+              base: "/solar-design-system/",
               resolve: {
                 alias: {
                   "@": path.resolve(__dirname, "./src")
@@ -163,6 +164,7 @@ jobs:
 
             export default defineConfig({
               plugins: [vue()],
+              base: "/solar-design-system/",
               resolve: {
                 alias: {
                   "@": path.resolve(__dirname, "./src")
