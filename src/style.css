@@ -1,5 +1,6 @@
 /* Load semantic tokens */
 @import './styles/compiled-tokens.css';
+@import './styles/fonts.css';
 
 @tailwind base;
 @tailwind components;
@@ -19,12 +20,14 @@
 
   html {
     @apply antialiased;
+    font-family: var(--font-primary);
   }
 
   body {
     color: var(--text-primary);
     background-color: var(--background-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: var(--font-primary);
   }
 
   #app {

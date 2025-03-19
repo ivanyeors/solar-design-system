@@ -29,6 +29,9 @@ const setBrand = (brand: BrandMode) => {
   currentBrand.value = brand;
   document.documentElement.setAttribute('data-brand', brand);
   
+  // Update theme attribute for fonts
+  document.documentElement.setAttribute('data-theme', brand === 'bruhealth' ? 'bruhealth' : 'evyd');
+  
   // Save preference
   localStorage.setItem('brandMode', brand);
 };
@@ -41,8 +44,9 @@ const updateEffectiveTheme = () => {
     effectiveTheme.value = themeMode.value as 'light' | 'dark';
   }
   
-  // Apply the theme to the document
-  document.documentElement.setAttribute('data-theme', effectiveTheme.value);
+  // Apply the theme to the document while preserving the brand theme
+  const currentBrandTheme = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-color-theme', effectiveTheme.value);
   
   if (effectiveTheme.value === 'dark') {
     document.documentElement.classList.add('dark');

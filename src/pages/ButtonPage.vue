@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import Button from '../components/ui/Button.vue';
-import ButtonPreview from '../components/showcase/ButtonPreview.vue';
+import Playground from '../components/showcase/Playground.vue';
 import ComponentShowcase from '../components/showcase/ComponentShowcase.vue';
 import PropRow from '../components/showcase/PropRow.vue';
-import TokenTable from '../components/showcase/TokenTable.vue';
 import SideNavigation from '../components/layout/SideNavigation.vue';
 import AccessibilityChecklist from '../components/showcase/AccessibilityChecklist.vue';
 import VersionHistory from '../components/showcase/VersionHistory.vue';
 import RelatedComponentCard from '../components/showcase/RelatedComponentCard.vue';
 import Icon from '../components/ui/Icon.vue';
+import { getButtonTokens, getCommonButtonTokens, getButtonSizeTokens } from '../utils/tokenUtils';
+import type { ButtonVariant } from '../utils/tokenUtils';
 
 // Active section tracking
 const activeSection = ref('overview');
 const sections = [
   { id: 'overview', label: 'Overview' },
   { id: 'playground', label: 'Playground' },
-  { id: 'implementation', label: 'Implementation' },
   { id: 'guidelines', label: 'Guidelines' },
   { id: 'anatomy', label: 'Anatomy' },
   { id: 'states', label: 'States & Variations' },
@@ -101,7 +101,7 @@ onMounted(() => {
 const props = [
   {
     name: 'variant',
-    type: "'primary' | 'secondary' | 'outline' | 'ghost'",
+    type: "'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'warning' | 'success'",
     defaultValue: "'primary'",
     description: "The visual style of the button."
   },
@@ -169,6 +169,15 @@ const accessibilityItems = [
 // Version history data
 const versionHistory = [
   {
+    version: "1.3.0",
+    date: "2024-03-18",
+    changes: [
+      "Added danger, warning, and success button variants",
+      "Updated button documentation and examples",
+      "Enhanced accessibility for status-indicating buttons"
+    ]
+  },
+  {
     version: "1.2.0",
     date: "2023-06-15",
     changes: [
@@ -213,6 +222,58 @@ const relatedComponents = [
     path: "/components/link"
   }
 ];
+
+// Computed tokens based on selected variant
+const selectedVariant = ref<ButtonVariant>('primary');
+const buttonTokens = computed(() => {
+  if (!selectedVariant.value) return [];
+  return getButtonTokens(selectedVariant.value);
+});
+
+// Available variants for the selector
+const availableVariants: ButtonVariant[] = ['primary', 'secondary', 'danger', 'warning', 'success'];
+
+// Add size and state options
+const sizeOptions = [
+  { value: 'sm', label: 'Small' },
+  { value: 'md', label: 'Medium' },
+  { value: 'lg', label: 'Large' }
+];
+
+const stateOptions = [
+  { value: 'rest', label: 'Default' },
+  { value: 'hover', label: 'Hover' },
+  { value: 'press', label: 'Pressed' },
+  { value: 'focus', label: 'Focused' },
+  { value: 'disabled', label: 'Disabled' }
+];
+
+// Add interface for playground configuration
+interface PlaygroundConfig {
+  size: string;
+  state: string;
+  type: string;
+  showLabel: boolean;
+  labelText: string;
+  showLeadingIcon: boolean;
+  showTrailingIcon: boolean;
+  [key: string]: string | boolean; // Add index signature
+}
+
+// Update playground configuration with type
+const playgroundConfig = ref<PlaygroundConfig>({
+  size: 'md',
+  state: 'rest',
+  type: 'primary',
+  showLabel: true,
+  labelText: 'Button Label',
+  showLeadingIcon: false,
+  showTrailingIcon: false
+});
+
+const handlePlaygroundUpdate = (key: string, value: any) => {
+  playgroundConfig.value[key] = value;
+};
 </script>
 
 <template>
@@ -258,7 +319,7 @@ const relatedComponents = [
                 WCAG AA Compliant
               </span>
               <span class="status-badge status-badge-neutral">
-                v1.2.0
+                v1.3.0
               </span>
             </div>
             
@@ -268,6 +329,9 @@ const relatedComponents = [
                 <Button variant="secondary">Secondary</Button>
                 <Button variant="outline">Outline</Button>
                 <Button variant="ghost">Ghost</Button>
+                <Button variant="danger">Danger</Button>
+                <Button variant="warning">Warning</Button>
+                <Button variant="success">Success</Button>
               </div>
             </div>
           </section>
@@ -280,70 +344,21 @@ const relatedComponents = [
             
             <!-- Interactive Preview -->
             <div class="showcase-container p-4 lg:p-6">
-              <ButtonPreview />
-            </div>
-          </section>
-
-          <section id="implementation" class="mb-10 scroll-mt-16">
-            <h2 class="text-2xl font-bold section-heading mb-4">Implementation</h2>
-            
-            <!-- Design Tokens -->
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Design Tokens</h3>
-              <TokenTable
-                :tokens="[
-                  { name: '--comp-button-main-radius', value: '8px', usage: 'Button corner radius' },
-                  { name: '--comp-button-main-gap', value: '8px', usage: 'Gap between elements in button' },
-                  { name: '--comp-button-main-text-weight', value: '500', usage: 'Button text font weight' },
-                  { name: '--comp-button-main-transition', value: '0.2s ease', usage: 'Transition timing for state changes' },
-                  { name: '--comp-button-main-height-s', value: '32px', usage: 'Height for small buttons' },
-                  { name: '--comp-button-main-height-m', value: '40px', usage: 'Height for medium buttons' },
-                  { name: '--comp-button-main-height-l', value: '48px', usage: 'Height for large buttons' },
-                  { name: '--comp-button-main-fill-rest-pri', value: 'var(--color-fill-brand-rest)', usage: 'Primary button background' },
-                  { name: '--comp-button-main-text-color-fill-pri', value: 'var(--color-text-neutrallight-rest)', usage: 'Primary button text color' },
-                  { name: '--comp-button-main-focus-width', value: '3px', usage: 'Width of focus outline' },
-                  { name: '--comp-button-main-focus-offset', value: '2px', usage: 'Offset for focus outline' },
-                  { name: '--comp-button-main-disabled-opacity', value: '0.5', usage: 'Opacity for disabled buttons' }
-                ]"
+              <Playground
+                title="Button Playground"
+                :current-size="playgroundConfig.size"
+                :current-state="playgroundConfig.state"
+                :current-type="playgroundConfig.type"
+                :show-label="playgroundConfig.showLabel"
+                :label-text="playgroundConfig.labelText"
+                :show-leading-icon="playgroundConfig.showLeadingIcon"
+                :show-trailing-icon="playgroundConfig.showTrailingIcon"
+                :size-options="sizeOptions"
+                :state-options="stateOptions"
+                :tokens="buttonTokens"
+                :variant="selectedVariant"
+                @update:config="handlePlaygroundUpdate"
               />
-            </div>
-            
-            <!-- API Reference -->
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">API Reference</h3>
-              <PropRow
-                v-for="prop in props"
-                :key="prop.name"
-                v-bind="prop"
-              />
-            </div>
-            
-            <div class="mb-8">
-              <h3 class="text-xl font-semibold mb-4">Event Handlers</h3>
-              <div class="event-handlers-container">
-                <table class="w-full">
-                  <thead>
-                    <tr class="event-row">
-                      <th class="text-left p-2">Event</th>
-                      <th class="text-left p-2">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="event-row">
-                      <td class="p-2 font-mono text-sm">@click</td>
-                      <td class="p-2">Triggered when button is clicked</td>
-                    </tr>
-                    <tr class="event-row">
-                      <td class="p-2 font-mono text-sm">@focus</td>
-                      <td class="p-2">Triggered when button receives focus</td>
-                    </tr>
-                    <tr>
-                      <td class="p-2 font-mono text-sm">@blur</td>
-                      <td class="p-2">Triggered when button loses focus</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </section>
 
@@ -464,7 +479,7 @@ const relatedComponents = [
             
             <div class="mb-8">
               <h3 class="text-xl font-semibold mb-4">Variants</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                 <div class="flex flex-col items-center">
                   <Button variant="primary">Primary</Button>
                   <span class="mt-2 text-sm state-label">Primary</span>
@@ -480,6 +495,18 @@ const relatedComponents = [
                 <div class="flex flex-col items-center">
                   <Button variant="ghost">Ghost</Button>
                   <span class="mt-2 text-sm state-label">Ghost</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="danger">Danger</Button>
+                  <span class="mt-2 text-sm state-label">Danger</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="warning">Warning</Button>
+                  <span class="mt-2 text-sm state-label">Warning</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <Button variant="success">Success</Button>
+                  <span class="mt-2 text-sm state-label">Success</span>
                 </div>
               </div>
             </div>
@@ -753,11 +780,17 @@ import Button from '@/components/ui/Button.vue';
 &lt;Button variant="primary" loading&gt;Loading&lt;/Button&gt;
 &lt;Button variant="secondary" loading&gt;Loading&lt;/Button&gt;
 &lt;Button variant="outline" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="danger" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="warning" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="success" loading&gt;Loading&lt;/Button&gt;
 
 // Disabled States
 &lt;Button variant="primary" disabled&gt;Disabled&lt;/Button&gt;
 &lt;Button variant="secondary" disabled&gt;Disabled&lt;/Button&gt;
 &lt;Button variant="outline" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="danger" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="warning" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="success" disabled&gt;Disabled&lt;/Button&gt;
               </template>
             </ComponentShowcase>
           </section>
@@ -1355,5 +1388,72 @@ button, a {
 
 :deep(.component-showcase-props-body) {
   background-color: var(--color-surface-primary-rest) !important;
+}
+
+.token-selector {
+  background-color: var(--color-surface-secondary-rest);
+  border-radius: var(--comp-button-main-radius);
+  padding: var(--comp-button-main-v-padding-m) var(--comp-button-main-h-padding-m);
+  border: 1px solid var(--color-border-primary-rest);
+}
+
+.token-selector-label {
+  color: var(--color-text-secondary-rest);
+  font-weight: var(--font-weight-medium-500);
+}
+
+.variant-selector-btn {
+  padding: var(--comp-button-main-v-padding-s) var(--comp-button-main-h-padding-s);
+  border-radius: var(--comp-button-main-radius);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-medium-500);
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  min-width: 80px;
+  text-align: center;
+}
+
+.variant-selector-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-border-brand-focus);
+}
+
+.variant-selector-btn:disabled {
+  opacity: var(--comp-button-main-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.variant-selector-btn--selected {
+  background-color: var(--color-fill-brand-rest);
+  color: var(--color-text-primary-inverse);
+  border-color: var(--color-border-brand-rest);
+}
+
+.variant-selector-btn--selected:hover:not(:disabled) {
+  background-color: var(--color-fill-brand-hover);
+  border-color: var(--color-border-brand-hover);
+}
+
+.variant-selector-btn--selected:active:not(:disabled) {
+  background-color: var(--color-fill-brand-press);
+  border-color: var(--color-border-brand-press);
+}
+
+.variant-selector-btn--unselected {
+  background-color: var(--color-surface-primary-rest);
+  color: var(--color-text-secondary-rest);
+  border-color: var(--color-border-primary-rest);
+}
+
+.variant-selector-btn--unselected:hover:not(:disabled) {
+  background-color: var(--color-surface-primary-hover);
+  color: var(--color-text-primary-rest);
+  border-color: var(--color-border-primary-hover);
+}
+
+.variant-selector-btn--unselected:active:not(:disabled) {
+  background-color: var(--color-surface-primary-press);
+  color: var(--color-text-primary-press);
+  border-color: var(--color-border-primary-press);
 }
 </style> 

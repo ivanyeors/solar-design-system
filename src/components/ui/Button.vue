@@ -6,7 +6,7 @@ const props = defineProps<{
   /**
    * The button variant
    */
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'warning' | 'success'
   /**
    * The button size
    */
@@ -30,7 +30,6 @@ const buttonStyles = computed(() => {
   const baseStyles = {
     borderRadius: `var(--comp-button-main-radius)`,
     gap: `var(--comp-button-main-gap)`,
-    // Use default values if tokens aren't available
     fontWeight: 'var(--font-weight-medium-500, 500)',
     transition: 'all 0.2s ease-in-out',
   };
@@ -38,7 +37,7 @@ const buttonStyles = computed(() => {
   // Variant-specific styles with corrected token naming to match compiled-tokens.css
   const variantStyles = {
     primary: {
-      backgroundColor: `var(--comp-button-main-fill-pri-focused, #257bdf)`, // Use focused as default since 'rest' doesn't exist
+      backgroundColor: `var(--comp-button-main-fill-pri-focused, #257bdf)`,
       color: `var(--comp-button-main-text-color-fill-pri, #17191a)`,
       borderWidth: '1px',
       borderStyle: 'solid',
@@ -49,7 +48,7 @@ const buttonStyles = computed(() => {
       color: `var(--comp-button-main-text-color-fill-sec, #dadee3)`,
       borderWidth: '1px',
       borderStyle: 'solid',
-      borderColor: `var(--comp-button-main-border-primary-rest, #313438)`, // Fallback to standard border color
+      borderColor: `var(--comp-button-main-border-primary-rest, #313438)`,
     },
     outline: {
       backgroundColor: 'transparent',
@@ -64,6 +63,27 @@ const buttonStyles = computed(() => {
       borderWidth: '1px',
       borderStyle: 'solid',
       borderColor: 'transparent',
+    },
+    danger: {
+      backgroundColor: `var(--color-fill-danger-rest, #f04437)`,
+      color: `var(--color-text-primary-inverse, #fafbfc)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--color-border-danger-rest, #8c1e16)`,
+    },
+    warning: {
+      backgroundColor: `var(--color-fill-warning-rest, #eda011)`,
+      color: `var(--color-text-primary-inverse, #fafbfc)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--color-border-warning-rest, #f0ab2b)`,
+    },
+    success: {
+      backgroundColor: `var(--color-fill-success-rest, #12b869)`,
+      color: `var(--color-text-primary-inverse, #fafbfc)`,
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: `var(--color-border-success-rest, #12b869)`,
     },
   };
   
@@ -99,6 +119,9 @@ const variantClasses = {
   secondary: 'btn-secondary',
   outline: 'btn-outline',
   ghost: 'btn-ghost',
+  danger: 'btn-danger',
+  warning: 'btn-warning',
+  success: 'btn-success',
 };
 </script>
 
@@ -197,6 +220,51 @@ const variantClasses = {
 }
 .btn-ghost:focus {
   outline: 2px solid var(--color-border-primary-focus, #313438);
+  outline-offset: 2px;
+}
+
+.btn-danger:not(:disabled):hover {
+  background-color: var(--color-fill-danger-hover, #f2584e);
+  border-color: var(--color-border-danger-hover, #731711);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-danger:not(:disabled):active {
+  background-color: var(--color-fill-danger-press, #d6382d);
+  border-color: var(--color-border-danger-press, #59110c);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-danger:focus {
+  outline: 2px solid var(--color-border-danger-focus, #fcdedc);
+  outline-offset: 2px;
+}
+
+.btn-warning:not(:disabled):hover {
+  background-color: var(--color-fill-warning-hover, #f0ab2b);
+  border-color: var(--color-border-warning-hover, #eda011);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-warning:not(:disabled):active {
+  background-color: var(--color-fill-warning-press, #d49115);
+  border-color: var(--color-border-warning-press, #d49115);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-warning:focus {
+  outline: 2px solid var(--color-border-warning-focus, #fae3b9);
+  outline-offset: 2px;
+}
+
+.btn-success:not(:disabled):hover {
+  background-color: var(--color-fill-success-hover, #28bf78);
+  border-color: var(--color-border-success-hover, #11a660);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-success:not(:disabled):active {
+  background-color: var(--color-fill-success-press, #11a660);
+  border-color: var(--color-border-success-press, #0d804a);
+  color: var(--color-text-primary-inverse, #fafbfc);
+}
+.btn-success:focus {
+  outline: 2px solid var(--color-border-success-focus, #12b869);
   outline-offset: 2px;
 }
 

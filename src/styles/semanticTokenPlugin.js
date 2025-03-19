@@ -39,7 +39,7 @@ function categorizeTokens(tokens) {
   return categories;
 }
 
-// Generated on: 2025-03-18T05:45:24.812Z
+// Generated on: 2025-03-19T01:50:03.268Z
 module.exports = plugin(function({ addUtilities }) {
   // Get tokens directory
   const tokensDir = path.join(__dirname, 'tokens/semantic-tokens');
