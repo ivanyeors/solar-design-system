@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
+import SolarLogo from '@/assets/solar-design-system.svg';
 
 defineProps<{
   isMobileMenuOpen?: boolean;
@@ -58,7 +59,10 @@ const closeMobileMenu = () => {
     >
       <div class="p-5">
         <div class="flex items-center justify-between mb-6">
-          <router-link to="/" class="text-xl font-bold sidebar-logo">Solar Design</router-link>
+          <router-link to="/" class="flex items-center text-xl font-bold sidebar-logo">
+            <img :src="SolarLogo" alt="Solar Design System" class="h-8 w-8 mr-2" />
+            <span>Solar Design</span>
+          </router-link>
           <button 
             @click="closeMobileMenu"
             class="sidebar-close-btn lg:hidden"

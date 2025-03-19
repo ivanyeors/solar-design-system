@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import SolarLogo from '@/assets/solar-design-system.svg';
 
 const emit = defineEmits(['toggleMobileMenu', 'toggleTheme']);
 
@@ -39,7 +40,8 @@ const toggleTheme = () => {
         </button>
         
         <!-- Logo (visible on mobile) -->
-        <div class="flex lg:hidden">
+        <div class="flex lg:hidden items-center">
+          <img :src="SolarLogo" alt="Solar Design System" class="h-8 w-8 mr-2" />
           <span class="text-xl font-bold logo-text">Solar Design</span>
         </div>
         
