@@ -137,41 +137,45 @@ jobs:
             # Backup original config
             cp vite.config.js vite.config.js.backup
             
-            # Check if Vue plugin is already imported and used
-            if ! grep -q "@vitejs/plugin-vue" vite.config.js; then
-              # Add Vue plugin import
-              sed -i '1s/^/import vue from "@vitejs\/plugin-vue";\n/' vite.config.js
-              
-              # Add plugins section if it doesn't exist
-              if ! grep -q "plugins:" vite.config.js; then
-                sed -i '/defineConfig({/a \  plugins: [vue()],' vite.config.js
-              else
-                # Add vue plugin to existing plugins array
-                sed -i '/plugins:/s/\[/\[vue(), /' vite.config.js
-              fi
-            fi
-            
-            # Add vue-router to external if it doesn't exist
-            if ! grep -q "rollupOptions" vite.config.js; then
-              sed -i '/defineConfig({/a \  build: { rollupOptions: { external: ["vue-router"] } },' vite.config.js
-            elif ! grep -q "vue-router" vite.config.js; then
-              sed -i '/rollupOptions/s/{/{external: ["vue-router"], /' vite.config.js
-            fi
-          else
-            # Create a new config file with Vue plugin
+            # Create new config with all necessary settings
             echo 'import { defineConfig } from "vite";
             import vue from "@vitejs/plugin-vue";
+            import path from "path";
 
             export default defineConfig({
               plugins: [vue()],
+              resolve: {
+                alias: {
+                  "@": path.resolve(__dirname, "./src")
+                }
+              },
               build: {
                 rollupOptions: {
                   external: ["vue-router"]
                 }
               }
             });' > vite.config.js
-            fi
-              cat vite.config.js
+          else
+            # Create a new config file with all settings
+            echo 'import { defineConfig } from "vite";
+            import vue from "@vitejs/plugin-vue";
+            import path from "path";
+
+            export default defineConfig({
+              plugins: [vue()],
+              resolve: {
+                alias: {
+                  "@": path.resolve(__dirname, "./src")
+                }
+              },
+              build: {
+                rollupOptions: {
+                  external: ["vue-router"]
+                }
+              }
+            });' > vite.config.js
+          fi
+          cat vite.config.js
         
       - name: Build for GitHub Pages
         run: npm run build
