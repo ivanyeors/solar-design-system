@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'vue-router': 'vue-router/dist/vue-router.esm-bundler.js'
     },
   },
   
@@ -25,7 +26,10 @@ export default defineConfig({
         globals: {
           vue: 'Vue',
         },
-        exports: 'named'
+        exports: 'named',
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router']
+        }
       },
     }
   } : {
@@ -36,6 +40,11 @@ export default defineConfig({
       input: {
         main: './index.html',
       },
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router']
+        }
+      }
     }
   }
 })
