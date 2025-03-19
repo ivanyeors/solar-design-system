@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import SolarLogo from '../assets/solar-design-system.svg';
+import SolarLogo from '@/assets/solar-design-system.svg';
 
 const emit = defineEmits(['toggleMobileMenu', 'toggleTheme']);
 

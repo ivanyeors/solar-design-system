@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { inject, ref, computed } from 'vue';
-import Badge from '../components/ui/Badge.vue';
-import Button from '../components/ui/Button.vue';
+import { inject, ref, computed, onMounted } from 'vue';
+import { Badge } from '../badge';
+import { ButtonMain as Button } from '../button';
 
 // Get theme controls from provider
 const currentBrand = inject('currentBrand', ref('evydcore'));

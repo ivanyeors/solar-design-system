@@ -24,10 +24,10 @@ const activeTab = ref('preview');
         <button
           @click="activeTab = 'preview'"
           :class="[
-            'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
+            'showcase-tab',
             activeTab === 'preview'
-              ? 'tab-active'
-              : 'tab-inactive'
+              ? 'showcase-tab--active'
+              : 'showcase-tab--inactive'
           ]"
         >
           Preview
@@ -35,10 +35,10 @@ const activeTab = ref('preview');
         <button
           @click="activeTab = 'code'"
           :class="[
-            'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
+            'showcase-tab',
             activeTab === 'code'
-              ? 'tab-active'
-              : 'tab-inactive'
+              ? 'showcase-tab--active'
+              : 'showcase-tab--inactive'
           ]"
         >
           Code
@@ -46,10 +46,10 @@ const activeTab = ref('preview');
         <button
           @click="activeTab = 'props'"
           :class="[
-            'px-4 py-3 text-sm font-medium border-b-2 focus:outline-none',
+            'showcase-tab',
             activeTab === 'props'
-              ? 'tab-active'
-              : 'tab-inactive'
+              ? 'showcase-tab--active'
+              : 'showcase-tab--inactive'
           ]"
         >
           Props
@@ -95,9 +95,9 @@ const activeTab = ref('preview');
 
 <style scoped>
 .showcase-container {
-  background-color: var(--color-surface-primary-rest);
+  background-color: var(--color-surface-secondary-rest);
   border-radius: 0.5rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-xs);
   border: 1px solid var(--color-border-primary-rest);
   overflow: hidden;
 }
@@ -123,28 +123,53 @@ const activeTab = ref('preview');
   border-bottom: 1px solid var(--color-border-primary-rest);
 }
 
-.tab-active {
-  border-color: var(--color-primary-rest);
-  color: var(--color-primary-rest);
+.showcase-tab {
+  padding: var(--comp-button-main-v-padding-s) var(--comp-button-main-h-padding-m);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-medium-500);
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
 }
 
-.tab-inactive {
-  border-color: transparent;
+.showcase-tab:focus {
+  outline: none;
+}
+
+.showcase-tab:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+.showcase-tab--active {
+  color: var(--color-text-brand-rest);
+  border-bottom-color: var(--color-border-brand-rest);
+  background-color: transparent;
+}
+
+.showcase-tab--active:hover {
+  color: var(--color-text-brand-hover);
+  border-bottom-color: var(--color-border-brand-hover);
+}
+
+.showcase-tab--inactive {
   color: var(--color-text-secondary-rest);
+  border-bottom-color: transparent;
+  background-color: transparent;
 }
 
-.tab-inactive:hover {
+.showcase-tab--inactive:hover {
   color: var(--color-text-secondary-hover);
-  border-color: var(--color-border-secondary-hover);
+  border-bottom-color: var(--color-border-secondary-hover);
+  background-color: var(--color-surface-secondary-hover);
 }
 
 .code-block {
-  background-color: var(--color-surface-secondary-rest);
-  padding: 1rem;
-  border-radius: 0.375rem;
+  background-color: var(--color-surface-code-rest);
+  padding: var(--comp-button-main-v-padding-m);
+  border-radius: var(--comp-button-main-radius);
   overflow-x: auto;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary-rest);
+  font-size: var(--font-size-14);
+  color: var(--color-text-code-rest);
+  font-family: var(--font-family-mono);
 }
 
 .showcase-table-divider {
@@ -157,5 +182,9 @@ const activeTab = ref('preview');
 
 .table-header {
   color: var(--color-text-secondary-rest);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-medium-500);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
 }
 </style> 

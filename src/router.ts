@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from './pages/HomePage.vue';
-import ButtonPage from './pages/ButtonPage.vue';
-import TokensPage from './pages/TokensPage.vue';
-import BrandsPage from './pages/BrandsPage.vue';
-import PlaceholderPage from './components/PlaceholderPage.vue';
+import HomePage from './pages/home/HomePage.vue';
+import ButtonPage from './design-system/button/ButtonPage.vue';
+import TokensPage from './design-system/tokens/TokensPage.vue';
+import BrandsPage from './design-system/brands/BrandsPage.vue';
+import PlaceholderPage from './components/global/PlaceholderPage.vue';
 
 const routes = [
   {

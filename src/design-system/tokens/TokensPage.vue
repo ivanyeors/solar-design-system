@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue';
-import { TOKEN_TYPES, TOKEN_STATES, getCssVar } from '../lib/tokens';
-import Button from '../components/ui/Button.vue';
+import { TOKEN_TYPES, TOKEN_STATES, getCssVar } from '../../lib/tokens';
+import { ButtonMain as Button } from '../button';
+import { Badge } from '../badge';
 
 // Define props including an optional title
 const props = defineProps({

@@ -6,6 +6,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Define transition variables */
+:root {
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* Define custom utilities before any @layer directives */
+.with-transition {
+  transition: all var(--transition-fast);
+}
+
+.with-radius {
+  border-radius: var(--comp-button-main-radius);
+}
+
+.text-small {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-medium-500);
+  color: var(--color-text-secondary-rest);
+}
+
 @layer base {
   :root {
     /* Core theme variables - light mode defaults */
@@ -49,8 +70,7 @@
   }
 
   .nav-link {
-    @apply flex items-center px-4 py-2 text-sm font-medium rounded-md;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    @apply flex items-center px-4 py-2 text-sm font-medium rounded-md with-transition-color;
   }
 
   .nav-link-active {
@@ -73,11 +93,9 @@
   }
 
   .icon-button {
-    @apply p-2 rounded-md focus:outline-none;
+    @apply p-2 with-radius with-transition-color focus:outline-none;
     color: var(--icon-secondary);
     background-color: transparent;
-    border-radius: var(--comp-button-main-radius);
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   }
   
   .icon-button:hover {
@@ -91,8 +109,7 @@
 
   /* Button styles */
   .btn {
-    @apply px-4 py-2 rounded-md font-medium;
-    transition: all 0.2s ease;
+    @apply px-4 py-2 rounded-md font-medium with-transition;
   }
 
   .btn-primary {
@@ -120,10 +137,10 @@
 
   /* Card styles */
   .card {
+    @apply with-transition-theme;
     background-color: var(--background-secondary);
     border: 1px solid var(--border-primary);
     border-radius: var(--comp-card-report-radius);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
   /* Input styles */
@@ -165,9 +182,30 @@
   }
 }
 
-/* Transitions */
-.theme-transition {
-  transition-property: color, background-color, border-color;
-  transition-duration: 0.3s;
-  transition-timing-function: ease;
+@layer utilities {
+  /* Core utility classes */
+  .with-transition {
+    transition: all var(--transition-fast);
+  }
+
+  .with-transition-color {
+    transition: background-color var(--transition-fast), 
+                color var(--transition-fast);
+  }
+
+  .with-transition-theme {
+    transition: background-color var(--transition-normal), 
+                color var(--transition-normal), 
+                border-color var(--transition-normal);
+  }
+
+  .with-radius {
+    border-radius: var(--comp-button-main-radius);
+  }
+
+  .text-small {
+    font-size: var(--font-size-12);
+    font-weight: var(--font-weight-medium-500);
+    color: var(--color-text-secondary-rest);
+  }
 }

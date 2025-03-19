@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLayout from './components/layout/MainLayout.vue';
+import { MainLayout } from './components/global';
 import ThemeProvider from './components/theme/ThemeProvider.vue';
 import ThemeToggle from './components/theme/ThemeToggle.vue';
 </script>

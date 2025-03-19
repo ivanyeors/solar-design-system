@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import Button from '../components/ui/Button.vue';
-import Playground from '../components/showcase/Playground.vue';
-import ComponentShowcase from '../components/showcase/ComponentShowcase.vue';
-import PropRow from '../components/showcase/PropRow.vue';
-import SideNavigation from '../components/layout/SideNavigation.vue';
-import AccessibilityChecklist from '../components/showcase/AccessibilityChecklist.vue';
-import VersionHistory from '../components/showcase/VersionHistory.vue';
-import RelatedComponentCard from '../components/showcase/RelatedComponentCard.vue';
-import Icon from '../components/ui/Icon.vue';
-import { getButtonTokens, getCommonButtonTokens, getButtonSizeTokens } from '../utils/tokenUtils';
-import type { ButtonVariant } from '../utils/tokenUtils';
+import ButtonMain from './components/ButtonMain.vue';
+import ButtonOption from './components/ButtonOption.vue';
+import ButtonPill from './components/ButtonPill.vue';
+import ButtonCard from './components/ButtonCard.vue';
+import Playground from '../../components/shared/Playground.vue';
+import ComponentShowcase from '../../components/shared/ComponentShowcase.vue';
+import PropRow from '../../components/shared/PropRow.vue';
+import SideNavigation from '../../components/global/SideNavigation.vue';
+import AccessibilityChecklist from '../../components/shared/AccessibilityChecklist.vue';
+import VersionHistory from '../../components/shared/VersionHistory.vue';
+import RelatedComponentCard from '../../components/shared/RelatedComponentCard.vue';
+import Icon from '../icon/components/Icon.vue';
+import { getCommonButtonTokens, getButtonSizeTokensBySize, getButtonStateTokens, getButtonVariantTokens } from './ButtonTokens';
+import type { TokenDefinition } from './ButtonTokens';
+import type { ButtonVariant } from '../../utils/tokenUtils';
+
+// Make ButtonMain available as Button in the template
+const Button = ButtonMain;
 
 // Active section tracking
 const activeSection = ref('overview');
@@ -227,7 +234,7 @@ const relatedComponents = [
 const selectedVariant = ref<ButtonVariant>('primary');
 const buttonTokens = computed(() => {
   if (!selectedVariant.value) return [];
-  return getButtonTokens(selectedVariant.value);
+  return getButtonVariantTokens(selectedVariant.value);
 });
 
 // Available variants for the selector
@@ -390,7 +397,7 @@ const handlePlaygroundUpdate = (key: string, value: any) => {
               <div class="guideline-panel-do">
                 <h3 class="font-semibold mb-4">Do</h3>
                 <div class="flex gap-4 items-center">
-                  <Button variant="primary">Save Changes</Button>
+                  <Button>Save Changes</Button>
                   <Button variant="secondary">Cancel</Button>
                 </div>
                 <p class="mt-4 guideline-text">Use clear, concise action verbs that describe what the button does</p>
@@ -398,7 +405,7 @@ const handlePlaygroundUpdate = (key: string, value: any) => {
               <div class="guideline-panel-dont">
                 <h3 class="font-semibold mb-4">Don't</h3>
                 <div class="flex gap-4 items-center">
-                  <Button variant="primary">Click Here</Button>
+                  <Button>Click Here</Button>
                   <Button variant="secondary">Submit</Button>
                 </div>
                 <p class="mt-4 guideline-text">Avoid vague labels that don't clearly communicate the action</p>
@@ -409,7 +416,7 @@ const handlePlaygroundUpdate = (key: string, value: any) => {
           <section id="anatomy" class="mb-10 scroll-mt-16">
             <h2 class="text-2xl font-bold section-heading mb-4">Anatomy</h2>
             <div class="anatomy-container">
-              <Button variant="primary" size="lg" class="mx-auto">
+              <Button size="lg" class="mx-auto">
                 <template #leading-icon>
                   <i class="icon-mail"></i>
                 </template>
@@ -455,23 +462,23 @@ const handlePlaygroundUpdate = (key: string, value: any) => {
               <h3 class="text-xl font-semibold mb-4">States</h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="flex flex-col items-center">
-                  <Button variant="primary">Default</Button>
+                  <Button>Default</Button>
                   <span class="mt-2 text-sm state-label">Default</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <Button variant="primary" class="hover">Hover</Button>
+                  <Button class="hover">Hover</Button>
                   <span class="mt-2 text-sm state-label">Hover</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <Button variant="primary" class="active">Active</Button>
+                  <Button class="active">Active</Button>
                   <span class="mt-2 text-sm state-label">Active</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <Button variant="primary" class="focus">Focus</Button>
+                  <Button class="focus">Focus</Button>
                   <span class="mt-2 text-sm state-label">Focus</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <Button variant="primary" disabled>Disabled</Button>
+                  <Button disabled>Disabled</Button>
                   <span class="mt-2 text-sm state-label">Disabled</span>
                 </div>
               </div>
@@ -564,23 +571,47 @@ const handlePlaygroundUpdate = (key: string, value: any) => {
             
             <!-- Basic Example -->
             <ComponentShowcase
-              title="Basic Button Examples"
+              title="Basic Button Variants"
               componentName="Button"
               class="component-showcase"
             >
               <template #preview>
-                <div class="flex gap-4">
-                  <Button>Default Button</Button>
+                <div class="flex flex-wrap gap-4">
                   <Button variant="primary">Primary</Button>
                   <Button variant="secondary">Secondary</Button>
+                  <Button variant="outline">Outline</Button>
+                  <Button variant="ghost">Ghost</Button>
                 </div>
               </template>
               <template #code>
-import Button from '@/components/ui/Button.vue';
+import { ButtonMain as Button } from '@/design-system/button';
 
-&lt;Button&gt;Default Button&lt;/Button&gt;
 &lt;Button variant="primary"&gt;Primary&lt;/Button&gt;
 &lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;
+&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;
+&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;
+              </template>
+            </ComponentShowcase>
+            
+            <!-- Status Button Variants -->
+            <ComponentShowcase
+              title="Status Button Variants"
+              componentName="Button"
+              class="mt-6 component-showcase"
+            >
+              <template #preview>
+                <div class="flex flex-wrap gap-4">
+                  <Button variant="danger">Danger</Button>
+                  <Button variant="warning">Warning</Button>
+                  <Button variant="success">Success</Button>
+                </div>
+              </template>
+              <template #code>
+import { ButtonMain as Button } from '@/design-system/button';
+
+&lt;Button variant="danger"&gt;Danger&lt;/Button&gt;
+&lt;Button variant="warning"&gt;Warning&lt;/Button&gt;
+&lt;Button variant="success"&gt;Success&lt;/Button&gt;
               </template>
             </ComponentShowcase>
             
@@ -591,56 +622,53 @@ import Button from '@/components/ui/Button.vue';
               class="mt-6 component-showcase"
             >
               <template #preview>
-                <div class="flex items-center gap-4">
-                  <Button variant="primary" size="sm">Small</Button>
-                  <Button variant="primary" size="md">Medium</Button>
-                  <Button variant="primary" size="lg">Large</Button>
+                <div class="flex flex-wrap items-center gap-4">
+                  <Button variant="danger" size="sm">Small</Button>
+                  <Button variant="warning" size="md">Medium</Button>
+                  <Button variant="success" size="lg">Large</Button>
                 </div>
               </template>
               <template #code>
-import Button from '@/components/ui/Button.vue';
+import { ButtonMain as Button } from '@/design-system/button';
 
-&lt;Button variant="primary" size="sm"&gt;Small&lt;/Button&gt;
-&lt;Button variant="primary" size="md"&gt;Medium&lt;/Button&gt;
-&lt;Button variant="primary" size="lg"&gt;Large&lt;/Button&gt;
+&lt;Button variant="danger" size="sm"&gt;Small&lt;/Button&gt;
+&lt;Button variant="warning" size="md"&gt;Medium&lt;/Button&gt;
+&lt;Button variant="success" size="lg"&gt;Large&lt;/Button&gt;
               </template>
             </ComponentShowcase>
             
-            <!-- Variant Showcase -->
+            <!-- State Examples -->
             <ComponentShowcase
-              title="Button Variants"
+              title="Button States"
               componentName="Button"
               class="mt-6 component-showcase"
             >
               <template #preview>
-                <div class="grid grid-cols-1 gap-4">
-                  <div v-if="!isDarkTheme" class="space-y-3">
-                    <h4 class="font-medium text-sm section-subheading">Light Theme</h4>
-                    <div class="theme-preview-light flex flex-wrap gap-3 p-4 rounded">
-                      <Button variant="primary">Primary</Button>
-                      <Button variant="secondary">Secondary</Button>
-                      <Button variant="outline">Outline</Button>
-                      <Button variant="ghost">Ghost</Button>
-                    </div>
+                <div class="space-y-4">
+                  <div class="flex flex-wrap gap-4">
+                    <Button variant="danger" loading>Loading</Button>
+                    <Button variant="warning" loading>Loading</Button>
+                    <Button variant="success" loading>Loading</Button>
                   </div>
-                  <div v-if="isDarkTheme" class="space-y-3">
-                    <h4 class="font-medium text-sm section-subheading">Dark Theme</h4>
-                    <div class="theme-preview-dark flex flex-wrap gap-3 p-4 rounded">
-                      <Button variant="primary">Primary</Button>
-                      <Button variant="secondary">Secondary</Button>
-                      <Button variant="outline">Outline</Button>
-                      <Button variant="ghost">Ghost</Button>
-                    </div>
+                  <div class="flex flex-wrap gap-4">
+                    <Button variant="danger" disabled>Disabled</Button>
+                    <Button variant="warning" disabled>Disabled</Button>
+                    <Button variant="success" disabled>Disabled</Button>
                   </div>
                 </div>
               </template>
               <template #code>
-import Button from '@/components/ui/Button.vue';
+import { ButtonMain as Button } from '@/design-system/button';
 
-&lt;Button variant="primary"&gt;Primary&lt;/Button&gt;
-&lt;Button variant="secondary"&gt;Secondary&lt;/Button&gt;
-&lt;Button variant="outline"&gt;Outline&lt;/Button&gt;
-&lt;Button variant="ghost"&gt;Ghost&lt;/Button&gt;
+// Loading States
+&lt;Button variant="danger" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="warning" loading&gt;Loading&lt;/Button&gt;
+&lt;Button variant="success" loading&gt;Loading&lt;/Button&gt;
+
+// Disabled States
+&lt;Button variant="danger" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="warning" disabled&gt;Disabled&lt;/Button&gt;
+&lt;Button variant="success" disabled&gt;Disabled&lt;/Button&gt;
               </template>
             </ComponentShowcase>
             
@@ -651,49 +679,50 @@ import Button from '@/components/ui/Button.vue';
               class="mt-6 component-showcase"
             >
               <template #preview>
-                <div class="flex gap-4">
-                  <Button variant="primary">
+                <div class="flex flex-wrap gap-4">
+                  <Button variant="danger">
                     <template #leading-icon>
-                      <span class="material-symbols-rounded">add</span>
+                      <Icon name="delete" />
                     </template>
-                    Add Item
+                    Delete
                   </Button>
-                  <Button variant="outline">
-                    Share
+                  <Button variant="warning">
+                    <template #leading-icon>
+                      <Icon name="warning" />
+                    </template>
+                    Warning
+                  </Button>
+                  <Button variant="success">
                     <template #trailing-icon>
-                      <span class="material-symbols-rounded">share</span>
+                      <Icon name="check_circle" />
                     </template>
-                  </Button>
-                  <Button variant="secondary" size="sm">
-                    <template #leading-icon>
-                      <span class="material-symbols-rounded">cloud_download</span>
-                    </template>
-                    Download
+                    Complete
                   </Button>
                 </div>
               </template>
               <template #code>
-import Button from '@/components/ui/Button.vue';
+import { ButtonMain as Button } from '@/design-system/button';
+import { Icon } from '@/design-system/icon';
 
-&lt;Button variant="primary"&gt;
+&lt;Button variant="danger"&gt;
   &lt;template #leading-icon&gt;
-    &lt;span class="material-symbols-rounded"&gt;add&lt;/span&gt;
+    &lt;Icon name="delete" /&gt;
   &lt;/template&gt;
-  Add Item
+  Delete
 &lt;/Button&gt;
 
-&lt;Button variant="outline"&gt;
-  Share
+&lt;Button variant="warning"&gt;
+  &lt;template #leading-icon&gt;
+    &lt;Icon name="warning" /&gt;
+  &lt;/template&gt;
+  Warning
+&lt;/Button&gt;
+
+&lt;Button variant="success"&gt;
   &lt;template #trailing-icon&gt;
-    &lt;span class="material-symbols-rounded"&gt;share&lt;/span&gt;
+    &lt;Icon name="check_circle" /&gt;
   &lt;/template&gt;
-&lt;/Button&gt;
-
-&lt;Button variant="secondary" size="sm"&gt;
-  &lt;template #leading-icon&gt;
-    &lt;span class="material-symbols-rounded"&gt;cloud_download&lt;/span&gt;
-  &lt;/template&gt;
-  Download
+  Complete
 &lt;/Button&gt;
               </template>
             </ComponentShowcase>
@@ -727,8 +756,8 @@ import Button from '@/components/ui/Button.vue';
                 </div>
               </template>
               <template #code>
-import Button from '@/components/ui/Button.vue';
-import Icon from '@/components/ui/Icon.vue';
+import { ButtonMain as Button } from '@/design-system/button';
+import { Icon } from '@/design-system/icon';
 
 &lt;Button variant="primary"&gt;
   &lt;template #leading-icon&gt;
@@ -750,47 +779,6 @@ import Icon from '@/components/ui/Icon.vue';
   &lt;/template&gt;
   Notifications
 &lt;/Button&gt;
-              </template>
-            </ComponentShowcase>
-            
-            <!-- State Examples -->
-            <ComponentShowcase
-              title="Button States"
-              componentName="Button"
-              class="mt-6 component-showcase"
-            >
-              <template #preview>
-                <div class="space-y-4">
-                  <div class="flex flex-wrap gap-4">
-                    <Button variant="primary" loading>Loading</Button>
-                    <Button variant="secondary" loading>Loading</Button>
-                    <Button variant="outline" loading>Loading</Button>
-                  </div>
-                  <div class="flex flex-wrap gap-4">
-                    <Button variant="primary" disabled>Disabled</Button>
-                    <Button variant="secondary" disabled>Disabled</Button>
-                    <Button variant="outline" disabled>Disabled</Button>
-                  </div>
-                </div>
-              </template>
-              <template #code>
-import Button from '@/components/ui/Button.vue';
-
-// Loading States
-&lt;Button variant="primary" loading&gt;Loading&lt;/Button&gt;
-&lt;Button variant="secondary" loading&gt;Loading&lt;/Button&gt;
-&lt;Button variant="outline" loading&gt;Loading&lt;/Button&gt;
-&lt;Button variant="danger" loading&gt;Loading&lt;/Button&gt;
-&lt;Button variant="warning" loading&gt;Loading&lt;/Button&gt;
-&lt;Button variant="success" loading&gt;Loading&lt;/Button&gt;
-
-// Disabled States
-&lt;Button variant="primary" disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button variant="secondary" disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button variant="outline" disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button variant="danger" disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button variant="warning" disabled&gt;Disabled&lt;/Button&gt;
-&lt;Button variant="success" disabled&gt;Disabled&lt;/Button&gt;
               </template>
             </ComponentShowcase>
           </section>
@@ -967,28 +955,42 @@ import Button from '@/components/ui/Button.vue';
 .guideline-item {
   @apply space-y-3;
   color: var(--color-text-secondary-rest);
+  font-size: var(--font-size-14);
+}
+
+.guideline-item li {
+  position: relative;
+  padding-left: var(--comp-button-main-h-padding-m);
 }
 
 .guideline-panel-do {
   @apply p-6 rounded-lg;
   background-color: var(--color-surface-success-muted);
+  border: 1px solid var(--color-border-success-rest);
 }
 
 .guideline-panel-do h3 {
   color: var(--color-text-success-rest);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-semibold-600);
 }
 
 .guideline-panel-dont {
   @apply p-6 rounded-lg;
   background-color: var(--color-surface-error-muted);
+  border: 1px solid var(--color-border-error-rest);
 }
 
 .guideline-panel-dont h3 {
   color: var(--color-text-error-rest);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-semibold-600);
 }
 
 .guideline-text {
   color: var(--color-text-secondary-rest);
+  font-size: var(--font-size-14);
+  margin-top: var(--comp-button-main-gap-s);
 }
 
 /* Anatomy section */
@@ -1033,9 +1035,9 @@ import Button from '@/components/ui/Button.vue';
 }
 
 .example-container {
-  background-color: var(--color-surface-primary-rest);
+  background-color: var(--color-surface-secondary-rest);
   border: 1px solid var(--color-border-primary-rest);
-  border-radius: 0.5rem;
+  border-radius: var(--comp-button-main-radius);
   overflow: hidden;
 }
 
@@ -1044,8 +1046,9 @@ import Button from '@/components/ui/Button.vue';
 }
 
 .example-preview {
-  padding: 1.5rem;
+  padding: var(--comp-button-main-v-padding-l);
   background-color: var(--color-surface-secondary-rest);
+  border-bottom: 1px solid var(--color-border-primary-rest);
 }
 
 .example-tab {
@@ -1107,22 +1110,26 @@ import Button from '@/components/ui/Button.vue';
 
 /* Status badges */
 .status-badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  @apply inline-flex items-center rounded-full text-xs font-medium;
+  padding: var(--comp-button-main-v-padding-xs) var(--comp-button-main-h-padding-s);
 }
 
 .status-badge-success {
   background-color: var(--color-surface-success-rest);
   color: var(--color-text-success-rest);
+  border: 1px solid var(--color-border-success-rest);
 }
 
 .status-badge-info {
   background-color: var(--color-surface-info-rest);
   color: var(--color-text-info-rest);
+  border: 1px solid var(--color-border-info-rest);
 }
 
 .status-badge-neutral {
   background-color: var(--color-surface-neutral-rest);
   color: var(--color-text-neutral-rest);
+  border: 1px solid var(--color-border-neutral-rest);
 }
 
 /* Showcase containers */
@@ -1134,10 +1141,16 @@ import Button from '@/components/ui/Button.vue';
 /* Theme preview containers */
 .theme-preview-light {
   background-color: var(--color-surface-light-rest);
+  border: 1px solid var(--color-border-light-rest);
+  padding: var(--comp-button-main-v-padding-m);
+  border-radius: var(--comp-button-main-radius);
 }
 
 .theme-preview-dark {
   background-color: var(--color-surface-dark-rest);
+  border: 1px solid var(--color-border-dark-rest);
+  padding: var(--comp-button-main-v-padding-m);
+  border-radius: var(--comp-button-main-radius);
 }
 
 /* Right sidebar styles */
@@ -1148,6 +1161,7 @@ import Button from '@/components/ui/Button.vue';
 }
 
 .sidebar-heading {
+  @apply text-sm font-semibold uppercase tracking-wider;
   color: var(--color-text-secondary-rest);
 }
 
@@ -1208,7 +1222,7 @@ import Button from '@/components/ui/Button.vue';
 }
 
 .mobile-nav-link-active {
-  background-color: var(--color-surface-brand-rest);
+  background-color: var(--color-fill-brand-rest);
   color: var(--color-text-brand-rest);
 }
 
@@ -1340,54 +1354,40 @@ button, a {
 
 /* For ComponentShowcase */
 :deep(.component-showcase) {
-  background-color: var(--color-surface-primary-rest) !important;
-  border-color: var(--color-border-primary-rest) !important;
+  background-color: var(--color-surface-secondary-rest) !important;
+  border: 1px solid var(--color-border-primary-rest) !important;
+  border-radius: var(--comp-button-main-radius) !important;
 }
 
 :deep(.component-showcase-header) {
-  border-color: var(--color-border-primary-rest) !important;
+  border-bottom: 1px solid var(--color-border-primary-rest) !important;
+  padding: var(--comp-button-main-v-padding-m) var(--comp-button-main-h-padding-m) !important;
 }
 
 :deep(.component-showcase-title) {
   color: var(--color-text-primary-rest) !important;
+  font-size: var(--font-size-16) !important;
+  font-weight: var(--font-weight-semibold-600) !important;
 }
 
 :deep(.component-showcase-description) {
   color: var(--color-text-secondary-rest) !important;
+  font-size: var(--font-size-14) !important;
+  margin-top: var(--comp-button-main-gap-xs) !important;
 }
 
-:deep(.component-showcase-tab) {
-  color: var(--color-text-secondary-rest) !important;
-}
-
-:deep(.component-showcase-tab-active) {
-  color: var(--color-text-brand-rest) !important;
-  border-color: var(--color-border-brand-rest) !important;
-}
-
-:deep(.component-showcase-tab-border) {
-  border-color: var(--color-border-primary-rest) !important;
+:deep(.component-showcase-preview) {
+  background-color: var(--color-surface-secondary-rest) !important;
+  padding: var(--comp-button-main-v-padding-l) !important;
+  border-bottom: 1px solid var(--color-border-primary-rest) !important;
 }
 
 :deep(.component-showcase-code) {
   background-color: var(--color-surface-code-rest) !important;
   color: var(--color-text-code-rest) !important;
-}
-
-:deep(.component-showcase-preview) {
-  background-color: var(--color-surface-secondary-rest) !important;
-}
-
-:deep(.component-showcase-props-header) {
-  color: var(--color-text-secondary-rest) !important;
-}
-
-:deep(.component-showcase-props-row) {
-  border-color: var(--color-border-primary-rest) !important;
-}
-
-:deep(.component-showcase-props-body) {
-  background-color: var(--color-surface-primary-rest) !important;
+  font-family: var(--font-family-mono) !important;
+  font-size: var(--font-size-14) !important;
+  padding: var(--comp-button-main-v-padding-m) !important;
 }
 
 .token-selector {
