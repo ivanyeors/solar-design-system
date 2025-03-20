@@ -23,6 +23,7 @@ const navItems = [
     title: 'Foundation',
     items: [
       { name: 'Design Tokens', path: '/foundation/tokens' },
+      { name: 'Brands', path: '/foundation/brands' },
       { name: 'Colors', path: '/foundation/colors' },
       { name: 'Typography', path: '/foundation/typography' },
       { name: 'Spacing', path: '/foundation/spacing' },
