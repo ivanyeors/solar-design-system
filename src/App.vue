@@ -5,7 +5,7 @@ import ThemeToggle from './components/theme/ThemeToggle.vue';
 </script>
 
 <template>
-  <ThemeProvider v-slot="{ themeMode, effectiveTheme, currentBrand, setThemeMode, setBrand }">
+  <ThemeProvider v-slot="{ themeMode, setThemeMode }">
     <MainLayout>
       <template #theme-controls>
         <ThemeToggle 

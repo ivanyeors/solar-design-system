@@ -7,7 +7,10 @@ defineProps<{
   isMobileMenuOpen?: boolean;
 }>();
 
-const emit = defineEmits(['closeMobileMenu']);
+const emit = defineEmits<{
+  (e: 'closeMobileMenu'): void;
+}>();
+
 const route = useRoute();
 
 const navItems = [
@@ -120,16 +123,37 @@ const closeMobileMenu = () => {
 <style scoped>
 /* Mobile overlay */
 .mobile-overlay {
-  @apply fixed inset-0 z-40 lg:hidden;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 1024px) {
+  .mobile-overlay {
+    display: none;
+  }
 }
 
 /* Sidebar */
 .sidebar {
-  @apply fixed top-[calc(4rem+1px)] left-0 z-50 h-[calc(100vh-4rem-1px)] w-64 transform overflow-y-auto 
-         transition-transform duration-300 ease-in-out lg:top-[calc(4rem+1px)] lg:translate-x-0;
+  position: fixed;
+  top: calc(4rem + 1px);
+  left: 0;
+  z-index: 50;
+  height: calc(100vh - 4rem - 1px);
+  width: 16rem;
+  transform: translateX(-100%);
+  overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
   background-color: var(--color-surface-primary-rest);
   border-right: 1px solid var(--color-border-primary-rest);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0);
+  }
 }
 
 /* Logo */
@@ -139,7 +163,8 @@ const closeMobileMenu = () => {
 
 /* Close button */
 .sidebar-close-btn {
-  @apply p-2 rounded-md;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
   color: var(--color-icon-secondary-rest);
 }
 
@@ -150,7 +175,10 @@ const closeMobileMenu = () => {
 
 /* Nav links */
 .nav-link {
-  @apply block py-2 px-3 rounded-lg transition-colors duration-200;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .nav-link-active {
@@ -174,7 +202,8 @@ const closeMobileMenu = () => {
 
 /* GitHub link */
 .github-link {
-  @apply flex items-center;
+  display: flex;
+  align-items: center;
   color: var(--color-text-secondary-rest);
   transition: color 0.2s ease;
 }

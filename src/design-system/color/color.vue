@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 
 // Note: Removed SCSS imports since they should already be included in the main application
 // The following should be done in your main styles instead 
