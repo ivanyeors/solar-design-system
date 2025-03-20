@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-const semanticTokenPlugin = require('./src/styles/semanticTokenPlugin.js');
+import semanticTokenPlugin from './src/styles/semanticTokenPlugin.js';
 
-module.exports = {
+export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",

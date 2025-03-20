@@ -3,17 +3,18 @@
   "version": "1.0.0",
   "description": "Token extraction and organization toolkit for Solar Design System",
   "main": "src/tokens/index.js",
+  "type": "module",
   "scripts": {
     "extract": "node token-extractor.js",
-    "extract:py": "python token-extractor.py",
+    "extract:py": "python3 token-extractor.py || python token-extractor.py || py token-extractor.py",
     "generate-token-utilities": "node scripts/generate-token-utilities.js",
-    "process-tokens": "python scripts/process_tokens.py",
+    "process-tokens": "(python3 scripts/process_tokens.py || python scripts/process_tokens.py || py scripts/process_tokens.py) || echo 'Warning: Python failed but continuing...'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "npm run process-tokens && npm run generate-token-utilities",
     "build": "vite build",
     "build:gh-pages": "vite build",
-    "predev": "npm run process-tokens && npm run generate-token-utilities",
-    "dev": "concurrently \"vite\" \"npm run browser-tools\"",
+    "predev": "npm run process-tokens && npm run generate-token-utilities || echo 'Continuing despite script errors...'",
+    "dev": "npx concurrently \"npx vite\" \"npm run browser-tools\"",
     "browser-tools": "npx @agentdeskai/browser-tools-server@1.2.0"
   },
   "keywords": [

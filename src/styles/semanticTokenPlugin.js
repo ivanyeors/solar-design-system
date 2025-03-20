@@ -1,6 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const plugin = require('tailwindcss/plugin');
+import fs from 'fs';
+import path from 'path';
+import plugin from 'tailwindcss/plugin';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Function to extract token variables from SCSS files
 function extractTokenVariables(filePath) {
@@ -39,8 +44,8 @@ function categorizeTokens(tokens) {
   return categories;
 }
 
-// Generated on: 2025-03-19T11:44:36.299Z
-module.exports = plugin(function({ addUtilities }) {
+// Generated on: 2025-03-20T05:48:59.583Z
+export default plugin(function({ addUtilities }) {
   // Get tokens directory
   const tokensDir = path.join(__dirname, 'tokens/semantic-tokens');
   
