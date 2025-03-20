@@ -1,6 +1,7 @@
 /* Load semantic tokens */
 @import './styles/compiled-tokens.css';
 @import './styles/fonts.css';
+@import './styles/theme.scss';
 
 @tailwind base;
 @tailwind components;

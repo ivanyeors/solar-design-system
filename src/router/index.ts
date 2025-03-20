@@ -4,6 +4,7 @@ import HomePage from '../pages/home/HomePage.vue'
 import ButtonPage from '../design-system/button/ButtonPage.vue'
 import TokensPage from '../design-system/tokens/TokensPage.vue'
 import BrandsPage from '../design-system/brands/BrandsPage.vue'
+import ColorPage from '../design-system/color/ColorPage.vue'
 
 // Get base URL from Vite configuration, defaulting to /solar-design-system/ for GitHub Pages
 const baseUrl = import.meta.env.BASE_URL || '/solar-design-system/'
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/foundation/brands',
       name: 'brands',
       component: BrandsPage
+    },
+    {
+      path: '/foundation/colors',
+      name: 'colors',
+      component: ColorPage
     }
   ]
 })

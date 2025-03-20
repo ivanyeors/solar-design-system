@@ -1,0 +1,17 @@
+// Main theme file
+
+// Import foundation styles
+@import './tokens/option-tokens/colors_light.scss';
+@import './tokens/option-tokens/colors_dark.scss';
+
+// Import all semantic tokens
+@import './tokens/semantic-tokens/_evydcore_comp.scss';
+@import './tokens/semantic-tokens/_bruhealth_comp.scss';
+
+// Import the color variables
+@import '../design-system/color/colors-variables.scss';
+
+// Set the default brand
+:root {
+  --default-brand: "evydcore";
+} 
