@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Main sun circle -->
+    <circle cx="128" cy="128" r="64" fill="#FDB813"/>
+    
+    <!-- Sun rays -->
+    <g>
+        <!-- Outer glow -->
+        <circle cx="128" cy="128" r="96" stroke="#FDB813" stroke-width="8" stroke-opacity="0.3"/>
+        
+        <!-- Rays -->
+        <path d="M128 0V48" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M128 208V256" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M0 128H48" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M208 128H256" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        
+        <!-- Diagonal rays -->
+        <path d="M37.2578 37.2578L71.799 71.799" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M184.201 184.201L218.742 218.742" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M37.2578 218.742L71.799 184.201" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+        <path d="M184.201 71.799L218.742 37.2578" stroke="#FDB813" stroke-width="16" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Inner details -->
+    <circle cx="128" cy="128" r="48" fill="#F4A013"/>
+    <circle cx="128" cy="128" r="32" fill="#FDB813"/>
+</svg> 

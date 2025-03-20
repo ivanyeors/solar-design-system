@@ -2,6 +2,7 @@
 // @ts-ignore - TypeScript doesn't recognize importmap resolutions, but it works at runtime
 import { useRoute } from 'vue-router';
 import SolarLogo from '@/assets/solar-design-system.svg';
+import { computed } from 'vue';
 
 defineProps<{
   isMobileMenuOpen?: boolean;
@@ -12,6 +13,13 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
+
+// Compute the proper logo URL with base path for GitHub Pages
+const logoPath = computed(() => {
+  // For imported assets in Vite, we can use them directly
+  // The asset import will already be processed correctly by Vite
+  return SolarLogo;
+});
 
 const navItems = [
   {
@@ -66,7 +74,7 @@ const closeMobileMenu = () => {
       <div class="p-5">
         <div class="flex items-center justify-between mb-6">
           <router-link to="/" class="flex items-center text-xl font-bold sidebar-logo">
-            <img :src="SolarLogo" alt="Solar Design System" class="h-8 w-8 mr-2" />
+            <img :src="logoPath" alt="Solar Design System" class="h-8 w-8 mr-2" />
             <span>Solar Design</span>
           </router-link>
           <button 

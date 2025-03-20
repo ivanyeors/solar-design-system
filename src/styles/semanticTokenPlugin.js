@@ -44,7 +44,7 @@ function categorizeTokens(tokens) {
   return categories;
 }
 
-// Generated on: 2025-03-20T06:27:18.596Z
+// Generated on: 2025-03-20T16:48:08.772Z
 export default plugin(function({ addUtilities }) {
   // Get tokens directory
   const tokensDir = path.join(__dirname, 'tokens/semantic-tokens');

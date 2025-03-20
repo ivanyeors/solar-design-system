@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import SolarLogo from '@/assets/solar-design-system.svg';
 
 const emit = defineEmits(['toggleMobileMenu', 'toggleTheme']);
@@ -22,6 +22,13 @@ const toggleTheme = () => {
   document.documentElement.setAttribute('data-theme', currentTheme.value);
   emit('toggleTheme', currentTheme.value);
 };
+
+// Compute the proper logo URL with base path for GitHub Pages
+const logoPath = computed(() => {
+  // For imported assets in Vite, we can use them directly
+  // The asset import will already be processed correctly by Vite
+  return SolarLogo;
+});
 </script>
 
 <template>
@@ -41,7 +48,7 @@ const toggleTheme = () => {
         
         <!-- Logo (visible on mobile) -->
         <div class="flex lg:hidden items-center">
-          <img :src="SolarLogo" alt="Solar Design System" class="h-8 w-8 mr-2" />
+          <img :src="logoPath" alt="Solar Design System" class="h-8 w-8 mr-2" />
           <span class="text-xl font-bold logo-text">Solar Design</span>
         </div>
         
