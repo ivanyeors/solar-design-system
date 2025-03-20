@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-ignore - TypeScript doesn't recognize importmap resolutions, but it works at runtime
 import { useRoute } from 'vue-router';
 import SolarLogo from '@/assets/solar-design-system.svg';
 

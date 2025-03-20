@@ -10,8 +10,12 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     },
+    dedupe: ['vue', 'vue-router']
   },
-  
+  optimizeDeps: {
+    include: ['vue-router'],
+    force: true
+  },
   build: process.env.BUILD_LIB ? {
     // Library build configuration
     lib: {
@@ -36,13 +40,19 @@ export default defineConfig({
     // GitHub Pages build configuration
     outDir: 'dist',
     emptyOutDir: true,
+    modulePreload: {
+      polyfill: true
+    },
     rollupOptions: {
+      external: ['vue', 'vue-router'],
       input: {
         main: './index.html',
       },
       output: {
-        manualChunks: {
-          'vue-vendor': ['vue', 'vue-router']
+        manualChunks: undefined, // Let Vite handle the chunks
+        globals: {
+          vue: 'Vue',
+          'vue-router': 'VueRouter'
         }
       }
     }
