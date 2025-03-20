@@ -8,8 +8,7 @@ export default defineConfig({
   base: '/solar-design-system/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      'vue-router': path.resolve(__dirname, './node_modules/vue-router/dist/vue-router.esm-bundler.js')
+      '@': path.resolve(__dirname, './src')
     },
   },
   
