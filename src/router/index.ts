@@ -1,6 +1,8 @@
 // @ts-ignore - TypeScript doesn't recognize importmap resolutions, but it works at runtime
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../pages/home/HomePage.vue'
+import ButtonPage from '../design-system/button/ButtonPage.vue'
+import TokensPage from '../design-system/tokens/TokensPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,6 +11,16 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomePage
+    },
+    {
+      path: '/components/button',
+      name: 'button',
+      component: ButtonPage
+    },
+    {
+      path: '/foundation/tokens',
+      name: 'tokens',
+      component: TokensPage
     }
   ]
 })
