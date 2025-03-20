@@ -28,7 +28,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/highlight.js": "^9.12.4",
     "fs": "0.0.1-security",
+    "highlight.js": "^11.11.1",
     "path": "^0.12.7",
     "vue-router": "^4.5.0"
   },
