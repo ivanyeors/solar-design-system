@@ -1,9 +1,9 @@
 /* Base Token Imports - Must come first */
-@import './tokens/option-tokens/colors_light.scss';
-@import './tokens/option-tokens/colors_dark.scss';
-@import './tokens/option-tokens/_scale.scss';
-@import './tokens/option-tokens/_typography.scss';
+@use './tokens/option-tokens/colors_light.scss' as colors_light;
+@use './tokens/option-tokens/colors_dark.scss' as colors_dark;
+@use './tokens/option-tokens/_scale.scss' as scale;
+@use './tokens/option-tokens/_typography.scss' as typography;
 
 /* Component-specific tokens */
-@import './tokens/semantic-tokens/_evydcore_comp.scss';
-@import './tokens/semantic-tokens/_bruhealth_comp.scss'; 
+@use './tokens/semantic-tokens/_evydcore_comp.scss' as evydcore;
+@use './tokens/semantic-tokens/_bruhealth_comp.scss' as bruhealth; 
