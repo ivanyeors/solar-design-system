@@ -1,15 +1,15 @@
 // Main theme file
 
 // Import foundation styles
-@import './tokens/option-tokens/colors_light.scss';
-@import './tokens/option-tokens/colors_dark.scss';
+@use './tokens/option-tokens/colors_light.scss' as colors_light;
+@use './tokens/option-tokens/colors_dark.scss' as colors_dark;
 
 // Import all semantic tokens
-@import './tokens/semantic-tokens/_evydcore_comp.scss';
-@import './tokens/semantic-tokens/_bruhealth_comp.scss';
+@use './tokens/semantic-tokens/_evydcore_comp.scss' as evydcore;
+@use './tokens/semantic-tokens/_bruhealth_comp.scss' as bruhealth;
 
 // Import the color variables
-@import '../design-system/color/colors-variables.scss';
+@use '../design-system/color/colors-variables.scss' as colors_variables;
 
 // Set the default brand
 :root {
