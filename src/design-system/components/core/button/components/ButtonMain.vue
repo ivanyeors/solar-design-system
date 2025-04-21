@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted, ref } from 'vue';
-import { createTokenStyles, TOKEN_TYPES, TOKEN_STATES } from '../../../lib/tokens';
-import { getThemeAwareToken, watchThemeChanges } from '../../../utils/tokenUtils';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { 
+  createTokenStyles, 
+  TOKEN_TYPES, 
+  TOKEN_STATES, 
+  watchThemeChanges,
+  getThemeAwareToken 
+} from '../../../../../lib/tokens';
 
 const props = defineProps<{
   /**

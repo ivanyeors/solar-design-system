@@ -3,13 +3,13 @@
  */
 
 // Common token prefixes
-const TOKEN_TYPES = {
+export const TOKEN_TYPES = {
   // Color tokens
-  COLOR_TEXT: '--color-text',
-  COLOR_FILL: '--color-fill',
-  COLOR_BORDER: '--color-border',
-  COLOR_ICON: '--color-icon',
-  COLOR_SURFACE: '--color-surface',
+  COLOR_TEXT: 'color-text',
+  COLOR_FILL: 'color-fill',
+  COLOR_BORDER: 'color-border',
+  COLOR_ICON: 'color-icon',
+  COLOR_SURFACE: 'color-surface',
   
   // Component-specific tokens
   COMP_BUTTON: '--comp-button',
@@ -20,7 +20,7 @@ const TOKEN_TYPES = {
 } as const;
 
 // Common token states
-const TOKEN_STATES = {
+export const TOKEN_STATES = {
   REST: 'rest',
   HOVER: 'hover',
   PRESS: 'press',
@@ -28,8 +28,8 @@ const TOKEN_STATES = {
   DISABLED: 'disabled'
 } as const;
 
-// Component token category mapping (helps to identify token categories for component-specific tokens)
-const COMPONENT_TOKEN_CATEGORIES = {
+// Component token category mapping
+export const COMPONENT_TOKEN_CATEGORIES = {
   FILL: 'fill',
   TEXT: 'text-color',
   BORDER: 'border-color',
@@ -43,6 +43,32 @@ const COMPONENT_TOKEN_CATEGORIES = {
   TEXT_SIZE: 'text-size',
   TEXT_WEIGHT: 'text-weight'
 } as const;
+
+export interface TokenDefinition {
+  name: string;
+  value: string;
+  usage?: string;
+}
+
+/**
+ * Create a style object usable in Vue components using semantic tokens
+ * @param tokens Token definitions or style mappings
+ * @returns Style object for binding in Vue templates
+ */
+export function createTokenStyles(tokens: TokenDefinition[] | Record<string, string>): Record<string, string> {
+  if (Array.isArray(tokens)) {
+    return tokens.reduce((styles, token) => {
+      styles[token.name] = token.value;
+      return styles;
+    }, {} as Record<string, string>);
+  }
+  
+  const result: Record<string, string> = {};
+  for (const [property, tokenName] of Object.entries(tokens)) {
+    result[property] = `var(--${tokenName})`;
+  }
+  return result;
+}
 
 /**
  * Get a CSS variable value from the current document
@@ -66,21 +92,6 @@ export function buildTokenName(
   state: typeof TOKEN_STATES[keyof typeof TOKEN_STATES] = TOKEN_STATES.REST
 ): string {
   return `${type}-${name}-${state}`;
-}
-
-/**
- * Create a style object usable in Vue components using semantic tokens
- * @param styles Object mapping style properties to token names
- * @returns Style object for binding in Vue templates
- */
-export function createTokenStyles(styles: Record<string, string>): Record<string, string> {
-  const result: Record<string, string> = {};
-  
-  for (const [property, tokenName] of Object.entries(styles)) {
-    result[property] = `var(--${tokenName})`;
-  }
-  
-  return result;
 }
 
 /**
@@ -115,4 +126,37 @@ export function getComponentTokensByCategory(
   return getComponentTokens(componentPrefix).filter(token => token.includes(category));
 }
 
-export { TOKEN_TYPES, TOKEN_STATES, COMPONENT_TOKEN_CATEGORIES }; 
+/**
+ * Watch for theme changes in the document root
+ * @param callback Function to call when theme changes
+ * @returns Cleanup function
+ */
+export function watchThemeChanges(callback: () => void): () => void {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-theme'
+      ) {
+        callback();
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+  });
+
+  return () => observer.disconnect();
+}
+
+/**
+ * Get a theme-aware token value
+ * @param tokenName Token name
+ * @returns Theme-aware token value
+ */
+export function getThemeAwareToken(tokenName: string): string {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  return `var(${tokenName})`;
+} 

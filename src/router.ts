@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from './pages/home/HomePage.vue';
-import ButtonPage from './design-system/button/ButtonPage.vue';
-import TokensPage from './design-system/tokens/TokensPage.vue';
-import BrandsPage from './design-system/brands/BrandsPage.vue';
+import HomePage from './pages/home';
+import ButtonPage from './pages/components/button';
+import TokensPage from './pages/foundation/tokens';
+import BrandsPage from './pages/foundation/brands';
 import PlaceholderPage from './components/global/PlaceholderPage.vue';
+import { ColorPage } from './design-system/color';
 
 const routes = [
   {
@@ -25,8 +26,7 @@ const routes = [
   {
     path: '/foundation/colors',
     name: 'Colors',
-    component: TokensPage,
-    props: { title: 'Colors' }
+    component: ColorPage,
   },
   {
     path: '/foundation/typography',

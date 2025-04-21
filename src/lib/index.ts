@@ -1,9 +1,9 @@
-import { ButtonMain as Button } from '../design-system/button';
-import { Badge } from '../design-system/badge';
+import { BaseButton } from '@/design-system/components/core/button';
+import { BaseBadge } from '@/design-system/components/core/badge';
 import * as TokenUtils from './tokens';
 
 // Export individual components
-export { Button, Badge, TokenUtils };
+export { BaseButton as Button, BaseBadge as Badge, TokenUtils };
 
 // Export all components as a plugin
 export default {

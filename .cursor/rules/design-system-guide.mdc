@@ -1,0 +1,611 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Design System Development Standards & Guidelines
+
+## Core Principles
+- Start small, iterate continuously
+- Solve real problems, not hypothetical ones
+- Build for maintainability and scalability
+- Document everything comprehensively
+- Maintain clear communication channels
+- Stay aligned with business objectives
+
+## Core Directory Structure
+/src
+├── design-system/    # Design system core
+│   ├── tokens/      # Design tokens (colors, typography, spacing, etc.)
+│   ├── components/  # Base components library
+│   └── patterns/    # Common UI patterns and layouts
+├── components/      # Project-specific components
+├── pages/          # Page components and layouts
+├── styles/         # Global styles and CSS utilities
+│   ├── theme.css   # Theme definitions
+│   └── style.css   # Global styles
+├── assets/         # Static assets (images, fonts, etc.)
+├── utils/          # Utility functions and helpers
+├── lib/            # Shared libraries and functions
+├── router/         # Routing configuration
+└── docs/           # Documentation and guidelines
+
+## Component Organization
+/src/design-system/components/
+├── core/           # Primitive components (Button, Input, etc.)
+├── composite/      # Composed components (Forms, Cards, etc.)
+├── layout/         # Layout components (Grid, Container, etc.)
+└── navigation/     # Navigation components (Menu, Breadcrumb, etc.)
+
+## Documentation Structure
+/src/docs/
+├── guidelines/     # Design and usage guidelines
+├── components/     # Component documentation
+├── tokens/         # Token documentation
+└── examples/       # Usage examples and patterns
+
+## Naming Conventions
+- Use kebab-case for file names: `primary-button.vue`
+- Use PascalCase for component names: `PrimaryButton`
+- Use descriptive prefixes for component types:
+  - Base components: `Base{ComponentName}`
+  - Layout components: `Layout{ComponentName}`
+  - Pattern components: `Pattern{ComponentName}`
+
+## File Organization Rules
+1. Keep related files close together
+2. Group by feature or component type
+3. Maintain clear separation between design system and project-specific code
+4. Use index files for cleaner imports
+5. Keep component-specific styles with their components
+6. Maintain consistent file structure within each directory
+
+## Import/Export Standards
+- Use named exports for components
+- Create index files for directory exports
+- Maintain clean import paths
+- Use alias paths where appropriate
+
+Remember:
+- All new components should follow this structure
+- Document any deviations from the standard
+- Keep the structure flat where possible
+- Maintain clear boundaries between design system and application code
+
+
+
+## Component Development Standards
+1. Structure:
+   - One component per file
+   - Use Vue 3 Composition API with <script setup>
+   - Include TypeScript interfaces for props
+   - Document component API clearly
+
+2. Props:
+   - Define clear prop interfaces
+   - Use required props when necessary
+   - Provide sensible defaults
+   - Include prop validation
+   - Document all props
+
+3. Accessibility:
+   - WCAG 2.1 AA compliance minimum
+   - Proper ARIA attributes
+   - Keyboard navigation support
+   - Screen reader compatibility
+   - Color contrast requirements
+
+4. Performance:
+   - Optimize bundle size
+   - Implement lazy loading
+   - Use code splitting
+   - Optimize assets
+   - Regular performance testing
+
+Component Showcase Structure
+- Component Overview
+- Purpose and use cases
+- Visual preview with interactive states
+- Token breakdown visualization
+   <template>
+     <div class="token-panel">
+       <h3>Design Tokens</h3>
+       <token-category v-for="category in tokenCategories" :key="category.name">
+         <template #header>
+           <h4>{{ category.name }}</h4>
+           <p>{{ category.description }}</p>
+         </template>
+         
+         <token-grid>
+           <token-cell 
+             v-for="token in category.tokens" 
+             :key="token.name"
+             :name="token.name"
+             :value="token.value"
+             :usage="token.usage"
+             :visual-preview="true"
+           />
+         </token-grid>
+       </token-category>
+     </div>
+   </template>
+
+Product Manager View: Component usage metrics, A/B test results, accessibility compliance
+Product Designer View: Interactive states, responsive behavior, UX guidelines
+Visual Designer View: Detailed token application, spacing visualizer, color contrast tools
+<template>
+  <div class="token-explorer">
+    <div class="token-controls">
+      <button @click="activeView = 'list'">List View</button>
+      <button @click="activeView = 'visual'">Visual View</button>
+      <button @click="activeView = 'code'">Code View</button>
+      
+      <select v-model="audienceFilter">
+        <option value="all">All Users</option>
+        <option value="product">Product Managers</option>
+        <option value="design">Designers</option>
+        <option value="dev">Developers</option>
+      </select>
+    </div>
+    
+    <!-- Token Visualization -->
+    <div v-if="activeView === 'visual'" class="token-visual">
+      <div class="token-category" v-for="category in filteredTokens" :key="category.name">
+        <h3>{{ category.name }}</h3>
+        
+        <!-- Color Tokens -->
+        <div v-if="category.type === 'color'" class="token-color-grid">
+          <div v-for="token in category.tokens" :key="token.name" class="token-color-item">
+            <div class="color-preview" :style="{ backgroundColor: token.value }"></div>
+            <div class="token-details">
+              <div class="token-name">{{ token.name }}</div>
+              <div class="token-value">{{ token.value }}</div>
+              <div class="token-usage">{{ token.usage }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Spacing Tokens -->
+        <div v-else-if="category.type === 'spacing'" class="token-spacing-grid">
+          <div v-for="token in category.tokens" :key="token.name" class="token-spacing-item">
+            <div class="spacing-preview" :style="{ width: token.value, height: token.value }"></div>
+            <div class="token-details">
+              <div class="token-name">{{ token.name }}</div>
+              <div class="token-value">{{ token.value }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Typography Tokens -->
+        <div v-else-if="category.type === 'typography'" class="token-typography-grid">
+          <div v-for="token in category.tokens" :key="token.name" class="token-typography-item">
+            <div class="typography-preview" :style="{ 
+              fontSize: token.value, 
+              fontWeight: token.weight || 'normal',
+              lineHeight: token.lineHeight || 'normal' 
+            }">
+              The quick brown fox jumps over the lazy dog
+            </div>
+            <div class="token-details">
+              <div class="token-name">{{ token.name }}</div>
+              <div class="token-value">{{ token.value }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Other Tokens -->
+        <div v-else class="token-grid">
+          <div v-for="token in category.tokens" :key="token.name" class="token-item">
+            <div class="token-name">{{ token.name }}</div>
+            <div class="token-value">{{ token.value }}</div>
+            <div class="token-usage">{{ token.usage }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Code View for Developers -->
+    <div v-if="activeView === 'code'" class="token-code">
+      <pre><code>{{ codeExample }}</code></pre>
+    </div>
+  </div>
+</template>
+
+Token Catalog Integration
+Each component should link to relevant tokens in the design system token catalog
+Visual indicators showing which tokens are applied to which parts of the component
+"In use" indicators on token catalog pages showing which components use each token
+
+
+## Version Control
+- Use semantic versioning (MAJOR.MINOR.PATCH)
+- Clear commit messages
+- Feature branches
+- Pull request templates
+- Code review requirements
+
+
+### 1. Vue Component Structure
+```vue
+<template>
+  <component-wrapper>
+    <slot-wrapper>
+      <!-- Component Content -->
+    </slot-wrapper>
+  </component-wrapper>
+</template>
+
+<script setup lang="ts">
+// 1. Type Imports
+import type { ComponentProps } from './types'
+
+// 2. Component Imports
+import { ComponentWrapper, SlotWrapper } from '@/components'
+
+// 3. Props/Emits Definition
+interface Props {
+  variant?: 'primary' | 'secondary'
+  size?: 'sm' | 'md' | 'lg'
+  isDisabled?: boolean
+}
+
+<script setup>
+// Technical implementation remains unchanged
+</script>
+
+<!-- Component implementation remains unchanged -->
+
+<!-- Add token visualization section -->
+<token-explorer :component="$options.name" />
+
+// 4. Props with defaults
+withDefaults(defineProps<Props>(), {
+  variant: 'primary',
+  size: 'md',
+  isDisabled: false
+})
+
+// 5. Emits
+const emit = defineEmits<{
+  (e: 'change', value: string): void
+  (e: 'update:modelValue', value: any): void
+}>()
+
+// 6. Composables/Utils
+const { someComposable } = useSomeFeature()
+
+// 7. Computed/Reactive State
+const computedValue = computed(() => {
+  // Logic here
+})
+</script>
+```
+
+### 2. TypeScript Best Practices
+
+```typescript
+// 1. Define Strong Types
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'tertiary'
+  size: 'sm' | 'md' | 'lg'
+  isDisabled?: boolean
+  onClick?: (event: MouseEvent) => void
+}
+
+// 2. Use Type Guards
+function isValidVariant(variant: string): variant is ButtonProps['variant'] {
+  return ['primary', 'secondary', 'tertiary'].includes(variant)
+}
+
+// 3. Utility Types
+type ComponentSize = Pick<ButtonProps, 'size'>
+type OptionalProps = Partial<ButtonProps>
+
+// 4. Generic Components
+interface DataListProps<T> {
+  items: T[]
+  renderItem: (item: T) => Vue.VNode
+}
+```
+
+### 3. CSS/Styling Standards
+
+```scss
+// 1. Use CSS Custom Properties for Tokens
+.component {
+  --component-spacing: var(--spacing-md);
+  --component-color: var(--color-primary-500);
+  
+  // 2. Mobile-First Approach
+  padding: var(--component-spacing);
+  
+  @media (min-width: 768px) {
+    padding: calc(var(--component-spacing) * 2);
+  }
+}
+
+// 3. State Classes
+.component {
+  &--disabled {
+    opacity: var(--opacity-disabled);
+  }
+  
+  &--loading {
+    cursor: wait;
+  }
+}
+
+// 4. Composition Classes
+.component {
+  &__header {
+    display: flex;
+    align-items: center;
+  }
+  
+  &__content {
+    position: relative;
+  }
+}
+```
+
+## Development Guidelines
+
+### 1. Component Architecture
+
+```typescript
+// 1. Composable Pattern
+export function useComponentLogic(props: Props) {
+  // Shared logic here
+  return {
+    // Exposed functionality
+  }
+}
+
+// 2. Component Composition
+const BaseButton = defineComponent({
+  name: 'BaseButton',
+  props: buttonProps,
+  setup(props, { slots, emit }) {
+    const { handleClick } = useButtonLogic(props)
+    return () => (
+      <button onClick={handleClick}>
+        {slots.default?.()}
+      </button>
+    )
+  }
+})
+```
+
+### 2. State Management
+
+```typescript
+// 1. Component State
+const componentState = reactive({
+  isLoading: false,
+  error: null as Error | null,
+  data: null as Data | null
+})
+
+// 2. Computed Properties
+const isValid = computed(() => {
+  return !componentState.error && componentState.data
+})
+
+// 3. Watchers
+watch(() => props.value, (newValue) => {
+  validateInput(newValue)
+}, { immediate: true })
+```
+
+### 3. Error Handling
+
+```typescript
+// 1. Error Boundaries
+const handleError = (error: Error) => {
+  console.error(error)
+  componentState.error = error
+}
+
+// 2. Async Error Handling
+const fetchData = async () => {
+  try {
+    componentState.isLoading = true
+    const result = await api.getData()
+    componentState.data = result
+  } catch (error) {
+    handleError(error as Error)
+  } finally {
+    componentState.isLoading = false
+  }
+}
+```
+
+## Best Practices Checklist
+
+### 1. Component Development
+- [ ] Single responsibility principle
+- [ ] Props validation and TypeScript interfaces
+- [ ] Proper event handling and emits
+- [ ] Accessibility implementation
+- [ ] Responsive design
+- [ ] Error states handling
+- [ ] Loading states
+- [ ] Empty states
+- [ ] Documentation
+
+### 2. Performance Optimization
+- [ ] Lazy loading when appropriate
+- [ ] Computed properties for expensive operations
+- [ ] Proper key usage in v-for loops
+- [ ] Debounced/throttled event handlers
+- [ ] Optimized re-renders
+
+### 3. Testing Requirements
+```typescript
+describe('Component', () => {
+  it('should render correctly', () => {
+    const wrapper = mount(Component)
+    expect(wrapper.exists()).toBe(true)
+  })
+
+  it('should emit events correctly', async () => {
+    const wrapper = mount(Component)
+    await wrapper.trigger('click')
+    expect(wrapper.emitted('click')).toBeTruthy()
+  })
+})
+```
+
+### 4. Documentation Standards
+```typescript
+/**
+ * @component BaseButton
+ * @description Primary button component with various states and variants
+ * 
+ * @example
+ * <BaseButton variant="primary" size="md">
+ *   Click Me
+ * </BaseButton>
+ * 
+ * @props {string} variant - Button variant (primary | secondary | tertiary)
+ * @props {string} size - Button size (sm | md | lg)
+ * @emits {click} - Emitted when button is clicked
+ */
+```
+
+## Code Review Checklist
+
+### 1. TypeScript
+- [ ] Proper type definitions
+- [ ] No any types unless necessary
+- [ ] Consistent interface naming
+- [ ] Type guards where needed
+
+### 2. Component Structure
+- [ ] Clean template structure
+- [ ] Logical script organization
+- [ ] Proper prop definitions
+- [ ] Event handling
+- [ ] Slot usage
+
+### 3. Styling
+- [ ] Token usage
+- [ ] Responsive design
+- [ ] State handling
+- [ ] Accessibility
+- [ ] CSS organization
+
+### 4. Performance
+- [ ] Optimized renders
+- [ ] Proper computed usage
+- [ ] Event optimization
+- [ ] Bundle size consideration
+
+## Common Patterns
+
+### 1. Composable Pattern
+```typescript
+export function useFeature() {
+  const state = reactive({})
+  const actions = {}
+  const getters = {}
+  
+  return {
+    ...toRefs(state),
+    ...actions,
+    ...getters
+  }
+}
+```
+
+### 2. Event Handler Pattern
+```typescript
+const handleEvent = async (event: Event) => {
+  try {
+    state.isLoading = true
+    await processEvent(event)
+    emit('success')
+  } catch (error) {
+    handleError(error as Error)
+  } finally {
+    state.isLoading = false
+  }
+}
+```
+
+### 3. Responsive Pattern
+```typescript
+const useResponsive = () => {
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const isTablet = useMediaQuery('(min-width: 768px)')
+  const isMobile = useMediaQuery('(max-width: 767px)')
+  
+  return {
+    isDesktop,
+    isTablet,
+    isMobile
+  }
+}
+```
+
+Remember:
+- Always consider accessibility
+- Write self-documenting code
+- Follow the established patterns
+- Consider edge cases
+- Test thoroughly
+- Document appropriately
+- Consider performance implications
+- Use TypeScript features effectively
+- Maintain consistency with existing components
+
+
+## Maintenance Guidelines
+1. Regular Tasks:
+   - Dependency updates
+   - Performance monitoring
+   - Accessibility audits
+   - Documentation updates
+   - Usage analytics review
+
+2. Health Checks:
+   - Bundle size monitoring
+   - Performance metrics
+   - Adoption metrics
+   - Bug report analysis
+   - User feedback review
+
+## Team Collaboration
+1. Communication:
+   - Regular team syncs
+   - Design reviews
+   - Technical discussions
+   - Documentation updates
+   - Feedback sessions
+
+2. Contribution:
+   - Clear contribution guidelines
+   - Code review process
+   - Documentation requirements
+   - Testing requirements
+   - Release process
+
+## Tools & Technology
+Required tooling:
+- Vite for build system
+- Vue 3 for components
+- TypeScript for type safety
+- ESLint for code quality
+- Prettier for formatting
+
+## Performance Requirements
+- First contentful paint < 1.5s
+- Time to interactive < 3.5s
+- Lighthouse score > 90
+- Bundle size monitoring
+- Performance budgets
+- Regular performance audits
+
+Remember: These standards are living documents and should be reviewed and updated regularly based on team feedback and evolving best practices.
+
+

@@ -1,3 +1,5 @@
+import { TOKEN_TYPES, TOKEN_STATES } from '@/lib/tokens';
+
 // Button Token Definitions
 export interface TokenDefinition {
   name: string;
@@ -302,4 +304,24 @@ export const watchThemeChanges = (callback: () => void): (() => void) => {
 
   // Return cleanup function
   return () => observer.disconnect();
+};
+
+// Button-specific token types
+export const BUTTON_TOKEN_TYPES = {
+  MAIN: `${TOKEN_TYPES.COMP_BUTTON}-main`,
+  OPTION: `${TOKEN_TYPES.COMP_BUTTON}-option`,
+  PILL: `${TOKEN_TYPES.COMP_BUTTON}-pill`,
+  CARD: `${TOKEN_TYPES.COMP_BUTTON}-card`,
+} as const;
+
+// Re-export common token states for convenience
+export { TOKEN_STATES };
+
+// Export button-specific token utilities
+export const getButtonTokenName = (
+  type: typeof BUTTON_TOKEN_TYPES[keyof typeof BUTTON_TOKEN_TYPES],
+  name: string,
+  state: typeof TOKEN_STATES[keyof typeof TOKEN_STATES] = TOKEN_STATES.REST
+): string => {
+  return `${type}-${name}-${state}`;
 }; 

@@ -1,4 +1,10 @@
+/**
+ * Token utilities for handling design tokens and theme changes.
+ * Note: Core token functions are in lib/tokens.ts, these are supplementary utilities.
+ */
+
 import { ref, computed } from 'vue';
+import type { TokenDefinition } from '../lib/tokens';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'warning' | 'success';
 
@@ -372,9 +378,8 @@ export const getAllTokensForTheme = (theme: 'light' | 'dark'): Record<string, st
  * @returns The value of the token for the current theme
  */
 export const getThemeAwareToken = (tokenName: string): string => {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const tokenValue = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
-  return tokenValue;
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  return `var(${tokenName})`;
 };
 
 /**
@@ -496,23 +501,24 @@ export const getButtonSizeTokensBySize = (size: string): TokenDefinition[] => {
 };
 
 /**
- * Watch for theme changes and execute a callback
+ * Watch for theme changes in the document
  * @param callback Function to call when theme changes
  * @returns Cleanup function
  */
-export const watchThemeChanges = (callback: () => void): () => void => {
+export function watchThemeChanges(callback: (theme: string) => void): () => void {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'data-theme') {
-        callback();
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        callback(theme);
       }
     });
   });
-  
+
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-theme']
+    attributeFilter: ['data-theme'],
   });
-  
+
   return () => observer.disconnect();
-}; 
+} 

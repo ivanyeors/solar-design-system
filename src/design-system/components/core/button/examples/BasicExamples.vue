@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ButtonMain, ButtonOption, ButtonPill, ButtonCard } from '../';
+import { Button, ButtonOption, ButtonPill, ButtonCard } from '../';
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import { ButtonMain, ButtonOption, ButtonPill, ButtonCard } from '../';
     <h3>Basic Button Examples</h3>
     <div class="examples-grid">
       <div class="example-item">
-        <ButtonMain>Primary Button</ButtonMain>
+        <Button>Primary Button</Button>
       </div>
       <div class="example-item">
         <ButtonOption>Option Button</ButtonOption>

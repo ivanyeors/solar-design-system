@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ButtonMain as Button } from '../../design-system/button';
-import { Badge } from '../../design-system/badge';
+import { BaseButton } from '@/design-system/components/core/button';
+import { BaseBadge } from '@/design-system/components/core/badge';
 </script>
 
 <template>
@@ -13,8 +13,8 @@ import { Badge } from '../../design-system/badge';
         A modern, accessible, and customizable design system for building beautiful Vue applications.
       </p>
       <div class="mt-8 flex justify-center gap-4">
-        <Button size="lg" variant="primary">Get Started</Button>
-        <Button size="lg" variant="outline">View on GitHub</Button>
+        <BaseButton size="lg" variant="primary">Get Started</BaseButton>
+        <BaseButton size="lg" variant="outline">View on GitHub</BaseButton>
       </div>
     </div>
     
@@ -27,7 +27,7 @@ import { Badge } from '../../design-system/badge';
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
           </div>
-          <Badge variant="brand" size="s">Design</Badge>
+          <BaseBadge variant="brand" size="s">Design</BaseBadge>
         </div>
         <h3 class="text-lg font-semibold text-primary">Customizable</h3>
         <p class="mt-2 text-secondary">
@@ -43,7 +43,7 @@ import { Badge } from '../../design-system/badge';
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <Badge variant="success" size="s">Performance</Badge>
+          <BaseBadge variant="success" size="s">Performance</BaseBadge>
         </div>
         <h3 class="text-lg font-semibold text-primary">Performant</h3>
         <p class="mt-2 text-secondary">
@@ -59,7 +59,7 @@ import { Badge } from '../../design-system/badge';
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <Badge variant="warning" size="s">Accessibility</Badge>
+          <BaseBadge variant="warning" size="s">Accessibility</BaseBadge>
         </div>
         <h3 class="text-lg font-semibold text-primary">Accessible</h3>
         <p class="mt-2 text-secondary">
@@ -71,7 +71,7 @@ import { Badge } from '../../design-system/badge';
     <div class="mt-16 bg-surface-secondary code-block">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold text-primary">Getting Started</h2>
-        <Badge variant="outline">v1.0</Badge>
+        <BaseBadge variant="outline">v1.0</BaseBadge>
       </div>
       <p class="mt-4 text-secondary">
         Install the Solar Design System using npm:
@@ -104,47 +104,33 @@ import { Badge } from '../../design-system/badge';
 
 .feature-card {
   padding: 1.5rem;
-  border-radius: var(--comp-card-report-radius);
-  border: 1px solid var(--color-border-primary-rest);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 .hover-card:hover {
-  background-color: var(--color-surface-primary-hover);
-  border-color: var(--color-border-primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
 }
 
 .feature-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
 .feature-icon {
-  width: 3rem;
-  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--comp-button-card-radius);
-  transition: background-color 0.2s ease;
-}
-
-.hover-card:hover .feature-icon {
-  background-color: var(--color-fill-brand-pale-hover);
-}
-
-.hover-card:hover .icon-brand {
-  color: var(--color-icon-brand-hover);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
 }
 
 .icon-brand {
-  color: var(--color-icon-brand-rest);
-  transition: color 0.2s ease;
+  color: var(--color-brand-500);
 }
 
 .code-block {

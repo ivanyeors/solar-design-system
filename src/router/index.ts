@@ -1,11 +1,11 @@
 // @ts-ignore - TypeScript doesn't recognize importmap resolutions, but it works at runtime
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomePage from '../pages/home/HomePage.vue'
-import ButtonPage from '../design-system/button/ButtonPage.vue'
-import TokensPage from '../design-system/tokens/TokensPage.vue'
-import BrandsPage from '../design-system/brands/BrandsPage.vue'
-import ColorPage from '../design-system/color/ColorPage.vue'
-import PlaceholderPage from '../components/global/PlaceholderPage.vue'
+import HomePage from '@/pages/home/HomePage.vue'
+import ButtonPage from '@/design-system/components/core/button/ButtonPage.vue'
+import TokensPage from '@/design-system/tokens/TokensPage.vue'
+import BrandsPage from '@/design-system/brands/BrandsPage.vue'
+import ColorPage from '@/design-system/color/ColorPage.vue'
+import PlaceholderPage from '@/components/global/PlaceholderPage.vue'
 
 // Get base URL from Vite configuration, defaulting to /solar-design-system/ for GitHub Pages
 const baseUrl = import.meta.env.BASE_URL || '/solar-design-system/'
